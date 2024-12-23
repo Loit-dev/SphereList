@@ -85,9 +85,7 @@
             <h1>Listas de Facciones</h1>
             <nav>
                 <ul>
-                    <li><a href="#">Inicio</a></li>
                     <li><a href="#">Facciones</a></li>
-                    <li><a href="#">Contacto</a></li>
                 </ul>
             </nav>
         </div>
@@ -133,11 +131,14 @@
 <script>
 const factions = {
     'Adeptos de Malesur': {
-        description: 'Los Adeptosa.',
         leaders: [
-            { name: 'Yenay', points: 5, characteristics: 'Característica X' },
-            { name: 'Liehnan', points: 6, characteristics: 'Característica Y' }
-            { name: '<strong>Mihualo, el Hombre Búho</strong>', points: 14, characteristics: ' \nDOM:4 EST:2 ORD:3 POD:4 \nMOV:45 DES:2 POT:2 CON:3 ARC:4 HER:4 TAM:3 AME:1 AGA:3', extraInfo: '<strong>Armas:</strong> Pequeñas Garras \n <strong>Bendicion de la tramontana</strong> - 8" \nIgnora linea de vision. El objetvo amigo que no este trabado puede desplazarse 4" en cualquier direccion, ignorando areas de defensa. \n<strong>Bendicion Interior</strong> - 8" \nIgnora linea de vision. El objetivo amigo tiene <strong>DES,POT y CON +1</strong>, hasta el inicio de la siguiente ronda amiga', comment: 'Armas: Pequeñas Garras \nBendicion de la tramontana - 8" \nIgnora linea de vision. El objetvo amigo que no este trabado puede desplazarse 4" en cualquier direccion, ignorando areas de defensa. \nBendicion Interior- 8" \nIgnora linea de vision. El objetivo amigo tiene DES,POT y CON +1, hasta el inicio de la siguiente ronda amiga' }
+	{ name: 'Yenay', points: 5, characteristics: 'Característica X' },
+
+	{ name: 'Liehnan', points: 6, characteristics: 'Característica Y' },
+
+	{ name: 'Shaogi', points: 6, characteristics: 'Característica Y' },
+
+	{ name: '<strong>Mihualo, el Hombre Búho</strong>', points: 14, characteristics: ' \nDOM:4 EST:2 ORD:3 POD:4 \nMOV:45 DES:2 POT:2 CON:3 ARC:4 HER:4 TAM:3 AME:1 AGA:3', extraInfo: '<strong>Armas:</strong> Pequeñas Garras \n <strong>Bendicion de la tramontana</strong> - 8" \nIgnora linea de vision. El objetvo amigo que no este trabado puede desplazarse 4" en cualquier direccion, ignorando areas de defensa. \n<strong>Bendicion Interior</strong> - 8" \nIgnora linea de vision. El objetivo amigo tiene <strong>DES,POT y CON +1</strong>, hasta el inicio de la siguiente ronda amiga', comment: 'Armas: Pequeñas Garras \nBendicion de la tramontana - 8" \nIgnora linea de vision. El objetvo amigo que no este trabado puede desplazarse 4" en cualquier direccion, ignorando areas de defensa. \nBendicion Interior- 8" \nIgnora linea de vision. El objetivo amigo tiene DES,POT y CON +1, hasta el inicio de la siguiente ronda amiga' }
         ],
         combatants: [
             { name: 'Chico Topo', points: 10, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' },
@@ -149,16 +150,13 @@ const factions = {
             { name: 'Mujer Serpiente', points: 10, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' },
             { name: 'Mujer Morena', points: 10, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' },
             { name: 'Hombre Toro', points: 15, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' }
-             ],
-        artifacts: [
-            { name: 'Artefacto 1', points: 3, characteristics: 'aM' },
-            { name: 'Artefacto 2', points: 4, characteristics: 'Ca N' }
         ],
-        veterans: [
-            { name: 'Veterano 1', points: 5, characteristics: 'a' },
-            { name: 'Veterano 2', points: 7, characteristics: 'a' }
+        artifacts: [
+            { name: 'Artefacto 1', points: 3, characteristics: 'Característica N'},
+            { name: 'Artefacto 2', points: 4, characteristics: 'Característica N' }
         ]
     },
+
     'Vástagos de Kurgan': {
         description: 'Los Vástagosa',
         leaders: [
