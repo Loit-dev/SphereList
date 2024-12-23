@@ -129,7 +129,10 @@
         </ul>
         <p class="total-points" id="total-points">Total de puntos: 0</p>
         <button class="reset-button" onclick="location.reload();">Reiniciar Lista</button>
+        <button class="reset-button" onclick="generatePDF()">Generar PDF</button>
     </div>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
 const factions = {
     'Adeptos de Malesur': {
@@ -406,6 +409,49 @@ function updateTotalPoints() {
         totalPointsElement.classList.remove('over-limit');
     }
 }
+async function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const username = prompt("Introduce tu nombre de usuario:");
+
+    if (!username) {
+        alert("Nombre de usuario es requerido.");
+        return;
+    }
+
+    const doc = new jsPDF();
+
+    // Título
+    doc.setFontSize(12); // Tamaño de letra más pequeño
+    doc.text("Lista de Ejercito", 105, 10, null, null, "center");
+
+    // Nombre de usuario
+    doc.setFontSize(10); // Tamaño de letra más pequeño
+    doc.text(`Usuario: ${username}`, 10, 20);
+
+    // Tamaño de la lista
+    const selectedList = document.getElementById('selected-list').getElementsByTagName('li');
+    let totalPoints = 0;
+    for (let i = 0; i < selectedList.length; i++) {
+        const points = parseInt(selectedList[i].textContent.match(/PB:(\d+)/)[1]);
+        totalPoints += points;
+    }
+    doc.text(`Total de puntos: ${totalPoints}`, 10, 30);
+
+    // Facción y opción
+    const faction = document.getElementById('faction-list').getElementsByTagName('li')[0].textContent;
+    const option = document.getElementById('options-list').getElementsByTagName('li')[0].textContent;
+    doc.text(`Facción: ${faction} - ${option}`, 10, 40);
+
+    // Líderes y Combatientes seleccionados
+    doc.text("Unidades:", 10, 50);
+    let y = 60;
+    for (let i = 0; i < selectedList.length; i++) {
+        doc.text(`- ${selectedList[i].textContent}`, 10, y);
+        y += 10;
+    }
+
+    // Guardar el PDF
+    doc.save("seleccion_reporte.pdf");
 </script>
 </body>
 </html>
