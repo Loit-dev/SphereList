@@ -61,7 +61,7 @@
             color: red;
         }
         .logo {
-            max-width: 350px;
+            max-width: 340px;
             display: block;
             margin: 0 auto;
         }
@@ -254,7 +254,7 @@ let chicaErizaCount = 0;
 function setPoints(points) {
     maxPoints = points;
     const pointsList = document.getElementById('points-list');
-    pointsList.innerHTML = `<li>${points} puntos</li>`;
+    pointsList.innerHTML = `<li><strong>${points}</strong> puntos</li>`;
     document.getElementById('faction-title').classList.remove('hidden');
     document.getElementById('faction-list').classList.remove('hidden');
     showFactions();
