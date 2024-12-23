@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listas de Facciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #77aaff 3px solid;
+        }
+        header a {
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+            list-style: none;
+        }
+        header li {
+            float: left;
+            display: inline;
+            padding: 0 20px 0 20px;
+        }
+        .main {
+            padding: 20px;
+            background: #fff;
+            margin-top: 20px;
+        }
+        .faction-list, .leader-list, .combatant-list, .selected-list, .points-list, .options-list, .artifact-list, .veteran-list {
+            list-style: none;
+            padding: 0;
+        }
+        .faction-list li, .leader-list li, .combatant-list li, .selected-list li, .points-list li, .options-list li, .artifact-list li, .veteran-list li {
+            background: #e4e4e4;
+            margin: 5px 0;
+            padding: 10px;
+            border: #ccc 1px solid;
+            cursor: pointer;
+        }
+        .total-points {
+            font-weight: bold;
+        }
+        .over-limit {
+            color: red;
+        }
+        .logo {
+            max-width: 350px;
+            display: block;
+            margin: 0 auto;
+        }
+        .hidden {
+            display: none;
+        }
+        .reset-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <img src="spherewars.png" alt="SphereWars Logo" class="logo">
+            <h1>Listas de Facciones</h1>
+            <nav>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#">Facciones</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="container main">
+        <h2>Selecciona el tamaño de la lista</h2>
+        <ul class="points-list" id="points-list">
+            <li onclick="setPoints(50)">50 puntos</li>
+            <li onclick="setPoints(75)">75 puntos</li>
+            <li onclick="setPoints(100)">100 puntos</li>
+        </ul>
+        <h2 class="hidden" id="faction-title">Facciones</h2>
+        <ul class="faction-list hidden" id="faction-list">
+            <!-- Aquí se mostrarán las facciones -->
+        </ul>
+        <h2 class="hidden" id="options-title">Opciones</h2>
+        <ul class="options-list hidden" id="options-list">
+            <!-- Aquí se mostrarán las opciones específicas -->
+        </ul>
+        <h2 class="hidden" id="leader-title">Líderes</h2>
+        <ul class="leader-list hidden" id="leader-list">
+            <!-- Aquí se mostrarán los líderes -->
+        </ul>
+        <h2 class="hidden" id="veteran-title">Veteranías</h2>
+        <ul class="veteran-list hidden" id="veteran-list">
+            <!-- Aquí se mostrarán las veteranías -->
+        </ul>
+        <h2 class="hidden" id="combatant-title">Combatientes</h2>
+        <ul class="combatant-list hidden" id="combatant-list">
+            <!-- Aquí se mostrarán los combatientes -->
+        </ul>
+        <h2 class="hidden" id="artifact-title">Artefactos</h2>
+        <ul class="artifact-list hidden" id="artifact-list">
+            <!-- Aquí se mostrarán los artefactos -->
+        </ul>
+        <h2>Lista Seleccionada</h2>
+        <ul class="selected-list" id="selected-list">
+            <!-- Aquí se mostrarán los combatientes seleccionados -->
+        </ul>
+        <p class="total-points" id="total-points">Total de puntos: 0</p>
+        <button class="reset-button" onclick="location.reload();">Reiniciar Lista</button>
+    </div>
+<script>
+const factions = {
+    'Adeptos de Malesur': {
+        description: 'Los Adeptosa.',
+        leaders: [
+            { name: 'Yenay', points: 5, characteristics: 'Característica X' },
+            { name: 'Liehnan', points: 6, characteristics: 'Característica Y' }
+        ],
+        combatants: [
+            { name: 'Chico Topo', points: 10, characteristics: 'a2' },
+            { name: 'Chica Eriza', points: 10, characteristics: 'a2' },
+            { name: 'Chicos Mangosta', points: 10, characteristics: 'Ma2' },
+            { name: 'Hombre Aguila', points: 10, characteristics: 'a:2' },
+            { name: 'Hombre Toro', points: 15, characteristics: 'a' }
+        ],
+        artifacts: [
+            { name: 'Artefacto 1', points: 3, characteristics: 'aM' },
+            { name: 'Artefacto 2', points: 4, characteristics: 'Ca N' }
+        ],
+        veterans: [
+            { name: 'Veterano 1', points: 5, characteristics: 'a' },
+            { name: 'Veterano 2', points: 7, characteristics: 'a' }
+        ]
+    },
+    'Vástagos de Kurgan': {
+        description: 'Los Vástagosa',
+        leaders: [
+            { name: 'Líder 3', points: 3, characteristics: 'a' },
+            { name: 'Líder 4', points: 9, characteristics: 'a' }
+        ],
+        combatants: [
+            { name: 'Combatiente 3', points: 2, characteristics: 'a' },
+            { name: 'Combatiente 4', points: 5, characteristics: 'a' }
+        ],
+        artifacts: [
+            { name: 'Artefacto 3', points: 2, characteristics: 'Ca' },
+            { name: 'Artefacto 4', points: 5, characteristics: 'Ca' }
+        ],
+        veterans: [
+            { name: 'Veterano 3', points: 4, characteristics: 'Ca' },
+            { name: 'Veterano 4', points: 6, characteristics: 'CaF' }
+        ]
+    },
+    'Manadas de Urueh': {
+        description: 'Las Manadasa',
+        leaders: [
+            { name: 'Líder 5', points: 4, characteristics: 'Característica V' },
+            { name: 'Líder 6', points: 11, characteristics: 'Característica U' }
+        ],
+        combatants: [
+            { name: 'Combatiente 5', points: 10, characteristics: 'Característica E' },
+            { name: 'Combatiente 6', points: 15, characteristics: 'Característica F' }
+        ],
+        artifacts: [
+            { name: 'Artefacto 5', points: 3, characteristics: 'Característica Q' },
+            { name: 'Artefacto 6', points: 6, characteristics: 'Característica R' }
+        ],
+        veterans: [
+            { name: 'Veterano 5', points: 5, characteristics: 'Característica G' },
+            { name: 'Veterano 6', points: 8, characteristics: 'Característica H' }
+        ]
+    },
+    'Alianza': {
+        description: 'La Alianzas',
+        leaders: [
+            { name: 'Líder 7', points: 5, characteristics: 'Característica T' },
+            { name: 'Líder 8', points: 6, characteristics: 'Característica S' }
+        ],
+        combatants: [
+            { name: 'Combatiente 7', points: 5, characteristics: 'Característica G' },
+            { name: 'Combatiente 8', points: 4, characteristics: 'Característica H' }
+        ],
+        artifacts: [
+            { name: 'Artefacto 7', points: 4, characteristics: 'Característica I' },
+            { name: 'Artefacto 8', points: 7, characteristics: 'Característica J' }
+        ],
+        veterans: [
+            { name: 'Veterano 7', points: 6, characteristics: 'Característica K' },
+            { name: 'Veterano 8', points: 9, characteristics: 'Característica L' }
+        ]
+    }
+};
+const options = {
+    'Adeptos de Malesur': [
+        { name: 'Devotos de Malesur', description: 'Los Devotos de Malesur son los seguidores más leales.' },
+        { name: 'Iniciados de Malesur', description: 'Los Iniciados de Malesur están en entrenamiento constante.' }
+    ],
+    'Vástagos de Kurgan': [
+        { name: 'Soimi', description: 'Soimi son los exploradores ágiles de los Vástagos de Kurgan.' },
+        { name: 'Regor', description: 'Regor son los guerreros de élite de los Vástagos de Kurgan.' }
+    ],
+    'Manadas de Urueh': [
+        { name: 'Teokkis', description: 'Teokkis son los cazadores furtivos de las Manadas de Urueh.' },
+        { name: 'Golothar', description: 'Golothar son los defensores implacables de las Manadas de Urueh.' },
+        { name: 'Ag-Tharan', description: 'Ag-Tharan son los líderes espirituales de las Manadas de Urueh.' }
+    ],
+    'Alianza': [
+        { name: 'La Alianza', description: 'La Alianza es una coalición de diversas facciones.' },
+        { name: 'Legión de los Mil Corazones', description: 'La Legión de los Mil Corazones es conocida por su valentía.' },
+        { name: 'Mercenarias de Isha', description: 'Las Mercenarias de Isha son guerreras contratadas por su habilidad.' }
+    ]
+};
+
+let selectedPoints = 0;
+let maxPoints = 0;
+let selectedOption = '';
+let chicaErizaCount = 0;
+
+function setPoints(points) {
+    maxPoints = points;
+    const pointsList = document.getElementById('points-list');
+    pointsList.innerHTML = `<li>${points} puntos</li>`;
+    document.getElementById('faction-title').classList.remove('hidden');
+    document.getElementById('faction-list').classList.remove('hidden');
+    showFactions();
+}
+
+function showFactions() {
+    const factionList = document.getElementById('faction-list');
+    factionList.innerHTML = ''; // Limpiar la lista
+
+    for (const faction in factions) {
+        const li = document.createElement('li');
+        li.textContent = faction;
+        li.onclick = () => selectFaction(faction);
+        factionList.appendChild(li);
+    }
+}
+
+function selectFaction(faction) {
+    const factionList = document.getElementById('faction-list');
+    factionList.innerHTML = ''; // Limpiar la lista
+
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${faction}</strong><br>${factions[faction].description}`;
+    factionList.appendChild(li);
+
+    document.getElementById('options-title').classList.remove('hidden');
+    document.getElementById('options-list').classList.remove('hidden');
+    showOptions(faction);
+}
+
+function showOptions(faction) {
+    const optionsList = document.getElementById('options-list');
+    optionsList.innerHTML = ''; // Limpiar la lista
+
+    options[faction].forEach(option => {
+        const li = document.createElement('li');
+        li.textContent = option.name;
+        li.onclick = () => selectOption(faction, option);
+        optionsList.appendChild(li);
+    });
+}
+
+function selectOption(faction, option) {
+    selectedOption = option.name;
+    chicaErizaCount = 0; // Reiniciar el contador al seleccionar una nueva opción
+    const optionsList = document.getElementById('options-list');
+    optionsList.innerHTML = ''; // Limpiar la lista
+
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${option.name}</strong><br>${option.description}`;
+    optionsList.appendChild(li);
+
+    document.getElementById('leader-title').classList.remove('hidden');
+    document.getElementById('leader-list').classList.remove('hidden');
+    showLeaders(faction);
+    document.getElementById('veteran-title').classList.remove('hidden');
+    document.getElementById('veteran-list').classList.remove('hidden');
+    showVeterans(faction);
+    document.getElementById('combatant-title').classList.remove('hidden');
+    document.getElementById('combatant-list').classList.remove('hidden');
+    showCombatants(faction);
+    document.getElementById('artifact-title').classList.remove('hidden');
+    document.getElementById('artifact-list').classList.remove('hidden');
+    showArtifacts(faction);
+}
+
+function showLeaders(faction) {
+    const leaderList = document.getElementById('leader-list');
+    leaderList.innerHTML = ''; // Limpiar la lista
+
+    factions[faction].leaders.forEach(leader => {
+        const li = document.createElement('li');
+        li.innerHTML = `${leader.name} - PB:${leader.points} ${leader.characteristics.replace(/\n/g, '<br>')}`;
+        li.title = leader.comment || ''; // Agregar comentario como tooltip
+        li.onclick = () => addToSelectedList(leader);
+        leaderList.appendChild(li);
+    });
+}
+
+function showVeterans(faction) {
+    const veteranList = document.getElementById('veteran-list');
+    veteranList.innerHTML = ''; // Limpiar la lista
+
+    if (factions[faction].veterans) {
+        factions[faction].veterans.forEach(veteran => {
+            const li = document.createElement('li');
+            li.innerHTML = `${veteran.name} - PB:${veteran.points} ${veteran.characteristics.replace(/\n/g, '<br>')}`;
+            li.title = veteran.comment || ''; // Agregar comentario como tooltip
+            li.onclick = () => addToSelectedList(veteran);
+            veteranList.appendChild(li);
+        });
+    }
+}
+
+function showCombatants(faction) {
+    const combatantList = document.getElementById('combatant-list');
+    combatantList.innerHTML = ''; // Limpiar la lista
+
+    factions[faction].combatants.forEach(combatant => {
+        if (selectedOption === 'Devotos de Malesur' && combatant.name === 'Chica Eriza') {
+            return; // No mostrar Chica Eriza para Devotos de Malesur
+        }
+        const li = document.createElement('li');
+        li.innerHTML = `${combatant.name} - PB:${combatant.points} ${combatant.characteristics.replace(/\n/g, '<br>')}`;
+        li.title = combatant.comment || ''; // Agregar comentario como tooltip
+        li.onclick = () => addToSelectedList(combatant);
+        combatantList.appendChild(li);
+    });
+}
+
+function showArtifacts(faction) {
+    const artifactList = document.getElementById('artifact-list');
+    artifactList.innerHTML = ''; // Limpiar la lista
+
+    factions[faction].artifacts.forEach(artifact => {
+        const li = document.createElement('li');
+        li.innerHTML = `${artifact.name} - PB:${artifact.points} ${artifact.characteristics.replace(/\n/g, '<br>')}`;
+        li.title = artifact.comment || ''; // Agregar comentario como tooltip
+        li.onclick = () => addToSelectedList(artifact);
+        artifactList.appendChild(li);
+    });
+}
+
+function addToSelectedList(unit) {
+    if (selectedOption === 'Iniciados de Malesur' && unit.name === 'Chica Eriza') {
+        if (chicaErizaCount >= 2) {
+            alert('Solo puedes añadir un máximo de 2 Chica Eriza.');
+            return;
+        }
+        chicaErizaCount++;
+    }
+
+    const selectedList = document.getElementById('selected-list');
+    const li = document.createElement('li');
+    li.innerHTML = `${unit.name} - PB:${unit.points} ${unit.characteristics.replace(/\n/g, '<br>')}<br>${unit.extraInfo ? unit.extraInfo.replace(/\n/g, '<br>') : ''}`;
+    li.onclick = () => removeFromSelectedList(unit, li);
+    selectedList.appendChild(li);
+
+    selectedPoints += unit.points;
+    updateTotalPoints();
+}
+
+function removeFromSelectedList(unit, listItem) {
+    const selectedList = document.getElementById('selected-list');
+    selectedList.removeChild(listItem);
+
+    if (unit.name === 'Chica Eriza') {
+        chicaErizaCount--;
+    }
+
+    selectedPoints -= unit.points;
+    updateTotalPoints();
+}
+
+function updateTotalPoints() {
+    const totalPointsElement = document.getElementById('total-points');
+    totalPointsElement.textContent = `Total de puntos: ${selectedPoints}`;
+
+    if (selectedPoints > maxPoints) {
+        totalPointsElement.classList.add('over-limit');
+    } else {
+        totalPointsElement.classList.remove('over-limit');
+    }
+}
+</script>
+</body>
+</html>
