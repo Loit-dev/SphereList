@@ -140,9 +140,8 @@
             <!-- Aquí se mostrarán los combatientes seleccionados -->
         </ul>
         <p class="total-points" id="total-points">Total de puntos: 0</p>
-        <button class="reset-button" onclick="location.reload();">Reiniciar Lista</button> <button id="generatePDF">Generar PDF</button>
+        <button class="reset-button" onclick="location.reload();">Reiniciar Lista</button> <button class="reset-button" id="generatePDF">Generar PDF</button>
     </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script>
 const factions = {
     'Adeptos de Malesur': {
@@ -460,7 +459,6 @@ function updateTotalPoints() {
     } else {
         totalPointsElement.classList.remove('over-limit');
     }
-}
 	document.getElementById('generatePDF').addEventListener('click', function () {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -474,6 +472,7 @@ function updateTotalPoints() {
     // Guarda el PDF
     doc.save('ListaSeleccionada.pdf');
 });
+}
 </script>
 </body>
 </html>
