@@ -464,37 +464,26 @@ function updateTotalPoints() {
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script>
+<script>
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('generatePDF').addEventListener('click', function () {
             const { jsPDF } = window.jspdf;
 
             // Capturar los elementos que queremos incluir en el PDF
-            const factionElement = document.getElementById('faction-list');
-            const optionsElement = document.getElementById('options-list');
-            const selectedListElement = document.getElementById('selected-list');
+            const contentElement = document.querySelector('.main');
 
-            // Usar html2canvas para capturar cada elemento
-            Promise.all([
-                html2canvas(factionElement),
-                html2canvas(optionsElement),
-                html2canvas(selectedListElement)
-            ]).then(canvases => {
+            // Usar html2canvas para capturar el contenido
+            html2canvas(contentElement).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('l', 'mm', 'a4'); // 'l' para formato horizontal
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const scaleFactor = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
 
-                // Añadir cada canvas al PDF
-                canvases.forEach((canvas, index) => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const imgProps = pdf.getImageProperties(imgData);
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-                    if (index > 0) {
-                        pdf.addPage();
-                    }
-                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                });
-
+                // Añadir la imagen escalada al PDF
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth * scaleFactor, imgHeight * scaleFactor);
                 pdf.save('lista.pdf');
             });
         });
