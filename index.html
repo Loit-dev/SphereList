@@ -142,7 +142,6 @@
         <p class="total-points" id="total-points">Total de puntos: 0</p>
         <button class="reset-button" onclick="location.reload();">Reiniciar Lista</button> <button class="reset-button" id="generatePDF">Generar PDF</button>
     </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script>
 const factions = {
     'Adeptos de Malesur': {
@@ -462,18 +461,21 @@ function updateTotalPoints() {
     }
 }
 </script>
-<script>
-    document.getElementById('printButton').addEventListener('click', function () {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('generatePDF').addEventListener('click', function () {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
 
-        // Aquí puedes obtener la lista seleccionada y añadirla al PDF
-        const listaSeleccionada = document.getElementById('listaSeleccionada').innerText;
-        doc.text(listaSeleccionada, 10, 10);
+                // Aquí puedes obtener la lista seleccionada y añadirla al PDF
+                const listaSeleccionada = document.getElementById('selected-list').innerText;
+                doc.text(listaSeleccionada, 10, 10);
 
-        // Guardar el PDF
-        doc.save('lista.pdf');
-    });
-</script>
+                // Guardar el PDF
+                doc.save('lista.pdf');
+            });
+        });
+    </script>
 </body>
 </html>
