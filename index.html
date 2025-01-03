@@ -61,7 +61,7 @@
             color: red;
         }
         .logo {
-            max-width: 340px;
+            max-width: 350px;
             display: block;
             margin: 0 auto;
         }
@@ -81,11 +81,13 @@
 <body>
     <header>
         <div class="container">
-            <img src="https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png" alt="SphereWars Logo" class="logo">
+            <img src="spherewars.png" alt="SphereWars Logo" class="logo">
             <h1>Listas de Facciones</h1>
             <nav>
                 <ul>
+                    <li><a href="#">Inicio</a></li>
                     <li><a href="#">Facciones</a></li>
+                    <li><a href="#">Contacto</a></li>
                 </ul>
             </nav>
         </div>
@@ -127,33 +129,21 @@
         </ul>
         <p class="total-points" id="total-points">Total de puntos: 0</p>
         <button class="reset-button" onclick="location.reload();">Reiniciar Lista</button>
-	<button class="reset-button" onclick="generatePDF()">Generar PDF</button>
-    </div>
-    	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     </div>
 <script>
 const factions = {
-   'Adeptos de Malesur': {
+    'Adeptos de Malesur': {
         description: 'Los Adeptosa.',
         leaders: [
-	{ name: 'Yenay', points: 5, characteristics: 'Característica X' },
-
-	{ name: 'Liehnan', points: 6, characteristics: 'Característica Y' },
-
-	{ name: 'Shaogi', points: 6, characteristics: 'Característica Y' },
-
-	{ name: '<strong>Mihualo, el Hombre Búho</strong>', points: 14, characteristics: ' \nDOM:4 EST:2 ORD:3 POD:4 \nMOV:45 DES:2 POT:2 CON:3 ARC:4 HER:4 TAM:3 AME:1 AGA:3', extraInfo: '<strong>Armas:</strong> Pequeñas Garras \n <strong>Bendicion de la tramontana</strong> - 8" \nIgnora linea de vision. El objetvo amigo que no este trabado puede desplazarse 4" en cualquier direccion, ignorando areas de defensa. \n<strong>Bendicion Interior</strong> - 8" \nIgnora linea de vision. El objetivo amigo tiene <strong>DES,POT y CON +1</strong>, hasta el inicio de la siguiente ronda amiga', comment: 'Armas: Pequeñas Garras \nBendicion de la tramontana - 8" \nIgnora linea de vision. El objetvo amigo que no este trabado puede desplazarse 4" en cualquier direccion, ignorando areas de defensa. \nBendicion Interior- 8" \nIgnora linea de vision. El objetivo amigo tiene DES,POT y CON +1, hasta el inicio de la siguiente ronda amiga' }
+            { name: 'Yenay', points: 5, characteristics: 'Característica X' },
+            { name: 'Liehnan', points: 6, characteristics: 'Característica Y' }
         ],
         combatants: [
-            { name: 'Chico Topo', points: 10, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' },
-            { name: 'Chica Eriza', points: 10, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' },
-            { name: 'Chicos Mangosta', points: 10, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' },
-            { name: 'Hombre Aguila', points: 10, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' },
-            { name: 'Hombre Cabra', points: 10, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' },
-            { name: 'Hombre Lince', points: 10, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' },
-            { name: 'Mujer Serpiente', points: 10, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' },
-            { name: 'Mujer Morena', points: 10, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' },
-            { name: 'Hombre Toro', points: 15, characteristics: 'MOV:4 DES:4 POT:3 CON:4 ARC:5 HER:6 TAM:4 AME:2 AGA:2' }
+            { name: 'Chico Topo', points: 10, characteristics: 'a2' },
+            { name: 'Chica Eriza', points: 10, characteristics: 'a2' },
+            { name: 'Chicos Mangosta', points: 10, characteristics: 'Ma2' },
+            { name: 'Hombre Aguila', points: 10, characteristics: 'a:2' },
+            { name: 'Hombre Toro', points: 15, characteristics: 'a' }
         ],
         artifacts: [
             { name: 'Artefacto 1', points: 3, characteristics: 'aM' },
@@ -164,9 +154,22 @@ const factions = {
             { name: 'Veterano 2', points: 7, characteristics: 'a' }
         ]
     },
-
     'Vástagos de Kurgan': {
-        description: 'Los Vástagosa',
+        description: `<STRONG>Cohesión por la Profecía</STRONG><br>
+
+<br>La Cohesión es un valor que va de 1 a 4 (ignora efectos que la suban por encima o por debajo de estos valores) y que define lo unida que está la banda Vástagos de Kurgan para seguir a su líder. Empieza con un valor de 3 y puede subir y bajar durante la partida:<br>
+
+<br><STRONG>+2</STRONG> de Cohesión si muere el Líder rival.
+<br><STRONG>-2</STRONG> de Cohesión si muere el Líder de la banda.
+<br><STRONG>+1</STRONG> de Cohesión cuando muera el primer enemigo que no sea invocación cada ronda.
+<br><STRONG>-1</STRONG> de Cohesión si se termina un turno en que ningún enemigo (ignorando invocaciones) haya recibido una herida.<br>
+
+<br><STRONG>Cohesión Efecto</STRONG><br>
+
+<br><STRONG>4:</STRONG> Todos los aliados activan sus habilidades de Lealtad y pueden recibir órdenes.
+<br><STRONG>3:</STRONG> Todos los aliados que compartan culto con el Líder activan sus habilidades de Lealtad. Todos los aliados pueden recibir órdenes.
+<br><STRONG>2:</STRONG> Solo los aliados que compartan culto con el Líder pueden recibir órdenes.
+<br><STRONG>1:</STRONG> Solo el Líder de la banda puede recibir órdenes.`,
         leaders: [
             { name: 'Líder 3', points: 3, characteristics: 'a' },
             { name: 'Líder 4', points: 9, characteristics: 'a' }
@@ -231,8 +234,10 @@ const options = {
         { name: 'Iniciados de Malesur', description: 'Los Iniciados de Malesur están en entrenamiento constante.' }
     ],
     'Vástagos de Kurgan': [
-        { name: 'Soimi', description: 'Soimi son los exploradores ágiles de los Vástagos de Kurgan.' },
-        { name: 'Regor', description: 'Regor son los guerreros de élite de los Vástagos de Kurgan.' }
+        { name: 'Soimi', description: `<STRONG>Unidos por la Profecía</STRONG><br>
+
+<br>Si el líder de tu banda es un Soimi, puedes contratar un segundo Líder Soimi por su coste original, este segundo combatiente pierde sus atributos de <STRONG>EST</STRONG> y <STRONG>ORD</STRONG> y deja de considerarse un Líder. Una banda que contenga un segundo Líder adquirido de esta forma empieza la partida con <STRONG>Cohesión 1</STRONG>.` },
+        { name: 'Regor', description: `Regor son los guerreros de élite de los Vástagos de Kurgan.` }
     ],
     'Manadas de Urueh': [
         { name: 'Teokkis', description: 'Teokkis son los cazadores furtivos de las Manadas de Urueh.' },
@@ -254,7 +259,7 @@ let chicaErizaCount = 0;
 function setPoints(points) {
     maxPoints = points;
     const pointsList = document.getElementById('points-list');
-    pointsList.innerHTML = `<li><strong>${points}</strong> puntos</li>`;
+    pointsList.innerHTML = `<li>${points} puntos</li>`;
     document.getElementById('faction-title').classList.remove('hidden');
     document.getElementById('faction-list').classList.remove('hidden');
     showFactions();
@@ -423,50 +428,6 @@ function updateTotalPoints() {
     } else {
         totalPointsElement.classList.remove('over-limit');
     }
-}
-	async function generatePDF() {
-    const { jsPDF } = window.jspdf;
-    const username = prompt("Introduce tu nombre de usuario:");
-
-    if (!username) {
-        alert("Nombre de usuario es requerido.");
-        return;
-    }
-
-    const doc = new jsPDF();
-
-    // Título
-    doc.setFontSize(12); // Tamaño de letra más pequeño
-    doc.text("Lista de Ejercito", 105, 10, null, null, "center");
-
-    // Nombre de usuario
-    doc.setFontSize(10); // Tamaño de letra más pequeño
-    doc.text(`Usuario: ${username}`, 10, 20);
-
-    // Tamaño de la lista
-    const selectedList = document.getElementById('selected-list').getElementsByTagName('li');
-    let totalPoints = 0;
-    for (let i = 0; i < selectedList.length; i++) {
-        const points = parseInt(selectedList[i].textContent.match(/PB:(\d+)/)[1]);
-        totalPoints += points;
-    }
-    doc.text(`Total de puntos: ${totalPoints}`, 10, 30);
-
-    // Facción y opción
-    const faction = document.getElementById('faction-list').getElementsByTagName('li')[0].textContent;
-    const option = document.getElementById('options-list').getElementsByTagName('li')[0].textContent;
-    doc.text(`Facción: ${faction} - ${option}`, 10, 40);
-
-    // Líderes y Combatientes seleccionados
-    doc.text("Unidades:", 10, 50);
-    let y = 60;
-    for (let i = 0; i < selectedList.length; i++) {
-        doc.text(`- ${selectedList[i].textContent}`, 10, y);
-        y += 10;
-    }
-
-    // Guardar el PDF
-    doc.save("seleccion_reporte.pdf");
 }
 </script>
 </body>
