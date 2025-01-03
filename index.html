@@ -76,6 +76,12 @@
             border: none;
             cursor: pointer;
         }
+        .info-box {
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -124,6 +130,12 @@
             <!-- Aquí se mostrarán los artefactos -->
         </ul>
         <h2>Lista Seleccionada</h2>
+        <div class="info-box hidden" id="selected-faction">
+            <!-- Aquí se mostrará la facción seleccionada -->
+        </div>
+        <div class="info-box hidden" id="selected-option">
+            <!-- Aquí se mostrará la opción seleccionada -->
+        </div>
         <ul class="selected-list" id="selected-list">
             <!-- Aquí se mostrarán los combatientes seleccionados -->
         </ul>
@@ -136,7 +148,8 @@ const factions = {
         description: 'Los Adeptosa.',
         leaders: [
             { name: 'Yenay', points: 5, characteristics: 'Característica X' },
-            { name: 'Liehnan', points: 6, characteristics: 'Característica Y' }
+            { name: 'Liehnan', points: 6, characteristics: 'Característica Y' },
+	    { name: '<strong>Mihualo, el Hombre Búho</strong>', points: 14, characteristics: ' \nDOM:4 EST:2 ORD:3 POD:4 \nMOV:45 DES:2 POT:2 CON:3 ARC:4 HER:4 TAM:3 AME:1 AGA:3', extraInfo: '<strong>Armas:</strong> Pequeñas Garras \n <strong>Bendicion de la tramontana</strong> - 8" \nIgnora linea de vision. El objetvo amigo que no este trabado puede desplazarse 4" en cualquier direccion, ignorando areas de defensa. \n<strong>Bendicion Interior</strong> - 8" \nIgnora linea de vision. El objetivo amigo tiene <strong>DES,POT y CON +1</strong>, hasta el inicio de la siguiente ronda amiga', comment: 'Armas: Pequeñas Garras \nBendicion de la tramontana - 8" \nIgnora linea de vision. El objetvo amigo que no este trabado puede desplazarse 4" en cualquier direccion, ignorando areas de defensa. \nBendicion Interior- 8" \nIgnora linea de vision. El objetivo amigo tiene DES,POT y CON +1, hasta el inicio de la siguiente ronda amiga' }
         ],
         combatants: [
             { name: 'Chico Topo', points: 10, characteristics: 'a2' },
@@ -164,23 +177,30 @@ const factions = {
 <br><STRONG>+1</STRONG> de Cohesión cuando muera el primer enemigo que no sea invocación cada ronda.
 <br><STRONG>-1</STRONG> de Cohesión si se termina un turno en que ningún enemigo (ignorando invocaciones) haya recibido una herida.<br>
 
-<br><STRONG>Cohesión Efecto</STRONG><br>
+<br><STRONG>Cohesión Efecto</STRONG>
 
 <br><STRONG>4:</STRONG> Todos los aliados activan sus habilidades de Lealtad y pueden recibir órdenes.
 <br><STRONG>3:</STRONG> Todos los aliados que compartan culto con el Líder activan sus habilidades de Lealtad. Todos los aliados pueden recibir órdenes.
 <br><STRONG>2:</STRONG> Solo los aliados que compartan culto con el Líder pueden recibir órdenes.
-<br><STRONG>1:</STRONG> Solo el Líder de la banda puede recibir órdenes.`,
+<br><STRONG>1:</STRONG> Solo el Líder de la banda puede recibir órdenes.<br>
+
+<br><STRONG>Demostración de Fuerza (Orden)</STRONG>
+
+<br>Esta orden puede darse después de lanzar una tirada de daño con un arma a melé. Repite la tirada de daño.`,
+
         leaders: [
-            { name: 'Líder 3', points: 3, characteristics: 'a' },
+            { name: '<strong>Nek`Org el Profeta</strong>', points: 18, characteristics: '\nDOM:2 EST:3 ORD:4 FUR:4 \nMOV:5 DES:4 POT:3 CON:5 ARC:4 HER:6 TAM:4 AME:2 AGA:3', extraInfo: '<strong>Armas:</strong> Espadon diente \n <strong>Impactante:</strong>Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2). \n<strong>Intimidante:</strong> Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene <strong>AME 1</strong> hasta el final de la activación. \n<strong>Comunicación Sensorial:</strong> Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8”. \n<strong>Demostración de Poder:</strong> Cuando un enemigo(no invocación) muera a causa de un hechizo a 8" o menos de estecombatiente, esta banda aumenta en 1 su Cohesión. \n<strong>-Lealtad- Magia Instintiva:</strong> Si la banda tiene suficiente Cohesión, este combatiente puede correr al doble y lanzar hechizos.', comment: 'Armas: Espadon diente \n Impactante:Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2). \nIntimidante: Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene AME 1 hasta el final de la activación. \nComunicación Sensorial: Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8”. \nDemostración de Poder: Cuando un enemigo(no invocación) muera a causa de un hechizo a 8" o menos de estecombatiente, esta banda aumenta en 1 su Cohesión. \n-Lealtad- Magia Instintiva: Si la banda tiene suficiente Cohesión, este combatiente puede correr al doble y lanzar hechizos.' },
+	    {  name: '<strong>Tir`Abe Muro de Hielo</strong>', points: 19, characteristics: '\nDOM:2 EST:2 ORD:4 FUR:2 \nMOV:5 DES:4 POT:4 CON:5 ARC:4 HER:6 TAM:4 AME:3 AGA:3', extraInfo: '<strong>Armas:</strong> Maza de Guerra \n <strong>Contundente:</strong>Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2); si el ataque tiene POT 4 o más, recibe un 1 adicional (2 en total). \n<strong>Comunicación Sensorial:</strong> Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8”. \n<strong>Campeón de Kurgan:</strong> Cuando este combatiente mate un enemigo (no invocación) de PB 6 o superior, esta banda aumenta en 1 su Cohesión. \n<strong>Aguijones:</strong>Causa una herida automática al objetivo. Sphere: este combatiente se cura una herida. \n<strong>Golpe Circular</strong> Este combatiente elige un enemigo en contacto y combate contra él (este es un combate adicional además del de cada activación). Este combatiente no puede combatir dos veces con el mismo oponente durante su activación. \n<strong>-Lealtad- Luchador Excepcional:</strong>si la banda tiene suficiente Cohesión, este combatiente nunca sufre la penalización por cansancio.', comment: 'Armas: Espadon diente \n Impactante:Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2). \nIntimidante: Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene AME 1 hasta el final de la activación. \nComunicación Sensorial: Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8”. \nDemostración de Poder: Cuando un enemigo(no invocación) muera a causa de un hechizo a 8" o menos de estecombatiente, esta banda aumenta en 1 su Cohesión. \nLealtad Magia Instintiva: Si la banda tiene suficiente Cohesión, este combatiente puede correr al doble y lanzar hechizos.'  },
             { name: 'Líder 4', points: 9, characteristics: 'a' }
         ],
         combatants: [
-            { name: 'Combatiente 3', points: 2, characteristics: 'a' },
-            { name: 'Combatiente 4', points: 5, characteristics: 'a' }
+            { name: '<strong>Adorador Gélido</strong>', points: 9, characteristics: '\nFUR:1 \nMOV:5 DES:4 POT:3 CON:4 ARC:4 HER:6 TAM:4 AME:1 AGA:2', extraInfo: '<strong>Armas:</strong> Espada diente \n<strong>Intimidante:</strong> Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene <strong>AME 1</strong> hasta el final de la activación. \n<strong>-Lealtad- Carga Fervorosa: </strong> si la banda tiene suficiente Cohesión, este combatiente se desplaza 1" adicional siempre que cargue. \n<strong>Aguijones:</strong>Causa una herida automática al objetivo. Sphere: este combatiente se cura una herida. ', comment: 'Armas: Espadon diente \n Impactante:Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2). \nIntimidante: Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene AME 1 hasta el final de la activación. \nComunicación Sensorial: Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8”. \nDemostración de Poder: Cuando un enemigo(no invocación) muera a causa de un hechizo a 8" o menos de estecombatiente, esta banda aumenta en 1 su Cohesión. \nLealtad Magia Instintiva: Si la banda tiene suficiente Cohesión, este combatiente puede correr al doble y lanzar hechizos.' },
+            {  name: '<strong>Enjendro del Hielo</strong>', points: 4, characteristics: '\nORD:1 FUR:1 \nMOV:4 DES:2 POT:2 CON:3 ARC:3 HER:5 TAM:3 AME:0 AGA:1', extraInfo: '<strong>Armas:</strong> Uñas \n<strong>Incompetente:</strong> Este combatiente no cansa a los enemigos ni ofrece apoyo en combate.\n<strong>Comunicación Sensorial:</strong> Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8”. \n<strong>Transfusión Vital:</strong> Cura una herida al Soimi aliado objetivo.', comment: 'Armas: Espadon diente \n Impactante:Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2). \nIntimidante: Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene AME 1 hasta el final de la activación. \nComunicación Sensorial: Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8”. \nDemostración de Poder: Cuando un enemigo(no invocación) muera a causa de un hechizo a 8" o menos de estecombatiente, esta banda aumenta en 1 su Cohesión. \nLealtad Magia Instintiva: Si la banda tiene suficiente Cohesión, este combatiente puede correr al doble y lanzar hechizos.'  }
         ],
         artifacts: [
-            { name: 'Artefacto 3', points: 2, characteristics: 'Ca' },
-            { name: 'Artefacto 4', points: 5, characteristics: 'Ca' }
+            { name: '<strong>Piel de Sabrash:</strong> -2 DOM-', points: 0, characteristics: 'a' },
+            { name: '<strong>Pellejo de Olbarak:</strong> -1 DOM-', points: 0, characteristics: 'Solo líderes de Culto Enur`Anar. Cuando este combatiente quite la última herida a un enemigo con un ataque a melé, recupera 1 herida.' },
+	    { name: '<strong>Furia de Kurgan:</strong> -1 DOM-', points: 0, characteristics: 'Este combatiente obtiene FUR 1' }
         ],
         veterans: [
             { name: 'Veterano 3', points: 4, characteristics: 'Ca' },
@@ -195,65 +215,66 @@ const factions = {
         ],
         combatants: [
             { name: 'Combatiente 5', points: 10, characteristics: 'Característica E' },
-            { name: 'Combatiente 6', points: 15, characteristics: 'Característica F' }
+            { name: 'Combatiente 6', points: 15, characteristics: 'F' }
         ],
         artifacts: [
-            { name: 'Artefacto 5', points: 3, characteristics: 'Característica Q' },
-            { name: 'Artefacto 6', points: 6, characteristics: 'Característica R' }
+            { name: 'Artefacto 5', points: 3, characteristics: 'Q' },
+            { name: 'Artefacto 6', points: 6, characteristics: 'R' }
         ],
         veterans: [
-            { name: 'Veterano 5', points: 5, characteristics: 'Característica G' },
-            { name: 'Veterano 6', points: 8, characteristics: 'Característica H' }
+            { name: 'Veterano 5', points: 5, characteristics: 'G' },
+            { name: 'Veterano 6', points: 8, characteristics: 'H' }
         ]
     },
     'Alianza': {
         description: 'La Alianzas',
         leaders: [
-            { name: 'Líder 7', points: 5, characteristics: 'Característica T' },
-            { name: 'Líder 8', points: 6, characteristics: 'Característica S' }
+            { name: 'Líder 7', points: 5, characteristics: 'T' },
+            { name: 'Líder 8', points: 6, characteristics: 'S' }
         ],
         combatants: [
-            { name: 'Combatiente Hombre 1', points: 5, characteristics: 'Característica G', gender: 'Hombre' },
-            { name: 'Combatiente Hombre 2', points: 4, characteristics: 'Característica H', gender: 'Hombre' },
-            { name: 'Combatiente Mujer 1', points: 6, characteristics: 'Característica I', gender: 'Mujer' },
-            { name: 'Combatiente Mujer 2', points: 7, characteristics: 'Característica J', gender: 'Mujer' }
+            { name: ' 1', points: 5, characteristics: 'G', gender: 'Hombre' },
+            { name: '2', points: 4, characteristics: 'H', gender: 'Hombre' },
+            { name: ' 1', points: 6, characteristics: ' I', gender: 'Mujer' },
+            { name: '2', points: 7, characteristics: 'Característica J', gender: 'Mujer' }
         ],
         artifacts: [
-            { name: 'Artefacto 7', points: 4, characteristics: 'Característica I' },
-            { name: 'Artefacto 8', points: 7, characteristics: 'Característica J' }
+            { name: 'Artefacto 7', points: 4, characteristics: 'I' },
+            { name: 'Artefacto 8', points: 7, characteristics: 'J' }
         ],
         veterans: [
-            { name: 'Veterano 7', points: 6, characteristics: 'Característica K' },
-            { name: 'Veterano 8', points: 9, characteristics: 'Característica L' }
+            { name: 'Veterano 7', points: 6, characteristics: 'K' },
+            { name: 'Veterano 8', points: 9, characteristics: 'L' }
         ]
     }
 };
 const options = {
     'Adeptos de Malesur': [
-        { name: 'Devotos de Malesur', description: 'Los Devotos de Malesur son los seguidores más leales.' },
-        { name: 'Iniciados de Malesur', description: 'Los Iniciados de Malesur están en entrenamiento constante.' }
+        { name: 'Devotos de Malesur', description: 'Lles.' },
+        { name: 'Iniciados de Malesur', description: 'Los .' }
     ],
     'Vástagos de Kurgan': [
         { name: 'Soimi', description: `<STRONG>Unidos por la Profecía</STRONG><br>
 
 <br>Si el líder de tu banda es un Soimi, puedes contratar un segundo Líder Soimi por su coste original, este segundo combatiente pierde sus atributos de <STRONG>EST</STRONG> y <STRONG>ORD</STRONG> y deja de considerarse un Líder. Una banda que contenga un segundo Líder adquirido de esta forma empieza la partida con <STRONG>Cohesión 1</STRONG>.` },
-        { name: 'Regor', description: `Regor son los guerreros de élite de los Vástagos de Kurgan.` }
+        { name: 'Regor', description: `Re.` }
     ],
     'Manadas de Urueh': [
-        { name: 'Teokkis', description: 'Teokkis son los cazadores furtivos de las Manadas de Urueh.' },
-        { name: 'Golothar', description: 'Golothar son los defensores implacables de las Manadas de Urueh.' },
-        { name: 'Ag-Tharan', description: 'Ag-Tharan son los líderes espirituales de las Manadas de Urueh.' }
+        { name: 'Teokkis', description: 'Te.' },
+        { name: 'Golothar', description: 'G.' },
+        { name: 'Ag-Tharan', description: 'Ag-.' }
     ],
     'Alianza': [
-        { name: 'La Alianza', description: 'La Alianza es una coalición de diversas facciones.' },
-        { name: 'Legión de los Mil Corazones', description: 'La Legión de los Mil Corazones es conocida por su valentía.' },
-        { name: 'Mercenarias de Isha', description: 'Las Mercenarias de Isha son guerreras contratadas por su habilidad.' }
+        { name: 'La Alianza', description: 'Les.' },
+        { name: 'Legión de los Mil Corazones', description: 'Laía.' },
+        { name: 'Mercenarias de Isha', description: 'Las.' }
     ]
 };
 
 let selectedPoints = 0;
 let maxPoints = 0;
 let selectedOption = '';
+let selectedFaction = '';
 let chicaErizaCount = 0;
 
 function setPoints(points) {
@@ -278,6 +299,7 @@ function showFactions() {
 }
 
 function selectFaction(faction) {
+    selectedFaction = faction;
     const factionList = document.getElementById('faction-list');
     factionList.innerHTML = ''; // Limpiar la lista
 
@@ -304,7 +326,7 @@ function showOptions(faction) {
 
 function selectOption(faction, option) {
     selectedOption = option.name;
-    chicaErizaCount = 0; // Reiniciar el contador al seleccionar una nueva opción
+    chicaErizaCount = 0;
     const optionsList = document.getElementById('options-list');
     optionsList.innerHTML = ''; // Limpiar la lista
 
@@ -324,6 +346,15 @@ function selectOption(faction, option) {
     document.getElementById('artifact-title').classList.remove('hidden');
     document.getElementById('artifact-list').classList.remove('hidden');
     showArtifacts(faction);
+
+    // Mostrar la facción y la opción seleccionadas
+    const selectedFactionDiv = document.getElementById('selected-faction');
+    selectedFactionDiv.innerHTML = `<strong>${faction}</strong><br>${factions[faction].description}`;
+    selectedFactionDiv.classList.remove('hidden');
+
+    const selectedOptionDiv = document.getElementById('selected-option');
+    selectedOptionDiv.innerHTML = `<strong>${option.name}</strong><br>${option.description}`;
+    selectedOptionDiv.classList.remove('hidden');
 }
 
 function showLeaders(faction) {
@@ -356,7 +387,7 @@ function showVeterans(faction) {
 
 function showCombatants(faction) {
     const combatantList = document.getElementById('combatant-list');
-    combatantList.innerHTML = ''; // Limpiar la lista
+    combatantList.innerHTML = '';
 
     factions[faction].combatants.forEach(combatant => {
         if (selectedOption === 'Devotos de Malesur' && combatant.name === 'Chica Eriza') {
