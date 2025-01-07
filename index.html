@@ -462,33 +462,27 @@ function updateTotalPoints() {
     }
 }
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('generatePDF').addEventListener('click', function () {
-            const { jsPDF } = window.jspdf;
-
-            // Capturar los elementos que queremos incluir en el PDF
-            const contentElement = document.querySelector('.main');
-
-            // Usar html2canvas para capturar el contenido
-            html2canvas(contentElement).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('l', 'mm', 'a4'); // 'l' para formato horizontal
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = pdf.internal.pageSize.getHeight();
-                const imgWidth = canvas.width;
-                const imgHeight = canvas.height;
-                const scaleFactor = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-
-                // Añadir la imagen escalada al PDF
-                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth * scaleFactor, imgHeight * scaleFactor);
-                pdf.save('lista.pdf');
-            });
-        });
-    });
-</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js">
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+	</script>
+	<script> document.addEventListener('DOMContentLoaded', function ()
+		{ document.getElementById('generatePDF').addEventListener('click', function () { const { jsPDF } = window.jspdf;
+// Capturar los elementos que queremos incluir en el PDF 
+		const contentElement = document.querySelector('.main'); 
+// Usar html2canvas para capturar el contenido
+		html2canvas(contentElement).then(canvas => { 
+			const imgData = canvas.toDataURL('image/png'); 
+			const pdf = new jsPDF('p', 'cm', 'a4'); // 'p' para formato vertical
+			const pdfWidth = pdf.internal.pageSize.getWidth() - 3; // Descontar márgenes laterales de 1.5 cm cada uno 
+			const pdfHeight = pdf.internal.pageSize.getHeight() - 3; // Descontar márgenes superior e inferior de 1.5 cm cada uno 
+			const imgWidth = canvas.width; 
+			const imgHeight = canvas.height; 
+			const scaleFactor = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight); 
+// Añadir la imagen escalada al PDF con márgenes de 1.5 cm 
+			pdf.addImage(imgData, 'PNG', 1.5, 1.5, imgWidth * scaleFactor, imgHeight * scaleFactor); 
+			pdf.save('lista.pdf'); }); }); }); 
+	</script>
 </body>
 </html>
 </body>
