@@ -485,8 +485,8 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         const imgHeight = canvas.height;
         const scaleFactor = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
 
-        // Añadir la imagen escalada al PDF
-        doc.addImage(imgData, 'PNG', 0, 0, imgWidth * scaleFactor, imgHeight * scaleFactor);
+        // Añadir la imagen escalada al PDF con márgenes de 1.5 cm
+        doc.addImage(imgData, 'PNG', 1.5, 1.5, imgWidth * scaleFactor, imgHeight * scaleFactor);
         doc.save('lista.pdf');
     });
 });
