@@ -474,6 +474,10 @@ function updateTotalPoints() {
 		{ document.getElementById('generatePDF').addEventListener('click', function () { const { jsPDF } = window.jspdf;
 // Selecciona el contenido debajo de la lista seleccionada
     const selectedContent = document.querySelector('.selected-list-content').innerHTML;
+ // Agrega el contenido al PDF
+    doc.text(selectedContent, 10, 10);
+ // Guarda el PDF
+    doc.save('contenido.pdf');
 // Usar html2canvas para capturar el contenido
 		html2canvas(contentElement).then(canvas => { 
 		const imgData = canvas.toDataURL('image/png'); 
