@@ -129,7 +129,9 @@
         <ul class="combatant-list hidden" id="combatant-list">
             <!-- Aquí se mostrarán los combatientes -->
         </ul>
-        <h2>Lista Seleccionada</h2>
+        <div class="lista-seleccionada">
+    <div class="selected-list-content">
+	    <h2>Lista Seleccionada</h2>
         <div class="info-box hidden" id="selected-faction">
             <!-- Aquí se mostrará la facción seleccionada -->
         </div>
@@ -140,6 +142,8 @@
             <!-- Aquí se mostrarán los combatientes seleccionados -->
         </ul>
         <p class="total-points" id="total-points">Total de puntos: 0</p>
+	        </div>
+	</div>
         <button class="reset-button" onclick="location.reload();">Reiniciar Lista</button>
         <button class="reset-button" id="generatePDF">Generar PDF</button>
     </div>
@@ -468,8 +472,8 @@ function updateTotalPoints() {
 	</script>
 	<script> document.addEventListener('DOMContentLoaded', function ()
 		{ document.getElementById('generatePDF').addEventListener('click', function () { const { jsPDF } = window.jspdf;
-// Capturar los elementos que queremos incluir en el PDF 
-		const contentElement = document.querySelector('.main'); 
+// Selecciona el contenido debajo de la lista seleccionada
+    const selectedContent = document.querySelector('.selected-list-content').innerHTML;
 // Usar html2canvas para capturar el contenido
 		html2canvas(contentElement).then(canvas => { 
 		const imgData = canvas.toDataURL('image/png'); 
