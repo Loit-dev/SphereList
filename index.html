@@ -507,7 +507,7 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         doc.text("Subfacción:", 4, yPosition);
         yPosition += 9;
         doc.text("Tamaño de lista:", 4, yPosition);
-        yPosition += 9;
+        yPosition += 5;
 
         // Añadir la información del usuario
         doc.setFont("Arial", "normal");
@@ -519,7 +519,7 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         doc.text(subfaction, 4, yPosition);
         yPosition += 9.5;
         doc.text(listSize, 4, yPosition);
-        yPosition += 7;
+        yPosition += 5;
        
 	    
         // Añadir la imagen escalada al PDF con márgenes de 1.5 cm
