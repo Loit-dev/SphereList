@@ -470,8 +470,10 @@ function updateTotalPoints() {
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
 	</script>
-	<script> document.addEventListener('DOMContentLoaded', function ()
-		{ document.getElementById('generatePDF').addEventListener('click', function () { const { jsPDF } = window.jspdf;
+	<script>
+		document.getElementById('generate-pdf').addEventListener('click', function () {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 // Selecciona el contenido debajo de la lista seleccionada
     const selectedContent = document.querySelector('.selected-list-content').innerHTML;
  // Agrega el contenido al PDF
