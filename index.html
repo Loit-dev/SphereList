@@ -263,7 +263,7 @@ const options = {
     'Vástagos de Kurgan': [
         { name: 'Soimi', description: `<STRONG>Unidos por la Profecía</STRONG><br>
 
-<br>Si el líder de tu banda es un Soimi, puedes contratar un segundo Líder Soimi por su coste original, este segundo combatiente pierde sus atributos de <STRONG>EST</STRONG> y <STRONG>ORD</STRONG> y deja de considerarse un Líder. Una banda que contenga un segundo Líder adquirido de esta forma empieza la partida con <STRONG>Cohesión 1</STRONG>.` },
+<br>Si el líder de tu banda es un Soimi, puedes contratar un segundo Líder Soimi por su coste original, este segundo combatiente pierde sus atributos de <STRONG>EST</STRONG> y <STRONG>ORD</STRONG> y deja de considerarse un Líder. Una banda que contenga un segundo Líder adquirido de esta forma empieza la partida con <STRONG>Cohesión +1</STRONG>.` },
         { name: 'Regor', description: `Re.` }
     ],
     'Manadas de Urueh': [
@@ -512,15 +512,15 @@ document.getElementById('generatePDF').addEventListener('click', function () {
 
         // Añadir la información del usuario
         doc.setFont("Arial", "normal");
-        yPosition = 9.5;
+        yPosition = 9.7;
         doc.text(userName, 4, yPosition);
-        yPosition += 9.5;
+        yPosition += 9.7;
         doc.text(faction, 4, yPosition);
-        yPosition += 9.5;
+        yPosition += 9.7;
         doc.text(subfaction, 4, yPosition);
-        yPosition += 9.5;
+        yPosition += 9.7;
         doc.text(listSize, 4, yPosition);
-        yPosition += 9;
+        yPosition += 9.7;
         doc.text("  ", 4, yPosition);
         // Añadir la imagen escalada al PDF con márgenes de 1.5 cm
         doc.addImage(imgData, 'PNG', 1.5, yPosition + 1, imgWidth * scaleFactor, imgHeight * scaleFactor);
