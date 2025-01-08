@@ -503,25 +503,25 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         // Añadir la información en negrita y en Arial 12
         doc.setFont("Arial", "bold");
         doc.setFontSize(12);
-        let yPosition = 0.25; 
+        let yPosition = 2.25; 
         doc.text("Usuario:", 0.15, yPosition); // 
-        yPosition += 1; 
+        yPosition += 2; 
         doc.text("Facción:", 0.15, yPosition); // 4 puntos en cm
-        yPosition += 1; 
+        yPosition += 2; 
         doc.text("Subfacción:", 0.15, yPosition); // 4 puntos en cm
-        yPosition += 1; 
+        yPosition += 2; 
         doc.text("Tamaño de lista:", 0.15, yPosition); // 4 puntos en cm
         yPosition += 0.60; // 5 puntos en cm
 
         // Añadir la información del usuario
         doc.setFont("Arial", "normal");
-        yPosition = 1; // 9.7 puntos en cm
+        yPosition = 2; // 9.7 puntos en cm
         doc.text(userName, 0.1411112, yPosition); 
-        yPosition += 1;
+        yPosition += 2;
         doc.text(faction, 0.1411112, yPosition); 
-        yPosition += 1; 
+        yPosition += 2; 
         doc.text(subfaction, 0.1411112, yPosition); 
-        yPosition += 1; 
+        yPosition += 2; 
         doc.text(listSize, 0.1411112, yPosition);
         yPosition += 0.60; 
 
