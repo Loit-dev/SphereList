@@ -500,25 +500,25 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         doc.setFont("Arial", "bold");
         doc.setFontSize(12);
         let yPosition = 1.5;
-        doc.text("Usuario:", 1.5, yPosition);
+        doc.text("Usuario:", 3.5, yPosition);
         yPosition += 0.5;
-        doc.text("Facción:", 1.5, yPosition);
+        doc.text("Facción:", 4.5, yPosition);
         yPosition += 0.5;
-        doc.text("Subfacción:", 1.5, yPosition);
+        doc.text("Subfacción:", 5.5, yPosition);
         yPosition += 0.5;
-        doc.text("Tamaño de lista:", 1.5, yPosition);
+        doc.text("Tamaño de lista:", 6.5, yPosition);
         yPosition += 0.5;
-        doc.text("Lista Seleccionada:", 1.5, yPosition);
+        doc.text("Lista Seleccionada:", 7.5, yPosition);
 
         // Añadir la información del usuario
         doc.setFont("Arial", "normal");
         yPosition = 2;
         doc.text(userName, 4, yPosition);
-        yPosition += 2;
+        yPosition += 4;
         doc.text(faction, 4, yPosition);
-        yPosition += 2;
+        yPosition += 6;
         doc.text(subfaction, 4, yPosition);
-        yPosition += 2;
+        yPosition += 8;
         doc.text(listSize, 4, yPosition);
 
         // Añadir la imagen escalada al PDF con márgenes de 1.5 cm
