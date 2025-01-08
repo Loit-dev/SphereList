@@ -496,8 +496,9 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         const subfaction = selectedOption;
         const listSize = maxPoints + " puntos";
 
-        // Añadir la información en negrita
-        doc.setFont("helvetica", "bold");
+        // Añadir la información en negrita y en Arial 12
+        doc.setFont("Arial", "bold");
+        doc.setFontSize(12);
         doc.text("Usuario:", 1.5, 1.5);
         doc.text("Facción:", 1.5, 2);
         doc.text("Subfacción:", 1.5, 2.5);
@@ -505,7 +506,7 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         doc.text("Lista Seleccionada:", 1.5, 3.5);
 
         // Añadir la información del usuario
-        doc.setFont("helvetica", "normal");
+        doc.setFont("Arial", "normal");
         doc.text(userName, 4, 1.5);
         doc.text(faction, 4, 2);
         doc.text(subfaction, 4, 2.5);
