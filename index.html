@@ -503,30 +503,30 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         // Añadir la información en negrita y en Arial 12
         doc.setFont("Arial", "bold");
         doc.setFontSize(12);
-        let yPosition = 0.2116668; // 6 puntos en cm
-        doc.text("Usuario:", 0.1411112, yPosition); // 4 puntos en cm
-        yPosition += 0.3175002; // 9 puntos en cm
-        doc.text("Facción:", 0.1411112, yPosition); // 4 puntos en cm
-        yPosition += 0.3175002; // 9 puntos en cm
-        doc.text("Subfacción:", 0.1411112, yPosition); // 4 puntos en cm
-        yPosition += 0.3175002; // 9 puntos en cm
-        doc.text("Tamaño de lista:", 0.1411112, yPosition); // 4 puntos en cm
-        yPosition += 0.176389; // 5 puntos en cm
+        let yPosition = 0.25; 
+        doc.text("Usuario:", 0.15, yPosition); // 
+        yPosition += 0.5; 
+        doc.text("Facción:", 0.15, yPosition); // 4 puntos en cm
+        yPosition += 0.5; 
+        doc.text("Subfacción:", 0.15, yPosition); // 4 puntos en cm
+        yPosition += 0.5; 
+        doc.text("Tamaño de lista:", 0.15, yPosition); // 4 puntos en cm
+        yPosition += 0.20; // 5 puntos en cm
 
         // Añadir la información del usuario
         doc.setFont("Arial", "normal");
-        yPosition = 0.34219465999999993; // 9.7 puntos en cm
-        doc.text(userName, 0.1411112, yPosition); // 4 puntos en cm
-        yPosition += 0.34219465999999993; // 9.7 puntos en cm
-        doc.text(faction, 0.1411112, yPosition); // 4 puntos en cm
-        yPosition += 0.33161132; // 9.4 puntos en cm
-        doc.text(subfaction, 0.1411112, yPosition); // 4 puntos en cm
-        yPosition += 0.33513909999999997; // 9.5 puntos en cm
-        doc.text(listSize, 0.1411112, yPosition); // 4 puntos en cm
-        yPosition += 0.176389; // 5 puntos en cm
+        yPosition = 0.5; // 9.7 puntos en cm
+        doc.text(userName, 0.1411112, yPosition); 
+        yPosition += 0.5;
+        doc.text(faction, 0.1411112, yPosition); 
+        yPosition += 0.5; 
+        doc.text(subfaction, 0.1411112, yPosition); 
+        yPosition += 0.5; 
+        doc.text(listSize, 0.1411112, yPosition);
+        yPosition += 0.20; 
 
         // Añadir la imagen escalada al PDF con márgenes de 1.5 cm
-        doc.addImage(imgData, 'PNG', 1.5, yPosition + 1, imgWidth * scaleFactor, imgHeight * scaleFactor);
+        doc.addImage(imgData, 'PNG', 1.0, yPosition + 1, imgWidth * scaleFactor, imgHeight * scaleFactor);
         doc.save('lista.pdf');
     });
 });
