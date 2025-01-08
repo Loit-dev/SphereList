@@ -512,13 +512,13 @@ document.getElementById('generatePDF').addEventListener('click', function () {
 
         // Añadir la información del usuario
         doc.setFont("Arial", "normal");
-        yPosition = 9;
+        yPosition = 9.5;
         doc.text(userName, 4, yPosition);
-        yPosition += 9;
+        yPosition += 9.5;
         doc.text(faction, 4, yPosition);
-        yPosition += 9;
+        yPosition += 9.5;
         doc.text(subfaction, 4, yPosition);
-        yPosition += 9;
+        yPosition += 9.5;
         doc.text(listSize, 4, yPosition);
 
         // Añadir la imagen escalada al PDF con márgenes de 1.5 cm
