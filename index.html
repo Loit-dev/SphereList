@@ -147,6 +147,8 @@
         <button class="reset-button" onclick="location.reload();">Reiniciar Lista</button>
         <button class="reset-button" id="generatePDF">Generar PDF</button>
     </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 const factions = {
     'Adeptos de Malesur': {
@@ -411,6 +413,7 @@ function showCombatants(faction) {
         combatantList.appendChild(li);
     });
 }
+
 function showArtifacts(faction) {
     const artifactList = document.getElementById('artifact-list');
     artifactList.innerHTML = ''; // Limpiar la lista
@@ -465,34 +468,28 @@ function updateTotalPoints() {
         totalPointsElement.classList.remove('over-limit');
     }
 }
-</script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js">
-	</script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
-	</script>
-	<script>
-		document.getElementById('generate-pdf').addEventListener('click', function () {
+
+document.getElementById('generatePDF').addEventListener('click', function () {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-// Selecciona el contenido debajo de la lista seleccionada
-    const selectedContent = document.querySelector('.selected-list-content').innerHTML;
- // Agrega el contenido al PDF
-    doc.text(selectedContent, 10, 10);
- // Guarda el PDF
-    doc.save('contenido.pdf');
-// Usar html2canvas para capturar el contenido
-		html2canvas(contentElement).then(canvas => { 
-		const imgData = canvas.toDataURL('image/png'); 
-		const pdf = new jsPDF('l', 'cm', 'a4'); // 'l' para formato horizontal 
-		const pdfWidth = pdf.internal.pageSize.getWidth() - 3; // Descontar márgenes laterales de 1.5 cm cada uno 
-		const pdfHeight = pdf.internal.pageSize.getHeight() - 3; // Descontar márgenes superior e inferior de 1.5 cm cada uno 
-		const imgWidth = canvas.width; const imgHeight = canvas.height; 
-		const scaleFactor = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight); // Añadir la imagen escalada al PDF con márgenes de 1.5 cm 
-		pdf.addImage(imgData, 'PNG', 1.5, 1.5, imgWidth * scaleFactor, imgHeight * scaleFactor); 
-		pdf.save('lista.pdf');
-				});
-			});
-		});
+
+    // Selecciona el contenido debajo de la lista seleccionada
+    const selectedContent = document.querySelector('.selected-list-content');
+
+    // Usar html2canvas para capturar el contenido
+    html2canvas(selectedContent).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdfWidth = doc.internal.pageSize.getWidth();
+        const pdfHeight = doc.internal.pageSize.getHeight();
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const scaleFactor = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+
+        // Añadir la imagen escalada al PDF
+        doc.addImage(imgData, 'PNG', 0, 0, imgWidth * scaleFactor, imgHeight * scaleFactor);
+        doc.save('lista.pdf');
+    });
+});
 	</script>
 </body>
 </html>
