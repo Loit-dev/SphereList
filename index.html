@@ -476,8 +476,11 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         return;
     }
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+   const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'cm',
+        format: 'a4'
 
     // Selecciona el contenido debajo de la lista seleccionada
     const selectedContent = document.querySelector('.selected-list-content');
