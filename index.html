@@ -470,6 +470,12 @@ function updateTotalPoints() {
 }
 
 document.getElementById('generatePDF').addEventListener('click', function () {
+    const userName = prompt("Por favor, introduce tu nombre de usuario:");
+    if (!userName) {
+        alert("El nombre de usuario es obligatorio.");
+        return;
+    }
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
@@ -479,14 +485,22 @@ document.getElementById('generatePDF').addEventListener('click', function () {
     // Usar html2canvas para capturar el contenido
     html2canvas(selectedContent).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
-        const pdfWidth = doc.internal.pageSize.getWidth();
-        const pdfHeight = doc.internal.pageSize.getHeight();
+        const pdfWidth = doc.internal.pageSize.getWidth() - 3; // Descontar márgenes laterales de 1.5 cm cada uno
+        const pdfHeight = doc.internal.pageSize.getHeight() - 3; // Descontar márgenes superior e inferior de 1.5 cm cada uno
         const imgWidth = canvas.width;
         const imgHeight = canvas.height;
         const scaleFactor = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
 
+        // Añadir la información del usuario, facción, subfacción y tamaño de lista
+        const faction = selectedFaction;
+        const subfaction = selectedOption;
+        const listSize = maxPoints + " puntos";
+        const userInfo = `Usuario: ${userName}\nFacción: ${faction}\nSubfacción: ${subfaction}\nTamaño de lista: ${listSize}\n\n`;
+
+        doc.text(userInfo, 1.5, 1.5);
+
         // Añadir la imagen escalada al PDF con márgenes de 1.5 cm
-        doc.addImage(imgData, 'PNG', 1.5, 1.5, imgWidth * scaleFactor, imgHeight * scaleFactor);
+        doc.addImage(imgData, 'PNG', 1.5, 3, imgWidth * scaleFactor, imgHeight * scaleFactor);
         doc.save('lista.pdf');
     });
 });
