@@ -374,7 +374,7 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         yPosition += 0.20; 
 
         // Añadir la imagen escalada al PDF con márgenes de 1.5 cm
-        doc.addImage(imgData, 'PNG', 1, yPosition + 1, imgWidth * scaleFactor, imgHeight * scaleFactor);
+        doc.addImage(imgData, 'PNG', 1.5, yPosition + 1, imgWidth * scaleFactor, imgHeight * scaleFactor);
         doc.save('lista.pdf');
     });
 });
