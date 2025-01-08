@@ -515,13 +515,13 @@ document.getElementById('generatePDF').addEventListener('click', function () {
 
         // Añadir la información del usuario
         doc.setFont("Arial", "normal");
-        yPosition = 2; // 9.7 puntos en cm
+        yPosition = 1.2; // 9.7 puntos en cm
         doc.text(userName, 1, yPosition); 
-        yPosition += 2;
+        yPosition += 1.2;
         doc.text(faction, 1, yPosition); 
-        yPosition += 2; 
+        yPosition += 1.2; 
         doc.text(subfaction, 1, yPosition); 
-        yPosition += 2; 
+        yPosition += 1.2; 
         doc.text(listSize, 1, yPosition);
         yPosition += 0.60; 
 
