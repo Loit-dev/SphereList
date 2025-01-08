@@ -495,12 +495,24 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         const faction = selectedFaction;
         const subfaction = selectedOption;
         const listSize = maxPoints + " puntos";
-        const userInfo = `Usuario: ${userName}\nFacción: ${faction}\nSubfacción: ${subfaction}\nTamaño de lista: ${listSize}\n\n`;
 
-        doc.text(userInfo, 1.5, 1.5);
+        // Añadir la información en negrita
+        doc.setFont("helvetica", "bold");
+        doc.text("Usuario:", 1.5, 1.5);
+        doc.text("Facción:", 1.5, 2);
+        doc.text("Subfacción:", 1.5, 2.5);
+        doc.text("Tamaño de lista:", 1.5, 3);
+        doc.text("Lista Seleccionada:", 1.5, 3.5);
+
+        // Añadir la información del usuario
+        doc.setFont("helvetica", "normal");
+        doc.text(userName, 4, 1.5);
+        doc.text(faction, 4, 2);
+        doc.text(subfaction, 4, 2.5);
+        doc.text(listSize, 4, 3);
 
         // Añadir la imagen escalada al PDF con márgenes de 1.5 cm
-        doc.addImage(imgData, 'PNG', 1.5, 3, imgWidth * scaleFactor, imgHeight * scaleFactor);
+        doc.addImage(imgData, 'PNG', 1.5, 4, imgWidth * scaleFactor, imgHeight * scaleFactor);
         doc.save('lista.pdf');
     });
 });
