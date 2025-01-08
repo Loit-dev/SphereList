@@ -508,7 +508,6 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         yPosition += 9;
         doc.text("Tamaño de lista:", 4, yPosition);
         yPosition += 9;
-        doc.text("Lista Seleccionada:", 4, yPosition);
 
         // Añadir la información del usuario
         doc.setFont("Arial", "normal");
@@ -520,8 +519,9 @@ document.getElementById('generatePDF').addEventListener('click', function () {
         doc.text(subfaction, 4, yPosition);
         yPosition += 9.7;
         doc.text(listSize, 4, yPosition);
-        yPosition += 9.7;
+        yPosition += 9.5;
         doc.text("  ", 4, yPosition);
+	    
         // Añadir la imagen escalada al PDF con márgenes de 1.5 cm
         doc.addImage(imgData, 'PNG', 1.5, yPosition + 1, imgWidth * scaleFactor, imgHeight * scaleFactor);
         doc.save('lista.pdf');
