@@ -137,7 +137,8 @@ const options = {
         { name: 'Ag-Tharan', description: 'Ag-.' }
     ],
     'Alianza': [
-        { name: 'La Alianza', description: `las` },
+        { name: 'La Alianza', description: `Esta subfacción tiene acceso a todos los combatientes de la facción, pero no ob-
+tiene ninguna regla especial.` },
         { name: 'Legión de los Mil Corazones', description: '<STRONG>Latir del Corazón</STRONG><br>
 			<br>Solo si toda la banda consta de combatientes <STRONG>Legión de los Cien Corazones.</STRONG> Cuando un aliado vaya a sufrir una herida, puede prevenirse dicha herida y elegir un aliado a hasta <STRONG>4"</STRONG> para que sufra una herida en su lugar. \nUn combatiente no puede ser elegido para sufrir heridas de esta forma si solo le queda una. Si un combatiente sufre múltiples heridas a la vez, puede transferir solo la primera. 
 			<br><STRONG>Inquebrantables (Orden)</STRONG>
