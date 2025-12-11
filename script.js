@@ -241,24 +241,6 @@ const factions = {
     ],
 
     combatants: [
-      {
-        name: 'Laroc, la seductora',
-        displayName: '<strong>Laroc, la seductora</strong>',
-        points: 14,
-        characteristics: '\nDOM:4 EST:2 ORD:3 \nMOV:4 DES:2 POT:2 CON:2 ARC:5 HER:4 TAM:3 AME:1 COR:4',
-        extraInfo:
-          '<strong>Armas:</strong>\n' +
-          '<strong>Báculo Ungido:</strong> <em>Golpe Arcano</em>. Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
-          '<strong>Aura de devoción a Laroc:</strong> Las otras aliadas <strong>Mercenarias de Isha</strong> a 4" o menos de esta combatiente obtienen <strong>CON+1</strong> y <strong>ARC+1</strong>.\n' +
-          '<strong>Descarga fulminante - 10":</strong> <em>Proyectil arcano</em>. El objetivo enemigo recibe una tirada de daño de <strong>3d6</strong> contra su <strong>ARC</strong>. <strong>Sphere:</strong> Aumenta el daño a <strong>5d6</strong>.\n' +
-          '<strong>Esfera protectora - 10":</strong> Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.',
-        comment:
-          'Armas: Báculo Ungido (Golpe Arcano): Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
-          'Aura de devoción a Laroc: Las otras aliadas Mercenarias de Isha a 4" o menos de esta combatiente obtienen CON+1 y ARC+1.\n' +
-          'Descarga fulminante - 10": Proyectil arcano. El objetivo enemigo recibe una tirada de daño de 3d6 contra su ARC. Sphere: Aumenta el daño a 5d6.\n' +
-          'Esfera protectora - 10": Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.',
-        gender: 'Mujer'
-      },
       { name: 'Combatiente 2', displayName: 'Combatiente 2', points: 4, characteristics: 'H', gender: 'Hombre' },
       { name: 'Combatiente 1', displayName: 'Combatiente 1', points: 6, characteristics: 'I', gender: 'Mujer' }
     ],
