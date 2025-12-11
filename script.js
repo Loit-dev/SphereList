@@ -137,18 +137,9 @@ const options = {
         { name: 'Ag-Tharan', description: 'Ag-.' }
     ],
     'Alianza': [
-        { name: 'La Alianza', description: `Esta subfacción tiene acceso a todos los combatientes de la facción, pero no ob-
-tiene ninguna regla especial.` },
-        { name: 'Legión de los Mil Corazones', description: '<STRONG>Latir del Corazón</STRONG><br>
-			<br>Solo si toda la banda consta de combatientes <STRONG>Legión de los Cien Corazones.</STRONG> Cuando un aliado vaya a sufrir una herida, puede prevenirse dicha herida y elegir un aliado a hasta <STRONG>4"</STRONG> para que sufra una herida en su lugar. \nUn combatiente no puede ser elegido para sufrir heridas de esta forma si solo le queda una. Si un combatiente sufre múltiples heridas a la vez, puede transferir solo la primera. 
-			<br><STRONG>Inquebrantables (Orden)</STRONG>
-			<br>Solo se puede dar esta orden si el líder aliado y el aliado que reciba la orden son <STRONG>Legión de los Cien Corazones.</STRONG>
-			<br>El aliado que reciba esta orden obtiene <STRONG>DES +1</STRONG> y <STRONG>AME +1</STRONG> en sus armas cuerpo a cuerpo hasta el final de la activación.' },
-        { name: 'Mercenarias de Isha', description: '<STRONG>Latir del Corazón</STRONG><br>
-			<br>Solo si toda la banda consta de combatientes <STRONG>Mercenaria de Isha.</STRONG> Todos los aliados ganan automáticamente las tiradas de moral <STRONG>(COR)</STRONG>.  
-			<br><STRONG>Inspiración de Isha (Orden)</STRONG>
-			<br>Solo se puede dar esta orden si el líder aliado y el aliado que reciba la orden son <STRONG>Mercenaria de Isha.</STRONG>
-			<br>El aliado que reciba esta orden obtiene <STRONG>DES +1</STRONG> y <STRONG>POT+1</STRONG> en sus armas cuerpo a cuerpo hasta el final de la activación.' }
+        { name: 'La Alianza', description: 'Esta subfacción tiene acceso a todos los combatientes de la facción, pero no obtiene ninguna regla especial.'},
+		{ name: 'Legión de los Mil Corazones', description: '<STRONG>Latir del Corazón</STRONG> <br>Solo si toda la banda consta de combatientes <STRONG>Legión de los Cien Corazones.</STRONG> Cuando un aliado vaya a sufrir una herida, puede prevenirse dicha herida y elegir un aliado a hasta <STRONG>4"</STRONG> para que sufra una herida en su lugar. \nUn combatiente no puede ser elegido para sufrir heridas de esta forma si solo le queda una. Si un combatiente sufre múltiples heridas a la vez, puede transferir solo la primera. <br><STRONG>Grito de la Legión (Orden):</STRONG> <br>Solo se puede dar esta orden si el líder aliado y el aliado que reciba la orden son <STRONG>Legión de los Cien Corazones.</STRONG>'},
+        { name: 'Mercenarias de Isha', description: '<STRONG>Inquebrantables</STRONG><br> <br>Solo si toda la banda consta de combatientes <STRONG>Mercenaria de Isha.</STRONG> Todos los aliados ganan automáticamente las tiradas de moral <STRONG>(COR)</STRONG>. <br><STRONG>Inspiración de Isha (Orden)</STRONG> <br>Solo se puede dar esta orden si el líder aliado y el aliado que reciba la orden son <STRONG>Mercenaria de Isha.</STRONG> <br>El aliado que reciba esta orden obtiene <STRONG>DES +1</STRONG> y <STRONG>POT+1</STRONG> en sus armas cuerpo a cuerpo hasta el final de la activación.'}
     ]
 };
 
