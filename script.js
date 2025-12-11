@@ -103,13 +103,13 @@ const factions = {
 			 		comment: 'Armas:\n Baculo Ungído: Golpe Arcano Puede elegise si usar CON o ARC del oponente como numero objetivo de la tirada de daño. \nAura de devoción a Laroc: Las otras aliadas Mercenaria de Isha a 4" o menos de esta combatiente, obtienen CON+1 Y ARC+1. \nDescarga fulminante - 10": Proyectil arcanoEl objetivo enemigo recibe una tirada de daño de 3d6 contra su ARC. Sphere: Aumenta el daño a 5d6 \nEsfera protectora - 10": Elige un punto dentro del alcance del echizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el prozimo turno aliado.' }
         ],
         combatants: [
-            { name: '<strong>Laroc, la seductora</strong>', points: 14, 
+            { name: '<strong>Laroc, la seductora</strong>', points: 12, 
 			 		characteristics: '\nDOM:4 EST:2 ORD:3 \nMOV:4 DES:2 POT:2 CON:2 ARC:5 HER:4 TAM:3 AME:1 COR:4', 
 			 		extraInfo: '<strong>Armas:\n </strong><strong>Baculo Ungído:</strong><em> Golpe Arcano</em> Puede elegise si usar <strong>CON</strong> o <strong>ARC</strong> del oponente como numero objetivo de la tirada de daño. \n<strong>Aura de devoción a Laroc:</strong> Las otras aliadas <strong>Mercenaria de Isha</strong> a 4" o menos de esta combatiente, obtienen <strong>CON+1</strong> Y <strong>ARC+1</strong> \n<strong>Descarga fulminante - 10":</strong> <em>Proyectil arcano</em> El objetivo enemigo recibe una tirada de daño de <strong>3d6</strong> contra su <strong>ARC</strong>.<strong>Sphere:</strong> Aumenta el daño a <strong>5d6</strong> \n<strong>Esfera protectora - 10":</strong> Elige un punto dentro del alcance del echizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el prozimo turno aliado.', 
 			 		comment: 'Armas:\n Baculo Ungído: Golpe Arcano Puede elegise si usar CON o ARC del oponente como numero objetivo de la tirada de daño. \nAura de devoción a Laroc: Las otras aliadas Mercenaria de Isha a 4" o menos de esta combatiente, obtienen CON+1 Y ARC+1. \nDescarga fulminante - 10": Proyectil arcanoEl objetivo enemigo recibe una tirada de daño de 3d6 contra su ARC. Sphere: Aumenta el daño a 5d6 \nEsfera protectora - 10": Elige un punto dentro del alcance del echizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el prozimo turno aliado.', gender: 'Hombre' },
             { name: '2', points: 4, characteristics: 'H', gender: 'Hombre' },
             { name: ' 1', points: 6, characteristics: ' I', gender: 'Mujer' },
-            { name: '2', points: 7, characteristics: 'Característica J', gender: 'Mujer' }
+            { name: 'Róxter, el piloto', points: 11, characteristics: '\nMOV:5 DES:4 POT:3 CON:4 ARC:4 HER:6 TAM:4 AME:1 AGA:2', extraInfo: '<strong>Armas:</strong> Espada diente \n<strong>Intimidante:</strong> Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene <strong>AME 1</strong> hasta el final de la activación. \n<strong>-Lealtad- Carga Fervorosa: </strong> si la banda tiene suficiente Cohesión, este combatiente se desplaza 1" adicional siempre que cargue. \n<strong>Aguijones:</strong>Causa una herida automática al objetivo. Sphere: este combatiente se cura una herida. ', comment: 'Armas: Espadon diente \n Impactante:Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2). \nIntimidante: Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene AME 1 hasta el final de la activación. \nComunicación Sensorial: Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8”. \nDemostración de Poder: Cuando un enemigo(no invocación) muera a causa de un hechizo a 8" o menos de estecombatiente, esta banda aumenta en 1 su Cohesión. \nLealtad Magia Instintiva: Si la banda tiene suficiente Cohesión, este combatiente puede correr al doble y lanzar hechizos.', gender: 'Mujer' }
         ],
         artifacts: [
             { name: 'Artefacto 7', points: 4, characteristics: 'I' },
@@ -137,9 +137,17 @@ const options = {
         { name: 'Ag-Tharan', description: 'Ag-.' }
     ],
     'Alianza': [
-        { name: 'La Alianza', description: 'Les.' },
-        { name: 'Legión de los Mil Corazones', description: 'Laía.' },
-        { name: 'Mercenarias de Isha', description: 'Las.' }
+        { name: 'La Alianza', description: `las` },
+        { name: 'Legión de los Mil Corazones', description: '<STRONG>Latir del Corazón</STRONG><br>
+			<br>Solo si toda la banda consta de combatientes <STRONG>Legión de los Cien Corazones.</STRONG> Cuando un aliado vaya a sufrir una herida, puede prevenirse dicha herida y elegir un aliado a hasta <STRONG>4"</STRONG> para que sufra una herida en su lugar. \nUn combatiente no puede ser elegido para sufrir heridas de esta forma si solo le queda una. Si un combatiente sufre múltiples heridas a la vez, puede transferir solo la primera. 
+			<br><STRONG>Inquebrantables (Orden)</STRONG>
+			<br>Solo se puede dar esta orden si el líder aliado y el aliado que reciba la orden son <STRONG>Legión de los Cien Corazones.</STRONG>
+			<br>El aliado que reciba esta orden obtiene <STRONG>DES +1</STRONG> y <STRONG>AME +1</STRONG> en sus armas cuerpo a cuerpo hasta el final de la activación.' },
+        { name: 'Mercenarias de Isha', description: '<STRONG>Latir del Corazón</STRONG><br>
+			<br>Solo si toda la banda consta de combatientes <STRONG>Mercenaria de Isha.</STRONG> Todos los aliados ganan automáticamente las tiradas de moral <STRONG>(COR)</STRONG>.  
+			<br><STRONG>Inspiración de Isha (Orden)</STRONG>
+			<br>Solo se puede dar esta orden si el líder aliado y el aliado que reciba la orden son <STRONG>Mercenaria de Isha.</STRONG>
+			<br>El aliado que reciba esta orden obtiene <STRONG>DES +1</STRONG> y <STRONG>POT+1</STRONG> en sus armas cuerpo a cuerpo hasta el final de la activación.' }
     ]
 };
 
