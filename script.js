@@ -265,12 +265,12 @@ const factions = {
       },
       {
         name: 'Róxter, el piloto',
-        displayName: '<strong>Róxter, el piloto<\strong>',
+        displayName: '<strong>Róxter, el piloto</strong>',
         points: 11,
         characteristics: '\nMOV:5 DES:4 POT:3 CON:4 ARC:4 HER:6 TAM:4 AME:1 AGA:2',
         extraInfo:
           '<strong>Armas:</strong>\n' +
-          '<strong>Espolones</strong>-<em>Descenso poderoso:<\em> Cuando este combatiente efectúe una carga, este arma obriene <strong>POT+1</strong> hasta el final de la activcion \n' +
+          '<strong>Espolones</strong>-<em>Descenso poderoso:</em> Cuando este combatiente efectúe una carga, este arma obriene <strong>POT+1</strong> hasta el final de la activcion \n' +
           '<em>Impactante:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)' +
           '<strong>Cañones Icaro - 10" DES:4 POT:3</strong>\n' +
           '<em>Penetracion:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)',
@@ -476,6 +476,12 @@ function showCombatants(faction) {
     // Filtros por subfacción
     if (selectedOption === 'Devotos de Malesur' && combatant.name === 'Chica Eriza') {
       return; // No mostrar Chica Eriza para Devotos de Malesur
+    }
+    if (selectedOption === 'Legión de los Mil Corazones' && leader.gender && leader.gender !== 'Hombre') {
+      return; // Mostrar solo hombres para Legión de los Mil Corazones
+    }
+    if (selectedOption === 'Mercenarias de Isha' && leader.gender && leader.gender !== 'Mujer') {
+      return; // Mostrar solo mujeres para Mercenarias de Isha
     }
     if (selectedOption === 'Legión de los Mil Corazones' && combatant.gender && combatant.gender !== 'Hombre') {
       return; // Mostrar solo hombres para Legión de los Mil Corazones
