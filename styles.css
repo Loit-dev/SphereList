@@ -1,23 +1,14 @@
-/* ------------------------------------------------------
-   BASE
---------------------------------------------------------- */
-
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-    color: #333;
 }
-
 .container {
     width: 80%;
     margin: auto;
+    overflow: hidden;
 }
-
-/* ------------------------------------------------------
-   HEADER (tal como tu versión original)
---------------------------------------------------------- */
 header {
     background: #333;
     color: #fff;
@@ -37,113 +28,51 @@ header ul {
 }
 header li {
     float: left;
-    padding: 0 20px;
+    display: inline;
+    padding: 0 20px 0 20px;
 }
-
-/* ------------------------------------------------------
-   CONTENIDO PRINCIPAL
---------------------------------------------------------- */
 .main {
     padding: 20px;
     background: #fff;
     margin-top: 20px;
-    border-radius: 6px;
 }
-
-/* ------------------------------------------------------
-   LISTAS DE OPCIONES (mantiene tu estilo original)
---------------------------------------------------------- */
-ul {
-    margin: 0;
+.faction-list, .leader-list, .combatant-list, .selected-list, .points-list, .options-list, .artifact-list, .veteran-list {
+    list-style: none;
     padding: 0;
 }
-
-.points-list li,
-.faction-list li,
-.options-list li,
-.leader-list li,
-.combatant-list li,
-.artifact-list li,
-.veteran-list li,
-.selected-list li {
+.faction-list li, .leader-list li, .combatant-list li, .selected-list li, .points-list li, .options-list li, .artifact-list li, .veteran-list li {
     background: #e4e4e4;
-    margin: 6px 0;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    margin: 5px 0;
+    padding: 10px;
+    border: #ccc 1px solid;
     cursor: pointer;
-    transition: 0.2s;
 }
-
-.points-list li:hover,
-.faction-list li:hover,
-.options-list li:hover,
-.leader-list li:hover,
-.combatant-list li:hover,
-.artifact-list li:hover,
-.veteran-list li:hover {
-    background: #dce8ff;
-    border-color: #77aaff;
-}
-
-/* ------------------------------------------------------
-   INFO BOXES
---------------------------------------------------------- */
-.info-box {
-    background: #f9f9f9;
-    border: 1px solid #ccc;
-    padding: 12px;
-    margin-bottom: 20px;
-    border-radius: 6px;
-}
-
-.hidden {
-    display: none;
-}
-
-/* ------------------------------------------------------
-   BOTONES
---------------------------------------------------------- */
-.reset-button {
-    margin-top: 20px;
-    padding: 12px 22px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    border-radius: 6px;
-}
-.reset-button:hover {
-    background-color: #444;
-}
-
-/* ------------------------------------------------------
-   LISTA SELECCIONADA
---------------------------------------------------------- */
-.selected-list-content {
-    background: #f8f8f8;
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-}
-
-/* ------------------------------------------------------
-   TOTAL DE PUNTOS
---------------------------------------------------------- */
 .total-points {
     font-weight: bold;
-    margin-top: 10px;
 }
 .over-limit {
     color: red;
-    font-weight: bold;
 }
-
-/* ------------------------------------------------------
-   LOGO
---------------------------------------------------------- */
 .logo {
     max-width: 350px;
     display: block;
     margin: 0 auto;
 }
+.hidden {
+    display: none;
+}
+.reset-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+.info-box {
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+```
