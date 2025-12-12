@@ -271,7 +271,7 @@ const factions = {
         extraInfo:
           '<strong>Armas:</strong>\n' +
           '<strong>Espolones</strong>-<em>Descenso poderoso:</em> Cuando este combatiente efectúe una carga, este arma obriene <strong>POT+1</strong> hasta el final de la activcion \n' +
-          '<em>Impactante:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)' +
+          '<em>Impactante:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)\n' +
           '<strong>Cañones Icaro - 10" DES:4 POT:3</strong>\n' +
           '<em>Penetracion:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)',
         comment: 
