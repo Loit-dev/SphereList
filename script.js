@@ -477,12 +477,6 @@ function showCombatants(faction) {
     if (selectedOption === 'Devotos de Malesur' && combatant.name === 'Chica Eriza') {
       return; // No mostrar Chica Eriza para Devotos de Malesur
     }
-    if (selectedOption === 'Legión de los Mil Corazones' && leaders.gender && leaders.gender !== 'Hombre') {
-      return; // Mostrar solo hombres para Legión de los Mil Corazones
-    }
-    if (selectedOption === 'Mercenarias de Isha' && leaders.gender && leaders.gender !== 'Mujer') {
-      return; // Mostrar solo mujeres para Mercenarias de Isha
-    }
     if (selectedOption === 'Legión de los Mil Corazones' && combatant.gender && combatant.gender !== 'Hombre') {
       return; // Mostrar solo hombres para Legión de los Mil Corazones
     }
