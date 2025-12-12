@@ -1,659 +1,590 @@
-/* -------------------------------------------
-   SphereWars — Generador de Bandas (script.js)
-   Implementación completa según el manual PDF
-   ------------------------------------------- */
-
-/* -------------------------
-   DATOS (facciones / subfacciones / unidades)
-   Nota: los perfiles tienen propiedades clave:
-   - points (PB)
-   - DOM (si aplica) para líderes
-   - domCost (para artefactos)
-   - unique (boolean)
-   - gender (si aplica)
-   - leader (boolean)
-   - tags: array de strings (ej. 'Mercenaria de Isha', 'Legión')
-*/
 const factions = {
   'Adeptos de Malesur': {
     description: 'Los Adeptos de Malesur.',
-    subfactions: {
-      'Iniciados de Malesur': { id: 'Iniciados de Malesur', description: 'Iniciados: sin reglas especiales', rules: {} },
-      'Devotos de Malesur': {
-        id: 'Devotos de Malesur',
-        description: 'Devotos: los no-líderes cuestan +1 PB; +ARC 2; efectos adicionales sin Sphere; durante actualización sanan hasta 2 aliados.',
-        rules: { nonLeaderExtraCost: 1, nonLeaderArcBonus: 2, devotosMode: true }
-      }
-    },
     leaders: [
-      { name: 'Yenay', displayName: 'Yenay', points: 5, leader: true, DOM: 0, unique: true, characteristics: '' },
-      { name: 'Liehnan', displayName: 'Liehnan', points: 6, leader: true, DOM: 0, unique: true, characteristics: '' },
-      { name: 'Mihualo, el Hombre Búho', displayName: '<strong>Mihualo, el Hombre Búho</strong>', points: 14, leader: true, DOM: 4, unique: true,
-        characteristics: 'DOM:4 EST:2 ORD:3 MOV:4 DES:2 POT:2 CON:3 ARC:4 HER:4 TAM:3 AME:1 AGA:3',
-        extraInfo: 'Bendición de la Tramontana / Bendición Interior'
+      { name: 'Yenay', displayName: 'Yenay', points: 5, characteristics: 'Característica X' },
+      { name: 'Liehnan', displayName: 'Liehnan', points: 6, characteristics: 'Característica Y' },
+      {
+        name: 'Mihualo, el Hombre Búho',
+        displayName: '<strong>Mihualo, el Hombre Búho</strong>',
+        points: 14,
+        characteristics: '\nDOM:4 EST:2 ORD:3 POT:4 \nMOV:4 DES:2 POT:2 CON:3 ARC:4 HER:4 TAM:3 AME:1 AGA:3',
+        extraInfo:
+          '<strong>Armas:</strong> Pequeñas Garras\n' +
+          '<strong>Bendición de la Tramontana</strong> - 8":\nIgnora línea de visión. El objetivo aliado que no esté trabado puede desplazarse 4" en cualquier dirección, ignorando áreas de defensa.\n' +
+          '<strong>Bendición Interior</strong> - 8":\nEl objetivo amigo tiene <strong>DES, POT y CON +1</strong> hasta el inicio de la siguiente ronda amiga.',
+        comment:
+          'Armas: Pequeñas Garras\n' +
+          'Bendición de la Tramontana - 8": Ignora línea de visión. El objetivo aliado que no esté trabado puede desplazarse 4" en cualquier dirección, ignorando áreas de defensa.\n' +
+          'Bendición Interior - 8": El objetivo amigo tiene DES, POT y CON +1 hasta el inicio de la siguiente ronda amiga'
       }
     ],
     combatants: [
-      { name: 'Chico Topo', displayName: 'Chico Topo', points: 10, gender: 'Hombre', unique: false, tags: [] },
-      { name: 'Chica Eriza', displayName: 'Chica Eriza', points: 10, gender: 'Mujer', unique: false, tags: [] },
-      { name: 'Chicos Mangosta', displayName: 'Chicos Mangosta', points: 10, gender: 'Hombre', unique: false, tags: [] },
-      { name: 'Hombre Águila', displayName: 'Hombre Águila', points: 10, gender: 'Hombre', unique: false, tags: [] },
-      { name: 'Hombre Toro', displayName: 'Hombre Toro', points: 15, gender: 'Hombre', unique: false, tags: [] }
+      { name: 'Chico Topo', displayName: 'Chico Topo', points: 10, characteristics: 'a2', gender: 'Hombre' },
+      { name: 'Chica Eriza', displayName: 'Chica Eriza', points: 10, characteristics: 'a2', gender: 'Mujer' },
+      { name: 'Chicos Mangosta', displayName: 'Chicos Mangosta', points: 10, characteristics: 'Ma2', gender: 'Hombre' },
+      { name: 'Hombre Águila', displayName: 'Hombre Águila', points: 10, characteristics: 'a:2', gender: 'Hombre' },
+      { name: 'Hombre Toro', displayName: 'Hombre Toro', points: 15, characteristics: 'a', gender: 'Hombre' }
     ],
     artifacts: [
-      { name: 'Favor de la dualidad', displayName: 'Favor de la dualidad', points: 0, domCost: 1, description: 'Permite cambiar modo Espíritu de la Bestia once per game', tags: [] },
-      { name: 'Favor del camuflaje', displayName: 'Favor del camuflaje', points: 0, domCost: 1, description: 'Solo Iniciados', tags: ['Iniciados only'] },
-      { name: 'Favor del crecimiento', displayName: 'Favor del crecimiento', points: 0, domCost: 1, description: 'Solo Devotos', tags: ['Devotos only'] }
+      { name: 'Artefacto 1', displayName: 'Artefacto 1', points: 3, characteristics: 'aM' },
+      { name: 'Artefacto 2', displayName: 'Artefacto 2', points: 4, characteristics: 'Ca N' }
     ],
     veterans: [
-      { name: 'Artífice veterano', displayName: 'Artífice veterano', points: 1, description: 'Líder obtiene DOM +1', leaderOnly: true },
-      { name: 'Mando veterano', displayName: 'Mando veterano', points: 1, description: 'Líder obtiene ORD +1', leaderOnly: true },
-      { name: 'Arcanista veterano', displayName: 'Arcanista veterano', points: 1, description: 'Líder obtiene POD +2', leaderOnly: true }
+      { name: 'Artífice veterano', displayName: 'Artífice veterano', points: 1, characteristics: 'El líder obtiene DOM +1' },
+      { name: 'Mando veterano', displayName: 'Mando veterano', points: 1, characteristics: 'El líder obtiene ORD +1' },
+      { name: 'Arcanista veterano', displayName: 'Arcanista veterano', points: 1, characteristics: 'El líder obtiene POD +2' }
     ]
   },
 
   'Vástagos de Kurgan': {
-    description: 'Vástagos de Kurgan. Cohesión inicial 3. Soimi pueden permitir segundo líder modificado.',
-    subfactions: {
-      'Soimi': { id: 'Soimi', description: 'Soimi: permite reclutar second leader Soimi modificado', rules: { allowSecondSoimi: true } },
-      'Regor': { id: 'Regor', description: 'Regor', rules: {} }
-    },
+    description:
+      '<strong>Cohesión por la Profecía</strong><br>' +
+      '<br>La Cohesión es un valor que va de 1 a 4 (ignora efectos que la suban por encima o por debajo de estos valores) y define lo unida que está la banda Vástagos de Kurgan para seguir a su líder. Empieza con un valor de 3 y puede subir y bajar durante la partida:<br>' +
+      '<br><strong>+2</strong> de Cohesión si muere el Líder rival.<br>' +
+      '<strong>-2</strong> de Cohesión si muere el Líder de la banda.<br>' +
+      '<strong>+1</strong> de Cohesión cuando muera el primer enemigo que no sea invocación cada ronda.<br>' +
+      '<strong>-1</strong> de Cohesión si se termina un turno en que ningún enemigo (ignorando invocaciones) haya recibido una herida.<br>' +
+      '<br><strong>Cohesión Efecto</strong><br>' +
+      '<strong>4:</strong> Todos los aliados activan sus habilidades de Lealtad y pueden recibir órdenes.<br>' +
+      '<strong>3:</strong> Todos los aliados que compartan culto con el Líder activan sus habilidades de Lealtad. Todos los aliados pueden recibir órdenes.<br>' +
+      '<strong>2:</strong> Solo los aliados que compartan culto con el Líder pueden recibir órdenes.<br>' +
+      '<strong>1:</strong> Solo el Líder de la banda puede recibir órdenes.<br>' +
+      '<br><strong>Demostración de Fuerza (Orden)</strong><br>' +
+      'Esta orden puede darse después de lanzar una tirada de daño con un arma a melé. Repite la tirada de daño.',
+
     leaders: [
-      { name: 'Nek`Org el Profeta', displayName: '<strong>Nek`Org el Profeta</strong>', points: 18, leader: true, DOM: 2, unique: true },
-      { name: 'Tir`Abe Muro de Hielo', displayName: '<strong>Tir`Abe Muro de Hielo</strong>', points: 19, leader: true, DOM: 2, unique: true }
+      {
+        name: 'Nek`Org el Profeta',
+        displayName: '<strong>Nek`Org el Profeta</strong>',
+        points: 18,
+        characteristics: '\nDOM:2 EST:3 ORD:4 FUR:4 \nMOV:5 DES:4 POT:3 CON:5 ARC:4 HER:6 TAM:4 AME:2 AGA:3',
+        extraInfo:
+          '<strong>Armas:</strong> Espadón diente\n' +
+          '<strong>Impactante:</strong> Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2).\n' +
+          '<strong>Intimidante:</strong> Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
+          '<strong>Comunicación Sensorial:</strong> Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8".\n' +
+          '<strong>Demostración de Poder:</strong> Cuando un enemigo (no invocación) muera a causa de un hechizo a 8" o menos de este combatiente, esta banda aumenta en 1 su Cohesión.\n' +
+          '<strong>-Lealtad- Magia Instintiva:</strong> Si la banda tiene suficiente Cohesión, este combatiente puede correr al doble y lanzar hechizos.',
+        comment:
+          'Armas: Espadón diente\n' +
+          'Impactante: Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2).\n' +
+          'Intimidante: Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene AME +1 hasta el final de la activación.\n' +
+          'Comunicación Sensorial: Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8".\n' +
+          'Demostración de Poder: Cuando un enemigo (no invocación) muera a causa de un hechizo a 8" o menos de este combatiente, esta banda aumenta en 1 su Cohesión.\n' +
+          'Lealtad - Magia Instintiva: Si la banda tiene suficiente Cohesión, este combatiente puede correr al doble y lanzar hechizos.'
+      },
+      {
+        name: 'Tir`Abe Muro de Hielo',
+        displayName: '<strong>Tir`Abe Muro de Hielo</strong>',
+        points: 19,
+        characteristics: '\nDOM:2 EST:2 ORD:4 FUR:2 \nMOV:5 DES:4 POT:4 CON:5 ARC:4 HER:6 TAM:4 AME:3 AGA:3',
+        extraInfo:
+          '<strong>Armas:</strong> Maza de Guerra\n' +
+          '<strong>Contundente:</strong> Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2); si el ataque tiene POT 4 o más, recibe 1 adicional (2 en total).\n' +
+          '<strong>Comunicación Sensorial:</strong> Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8".\n' +
+          '<strong>Campeón de Kurgan:</strong> Cuando este combatiente mate un enemigo (no invocación) de PB 6 o superior, esta banda aumenta en 1 su Cohesión.\n' +
+          '<strong>Aguijones:</strong> Causa una herida automática al objetivo. Sphere: este combatiente se cura una herida.\n' +
+          '<strong>Golpe Circular:</strong> Este combatiente elige un enemigo en contacto y combate contra él (combate adicional). No puede combatir dos veces con el mismo oponente durante su activación.\n' +
+          '<strong>-Lealtad- Luchador Excepcional:</strong> Si la banda tiene suficiente Cohesión, este combatiente nunca sufre la penalización por cansancio.',
+        comment:
+          'Armas: Maza de Guerra\n' +
+          'Contundente: Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2); si el ataque tiene POT 4 o más, recibe 1 adicional (2 en total).\n' +
+          'Comunicación Sensorial: Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8".\n' +
+          'Campeón de Kurgan: Cuando este combatiente mate un enemigo (no invocación) de PB 6 o superior, esta banda aumenta en 1 su Cohesión.\n' +
+          'Aguijones: Causa una herida automática al objetivo. Sphere: este combatiente se cura una herida.\n' +
+          'Golpe Circular: Combate adicional contra un enemigo en contacto.'
+      },
+      { name: 'Líder 4', displayName: 'Líder 4', points: 9, characteristics: 'a' }
     ],
+
     combatants: [
-      { name: 'Adorador Gélido', displayName: '<strong>Adorador Gélido</strong>', points: 9, unique: false },
-      { name: 'Enjendro del Hielo', displayName: '<strong>Enjendro del Hielo</strong>', points: 4, unique: false }
+      {
+        name: 'Adorador Gélido',
+        displayName: '<strong>Adorador Gélido</strong>',
+        points: 9,
+        characteristics: '\nFUR:1 \nMOV:5 DES:4 POT:3 CON:4 ARC:4 HER:6 TAM:4 AME:1 AGA:2',
+        extraInfo:
+          '<strong>Armas:</strong> Espada diente\n' +
+          '<strong>Intimidante:</strong> Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
+          '<strong>-Lealtad- Carga Fervorosa:</strong> Si la banda tiene suficiente Cohesión, este combatiente se desplaza 1" adicional cuando cargue.\n' +
+          '<strong>Aguijones:</strong> Causa una herida automática al objetivo. Sphere: este combatiente se cura una herida.',
+        comment:
+          'Armas: Espada diente\n' +
+          'Intimidante: Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene AME +1 hasta el final de la activación.\n' +
+          'Carga Fervorosa: Si la banda tiene suficiente Cohesión, este combatiente se desplaza 1" adicional cuando cargue.\n' +
+          'Aguijones: Causa una herida automática al objetivo. Sphere: este combatiente se cura una herida.'
+      },
+      {
+        name: 'Enjendro del Hielo',
+        displayName: '<strong>Enjendro del Hielo</strong>',
+        points: 4,
+        characteristics: '\nORD:1 FUR:1 \nMOV:4 DES:2 POT:2 CON:3 ARC:3 HER:5 TAM:3 AME:0 AGA:1',
+        extraInfo:
+          '<strong>Armas:</strong> Uñas\n' +
+          '<strong>Incompetente:</strong> Este combatiente no cansa a los enemigos ni ofrece apoyo en combate.\n' +
+          '<strong>Comunicación Sensorial:</strong> Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8".\n' +
+          '<strong>Transfusión Vital:</strong> Cura una herida al Soimi aliado objetivo.',
+        comment:
+          'Armas: Uñas\n' +
+          'Incompetente: No cansa a los enemigos ni ofrece apoyo en combate.\n' +
+          'Comunicación Sensorial: Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8".\n' +
+          'Transfusión Vital: Cura una herida al Soimi aliado objetivo.'
+      }
     ],
+
     artifacts: [
-      { name: 'Piel de Sabrash', displayName: 'Piel de Sabrash', points: 0, domCost: 0, description: 'Reducciones MOV no aplican' }
+      {
+        name: 'Piel de Sabrash',
+        displayName: '<strong>Piel de Sabrash:</strong> -2 DOM-',
+        points: 0,
+        characteristics:
+          'Este combatiente puede correr al doble aunque tenga enemigos a 4". Además, el MOV de este combatiente no puede ser reducido por efectos enemigos.'
+      },
+      {
+        name: 'Pellejo de Olbarak',
+        displayName: '<strong>Pellejo de Olbarak:</strong> -1 DOM-',
+        points: 0,
+        characteristics:
+          'Solo líderes de Culto Enur`Anar. Cuando este combatiente quite la última herida a un enemigo con un ataque a melé, recupera 1 herida.'
+      },
+      { name: 'Furia de Kurgan', displayName: '<strong>Furia de Kurgan:</strong> -1 DOM-', points: 0, characteristics: 'Este combatiente obtiene FUR +1' }
     ],
+
     veterans: [
-      { name: 'Veterano 3', displayName: 'Veterano 3', points: 4, description: 'Veterano genérico' }
+      { name: 'Veterano 3', displayName: 'Veterano 3', points: 4, characteristics: 'Ca' },
+      { name: 'Veterano 4', displayName: 'Veterano 4', points: 6, characteristics: 'CaF' }
     ]
   },
 
   'Manadas de Urueh': {
-    description: 'Manadas de Urueh. Elije volcán de origen (Teokkis, Golothar, Ag-Tharan).',
-    subfactions: {
-      'Teokkis': { id: 'Teokkis', description: 'Si tienes igual o más combatientes que rival, líder obtiene EST +1', rules: { teokkis: true } },
-      'Golothar': { id: 'Golothar', description: 'Cuando un enemigo muere se añade +1 contador de orden (más si cuesta >=8 PB)', rules: { golothar: true } },
-      'Ag-Tharan': { id: 'Ag-Tharan', description: 'Cenizas aliados MOV +2', rules: { agtharan: true } }
-    },
+    description: 'Las Manadas de Urueh.',
     leaders: [
-      { name: 'Líder 5', displayName: 'Líder 5', points: 4, leader: true, unique: true },
-      { name: 'Líder 6', displayName: 'Líder 6', points: 11, leader: true, unique: true }
+      { name: 'Líder 5', displayName: 'Líder 5', points: 4, characteristics: 'Característica V' },
+      { name: 'Líder 6', displayName: 'Líder 6', points: 11, characteristics: 'Característica U' }
     ],
     combatants: [
-      { name: 'Combatiente 5', displayName: 'Combatiente 5', points: 10, unique: false },
-      { name: 'Combatiente 6', displayName: 'Combatiente 6', points: 15, unique: false }
+      { name: 'Combatiente 5', displayName: 'Combatiente 5', points: 10, characteristics: 'Característica E' },
+      { name: 'Combatiente 6', displayName: 'Combatiente 6', points: 15, characteristics: 'F' }
     ],
     artifacts: [
-      { name: 'Artefacto 5', displayName: 'Artefacto 5', points: 3, domCost: 0 },
-      { name: 'Artefacto 6', displayName: 'Artefacto 6', points: 6, domCost: 0 }
+      { name: 'Artefacto 5', displayName: 'Artefacto 5', points: 3, characteristics: 'Q' },
+      { name: 'Artefacto 6', displayName: 'Artefacto 6', points: 6, characteristics: 'R' }
     ],
     veterans: [
-      { name: 'Veterano 5', displayName: 'Veterano 5', points: 5, description: '' },
-      { name: 'Veterano 6', displayName: 'Veterano 6', points: 8, description: '' }
+      { name: 'Veterano 5', displayName: 'Veterano 5', points: 5, characteristics: 'G' },
+      { name: 'Veterano 6', displayName: 'Veterano 6', points: 8, characteristics: 'H' }
     ]
   },
 
   'Alianza': {
     description: 'La Alianza.',
-    subfactions: {
-      'La Alianza': { id: 'La Alianza', description: 'Acceso a todos los combatientes, sin regla especial', rules: {} },
-      'Legión de los Cien Corazones': { id: 'Legión de los Cien Corazones', description: 'Solo combatientes Legión (hombres en tu dataset), regla: Latir del Corazón', rules: { requireTag: 'Legión' } },
-      'Mercenarias de Isha': { id: 'Mercenarias de Isha', description: 'Solo combatientes Mercenaria de Isha (mujeres), regla: Inquebrantables', rules: { requireTag: 'Mercenaria de Isha' } }
-    },
     leaders: [
-      { name: 'Nirlem, el paladín', displayName: '<strong>Nirlem, el paladín</strong>', points: 15, leader: true, DOM: 2, unique: true },
-      { name: 'Rodanes, Brazo de metal', displayName: '<strong>Rodanes, Brazo de metal</strong>', points: 16, leader: true, DOM: 2, unique: true },
-      { name: 'Taem, la carnicera', displayName: '<strong>Taem, la carnicera</strong>', points: 15, leader: true, DOM: 2, unique: true },
-      { name: 'Laroc, la seductora', displayName: '<strong>Laroc, la seductora</strong>', points: 14, leader: true, DOM: 4, unique: true, gender: 'Mujer', tags: ['Mercenaria de Isha'] }
+      {
+        name: 'Nirlem, el paladín',
+        displayName: '<strong>Nirlem, el paladín</strong>',
+        points: 15,
+        characteristics: '\nDOM:2 EST:3 ORD:3 \nMOV:3 DES:4 POT:3 CON:5 ARC:4 HER:6 TAM:3 AME:1 COR:5',
+        extraInfo:
+          '<strong>Armas:</strong>\n' +
+          '<strong>Ajusticiadora:</strong> <em>Contundente</em>: Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2); si el ataque tiene POT 4 o más, recibe 1 adicional (2 en total).\n' +
+          '<strong>Bastión de la Verdad (Defensiva)</strong>: Esta arma no hace tiradas de daño ni provoca tiradas de moral por ganar la tirada en combate.\n' +
+          '<strong>¡Levántate y lucha! - 4":</strong> El objetivo aliado que no sea este combatiente sana 1 herida. <strong>Sphere:</strong> Elige un objetivo aliado adicional que no sea este combatiente.',
+        comment:
+          'Armas: Ajusticiadora (Contundente): Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2); si el ataque tiene POT 4 o más, recibe 1 adicional (2 en total).\n' +
+          'Bastión de la Verdad (Defensiva): Esta arma no hace tiradas de daño ni provoca tiradas de moral por ganar la tirada en combate.\n' +
+          '¡Levántate y lucha!: El objetivo aliado que no sea este combatiente sana 1 herida. Sphere: Elige un objetivo aliado adicional que no sea este combatiente.'
+      },
+      {
+        name: 'Rodanes, Brazo de metal',
+        displayName: '<strong>Rodanes, Brazo de metal</strong>',
+        points: 16,
+        characteristics: '\nDOM:2 EST:4 ORD:4 \nMOV:3 DES:5 POT:3 CON:5 ARC:4 HER:6 TAM:3 AME:1 COR:5',
+        extraInfo:
+          '<strong>Armas:</strong>\n' +
+          '<strong>Integridad:</strong> <em>Intimidante</em>. Si se obtiene al menos un <strong>Sphere</strong> en la tirada de ataque, este combatiente obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
+          '<strong>¡Legión, con el corazón! - 4":</strong> El objetivo aliado que no sea este combatiente deja de estar cansado. <strong>Sphere:</strong> Elige un objetivo aliado adicional que no sea este combatiente.',
+        comment:
+          'Armas: Integridad (Intimidante): Si se obtiene al menos un Sphere en la tirada de ataque, este combatiente obtiene AME +1 hasta el final de la activación.\n' +
+          '¡Legión, con el corazón!: El objetivo aliado que no sea este combatiente deja de estar cansado. Sphere: Elige un objetivo aliado adicional que no sea este combatiente.'
+      },
+      {
+        name: 'Taem, la carnicera',
+        displayName: '<strong>Taem, la carnicera</strong>',
+        points: 15,
+        characteristics: '\nDOM:2 EST:3 ORD:4 \nMOV:4 DES:4 POT:3 CON:4 ARC:4 HER:6 TAM:3 AME:1 COR:5',
+        extraInfo:
+          '<strong>Armas:</strong>\n' +
+          '<strong>Hacha de carnicera:</strong> <em>Intimidante</em>: Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
+          '<strong>¡Ven aquí! - 4":</strong> Si el objetivo es de <strong>TAM 4</strong> o inferior, desplázalo 4" acercándolo hacia este combatiente. <strong>Sphere:</strong> El objetivo sufre 1 herida.',
+        comment:
+          'Armas: Hacha de carnicera (Intimidante): Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene AME +1 hasta el final de la activación.\n' +
+          '¡Ven aquí!: Si el objetivo es de TAM 4 o inferior, desplázalo 4" acercándolo hacia este combatiente. Sphere: El objetivo sufre 1 herida.'
+      },
+      {
+        name: 'Laroc, la seductora',
+        displayName: '<strong>Laroc, la seductora</strong>',
+        points: 14,
+        characteristics: '\nDOM:4 EST:2 ORD:3 \nMOV:4 DES:2 POT:2 CON:2 ARC:5 HER:4 TAM:3 AME:1 COR:4',
+        extraInfo:
+          '<strong>Armas:</strong>\n' +
+          '<strong>Báculo Ungido:</strong> <em>Golpe Arcano</em>. Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
+          '<strong>Aura de devoción a Laroc:</strong> Las otras aliadas <strong>Mercenarias de Isha</strong> a 4" o menos de esta combatiente obtienen <strong>CON+1</strong> y <strong>ARC+1</strong>.\n' +
+          '<strong>Descarga fulminante - 10":</strong> <em>Proyectil arcano</em>. El objetivo enemigo recibe una tirada de daño de <strong>3d6</strong> contra su <strong>ARC</strong>. <strong>Sphere:</strong> Aumenta el daño a <strong>5d6</strong>.\n' +
+          '<strong>Esfera protectora - 10":</strong> Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.',
+        comment:
+          'Armas: Báculo Ungido (Golpe Arcano): Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
+          'Aura de devoción a Laroc: Las otras aliadas Mercenarias de Isha a 4" o menos de esta combatiente obtienen CON+1 y ARC+1.\n' +
+          'Descarga fulminante - 10": Proyectil arcano. El objetivo enemigo recibe una tirada de daño de 3d6 contra su ARC. Sphere: Aumenta el daño a 5d6.\n' +
+          'Esfera protectora - 10": Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.'
+      }
     ],
+
     combatants: [
-      { name: 'Laroc, la seductora (combatiente)', displayName: '<strong>Laroc, la seductora</strong>', points: 14, gender: 'Mujer', unique: true, tags: ['Mercenaria de Isha'] },
-      { name: 'Combatiente 2', displayName: 'Combatiente 2', points: 4, gender: 'Hombre', unique: false },
-      { name: 'Combatiente 1', displayName: 'Combatiente 1', points: 6, gender: 'Mujer', unique: false }
+      { name: 'Combatiente 2', displayName: 'Combatiente 2', points: 4, characteristics: 'H', gender: 'Hombre' },
+      { name: 'Combatiente 1', displayName: 'Combatiente 1', points: 6, characteristics: 'I', gender: 'Mujer' }
     ],
+
     artifacts: [
-      { name: 'Anillo de sanación', displayName: 'Anillo de sanación', points: 0, domCost: 1, description: 'Sana 1 herida 1 vez' },
-      { name: 'Cadena Lucidez Estratégica', displayName: 'Cadena Lucidez Estratégica', points: 0, domCost: 2, description: 'Describe efecto' }
+      { name: 'Artefacto 7', displayName: 'Artefacto 7', points: 4, characteristics: 'I' },
+      { name: 'Artefacto 8', displayName: 'Artefacto 8', points: 7, characteristics: 'J' }
     ],
+
     veterans: [
-      { name: 'Veterano 7', displayName: 'Veterano 7', points: 6, description: '' },
-      { name: 'Veterano 8', displayName: 'Veterano 8', points: 9, description: '' }
+      { name: 'Veterano 7', displayName: 'Veterano 7', points: 6, characteristics: 'K' },
+      { name: 'Veterano 8', displayName: 'Veterano 8', points: 9, characteristics: 'L' }
     ]
   }
 };
 
-/* -------------------------
-   Estado global
-*/
+const options = {
+  'Adeptos de Malesur': [
+    { name: 'Devotos de Malesur', description: 'Los devotos de Malesur.' },
+    { name: 'Iniciados de Malesur', description: 'Los iniciados de Malesur.' }
+  ],
+  'Vástagos de Kurgan': [
+    {
+      name: 'Soimi',
+      description:
+        '<strong>Unidos por la Profecía</strong><br>' +
+        '<br>Si el líder de tu banda es un Soimi, puedes contratar un segundo Líder Soimi por su coste original; este segundo combatiente pierde sus atributos de <strong>EST</strong> y <strong>ORD</strong> y deja de considerarse un Líder. Una banda que contenga un segundo Líder adquirido de esta forma empieza la partida con <strong>Cohesión +1</strong>.'
+    },
+    { name: 'Regor', description: 'Regor.' }
+  ],
+  'Manadas de Urueh': [
+    { name: 'Teokkis', description: 'Teokkis.' },
+    { name: 'Golothar', description: 'Golothar.' },
+    { name: 'Ag-Tharan', description: 'Ag-Tharan.' }
+  ],
+  'Alianza': [
+    { name: 'La Alianza', description: 'Esta subfacción tiene acceso a todos los combatientes de la facción, pero no obtiene ninguna regla especial.' },
+    { name: 'Legión de los Mil Corazones', description: 'Esta subfacción se centra en unidades masculinas y reglas de transfusión de heridas.' },
+    { name: 'Mercenarias de Isha', description: 'Esta subfacción se centra en combatientes femeninas y reglas de apoyo de Isha.' }
+  ]
+};
+
+/* --- Variables globales --- */
+let selectedPoints = 0;
 let maxPoints = 0;
+let selectedOption = '';
 let selectedFaction = '';
-let selectedSubfaction = '';
-let selectedUnits = []; // {unit, type, adjustedPoints, extra: {isSecondSoimi:false, veteranies:[]}}
-let selectedLeader = null; // object ref to chosen leader (if any)
-let domAvailable = 0;
-let domUsed = 0;
+let chicaErizaCount = 0;
 
-/* -------------------------
-   Utilidades
-*/
-const el = id => document.getElementById(id);
-function clearChildren(node){ if(!node) return; while(node.firstChild) node.removeChild(node.firstChild); }
+/* --- Funciones UI (sin cambios lógicos, pero usando displayName para mostrar) --- */
 
-/* -------------------------
-   Inicialización - cargar facciones en UI
-*/
-function setPoints(points){
+function setPoints(points) {
   maxPoints = points;
-  el('points-list').innerHTML = `<li class="muted">Lista: ${points} PB</li>`;
-  el('faction-title').classList.remove('hidden');
-  el('options-title').classList.remove('hidden');
+  const pointsList = document.getElementById('points-list');
+  if (pointsList) {
+    pointsList.innerHTML = `<li>${points} puntos</li>`;
+  }
+  const factionTitle = document.getElementById('faction-title');
+  const factionListEl = document.getElementById('faction-list');
+  if (factionTitle) factionTitle.classList.remove('hidden');
+  if (factionListEl) factionListEl.classList.remove('hidden');
   showFactions();
-  updateSummary();
 }
 
-function showFactions(){
-  const list = el('faction-list');
-  clearChildren(list);
-  for(const f in factions){
+function showFactions() {
+  const factionList = document.getElementById('faction-list');
+  if (!factionList) return;
+  factionList.innerHTML = ''; // Limpiar la lista
+
+  for (const faction in factions) {
     const li = document.createElement('li');
-    li.textContent = f;
-    li.onclick = ()=> selectFaction(f);
-    list.appendChild(li);
+    li.textContent = faction;
+    li.onclick = () => selectFaction(faction);
+    factionList.appendChild(li);
   }
 }
 
-/* -------------------------
-   Selección facción y subfacción
-*/
-function selectFaction(faction){
+function selectFaction(faction) {
   selectedFaction = faction;
-  selectedSubfaction = '';
-  selectedLeader = null;
-  selectedUnits = [];
-  domAvailable = 0;
-  domUsed = 0;
-  // show description
-  el('selected-faction').innerHTML = `<strong>${faction}</strong><br>${factions[faction].description}`;
-  el('selected-faction').classList.remove('hidden');
+  const factionList = document.getElementById('faction-list');
+  if (!factionList) return;
+  factionList.innerHTML = ''; // Limpiar la lista
 
-  // show subfactions
-  const optionsList = el('options-list');
-  clearChildren(optionsList);
-  const subfs = factions[faction].subfactions || {};
-  for(const s in subfs){
-    const li = document.createElement('li');
-    li.innerHTML = `<strong>${s}</strong><div class="muted">${subfs[s].description}</div>`;
-    li.onclick = ()=> selectSubfaction(s);
-    optionsList.appendChild(li);
-  }
-  el('options-list').classList.remove('hidden');
-  el('leader-title').classList.add('hidden');
-  el('combatant-title').classList.add('hidden');
-  el('veteran-title').classList.add('hidden');
-  el('artifact-title').classList.add('hidden');
-  updateSummary();
-}
-
-function selectSubfaction(sub){
-  selectedSubfaction = sub;
-  selectedLeader = null;
-  selectedUnits = [];
-  domAvailable = 0;
-  domUsed = 0;
-  el('selected-option').innerHTML = `<strong>${sub}</strong><br>${factions[selectedFaction].subfactions[sub].description}`;
-  el('selected-option').classList.remove('hidden');
-  // show lists
-  el('leader-title').classList.remove('hidden');
-  el('combatant-title').classList.remove('hidden');
-  el('veteran-title').classList.remove('hidden');
-  el('artifact-title').classList.remove('hidden');
-  showLeaders();
-  showCombatants();
-  showArtifacts();
-  showVeterans();
-  updateSummary();
-}
-
-/* -------------------------
-   Reglas activas summary
-*/
-function getActiveRules(){
-  if(!selectedFaction || !selectedSubfaction) return [];
-  const rules = [];
-  const sub = factions[selectedFaction].subfactions[selectedSubfaction];
-  if(sub?.rules?.nonLeaderExtraCost) rules.push(`Devotos: +${sub.rules.nonLeaderExtraCost} PB a no-líderes`);
-  if(sub?.rules?.allowSecondSoimi) rules.push('Soimi: permite reclutar un segundo líder Soimi (convertido en combatiente)');
-  if(sub?.rules?.teokkis) rules.push('Teokkis: si tienes igual o más combatientes que rival, líder +EST +1');
-  if(sub?.rules?.golothar) rules.push('Golothar: muertes añaden contadores de orden');
-  if(sub?.rules?.agtharan) rules.push('Ag-Tharan: Cenizas MOV +2');
-  if(factions[selectedFaction].description) rules.push(factions[selectedFaction].description);
-  return rules;
-}
-
-function updateSummary(){
-  const rs = el('rules-summary');
-  const active = getActiveRules();
-  if(active.length===0){
-    rs.classList.add('hidden');
-    return;
-  }
-  rs.classList.remove('hidden');
-  rs.innerHTML = `<strong>Reglas activas:</strong><ul>${active.map(r=>`<li>${r}</li>`).join('')}</ul>`;
-  // DOM info
-  updateDOMInfo();
-}
-
-/* -------------------------
-   Mostrar unidades (ocultar ilegales)
-*/
-function showLeaders(){
-  const list = el('leader-list');
-  clearChildren(list);
-  const leaders = (factions[selectedFaction].leaders || []);
-  leaders.forEach(l=>{
-    if(!isUnitLegal(l,'leaders')) return;
-    const li = document.createElement('li');
-    li.innerHTML = `${l.displayName || l.name} - PB:${l.points} ${l.DOM ? `(DOM:${l.DOM})` : ''}`;
-    li.onclick = ()=> chooseLeader(l);
-    list.appendChild(li);
-  });
-}
-
-function showCombatants(){
-  const list = el('combatant-list');
-  clearChildren(list);
-  const combatants = (factions[selectedFaction].combatants || []);
-  combatants.forEach(c=>{
-    if(!isUnitLegal(c,'combatants')) return;
-    // apply Devotos +1 display if needed
-    let displayPoints = c.points;
-    const subrules = factions[selectedFaction].subfactions[selectedSubfaction].rules || {};
-    if(subrules.nonLeaderExtraCost && !c.leader && !c.unique){
-      displayPoints = c.points + subrules.nonLeaderExtraCost;
-    }
-    const li = document.createElement('li');
-    li.innerHTML = `${c.displayName || c.name} - PB:${displayPoints}`;
-    li.onclick = ()=> addUnit(c,'combatants');
-    list.appendChild(li);
-  });
-}
-
-function showArtifacts(){
-  const list = el('artifact-list');
-  clearChildren(list);
-  const arts = (factions[selectedFaction].artifacts || []);
-  arts.forEach(a=>{
-    if(!isUnitLegal(a,'artifacts')) return;
-    const li = document.createElement('li');
-    li.innerHTML = `${a.displayName || a.name} - PB:${a.points || 0}${typeof a.domCost!=='undefined' ? ` - DOM:${a.domCost}` : ''}<div class="muted">${a.description || ''}</div>`;
-    li.onclick = ()=> addUnit(a,'artifacts');
-    list.appendChild(li);
-  });
-}
-
-function showVeterans(){
-  const list = el('veteran-list');
-  clearChildren(list);
-  const vets = (factions[selectedFaction].veterans || []);
-  vets.forEach(v=>{
-    if(!isUnitLegal(v,'veterans')) return;
-    const li = document.createElement('li');
-    li.innerHTML = `${v.displayName || v.name} - PB:${v.points || 0} <div class="muted">${v.description || ''}</div>`;
-    li.onclick = ()=> addVeteran(v);
-    list.appendChild(li);
-  });
-}
-
-/* -------------------------
-   Legality: si una unidad debe ocultarse según subfacción
-   (Si no es legal: no aparece como opción seleccionable)
-*/
-function isUnitLegal(unit, type){
-  if(!selectedFaction || !selectedSubfaction) return false;
-  // unique check: hide if already selected
-  if(unit.unique && selectedUnits.some(su=>su.unit.name===unit.name)) return false;
-  const subRules = factions[selectedFaction].subfactions[selectedSubfaction].rules || {};
-  // requireTag rule (Alianza subfactions)
-  if(subRules.requireTag){
-    if(!unit.tags || !unit.tags.includes(subRules.requireTag)) return false;
-  }
-  // Iniciados / Devotos tags for artifacts (Favor del camuflaje, Favor del crecimiento)
-  if(unit.tags && unit.tags.includes('Iniciados only') && selectedSubfaction!=='Iniciados de Malesur') return false;
-  if(unit.tags && unit.tags.includes('Devotos only') && selectedSubfaction!=='Devotos de Malesur') return false;
-  return true;
-}
-
-/* -------------------------
-   Selección de líder
-*/
-function chooseLeader(leader){
-  // If a leader is already selected, ask to replace
-  if(selectedLeader && selectedLeader.name === leader.name){
-    // already selected; nothing
-    return;
-  }
-  // Reset selectedUnits (we'll allow replacing leader and keep others if they fit -> simpler: reset all)
-  selectedUnits = [];
-  selectedLeader = leader;
-  domAvailable = leader.DOM || 0;
-  domUsed = 0;
-  // Add leader to selectedUnits array as an entry type 'leader' with veteranies
-  selectedUnits.push({unit: leader, type:'leader', adjustedPoints: leader.points, extra: { veteranies: [] }});
-  selectedPointsRecalc();
-  renderSelectedList();
-  // refresh artifact list because DOM-based artifacts may become available
-  showArtifacts();
-  showVeterans();
-  updateDOMInfo();
-}
-
-/* -------------------------
-   Añadir unit/artifact
-*/
-function addUnit(unit, type){
-  // validation: leader must be chosen first for artifacts/veterans maybe?
-  if(type === 'artifacts'){
-    if(!selectedLeader){
-      alert('Debes seleccionar un líder antes de añadir artefactos (para revisar DOM).');
-      return;
-    }
-  }
-  // compute adjusted points (Devotos +1 for non-leader non-unique)
-  let adjusted = unit.points || 0;
-  const subrules = (factions[selectedFaction].subfactions[selectedSubfaction].rules || {});
-  if(subrules.nonLeaderExtraCost && type==='combatants' && !unit.leader && !unit.unique){
-    adjusted = adjusted + subrules.nonLeaderExtraCost;
-  }
-  // PB cap
-  if( (selectedTotalPoints() + adjusted) > maxPoints ){
-    alert('Añadir esta unidad excede el límite de PB de la lista.');
-    return;
-  }
-  // Unique duplication
-  if(unit.unique && selectedUnits.some(su=>su.unit.name === unit.name)){
-    alert('No puedes reclutar otra copia de ese personaje único.');
-    return;
-  }
-  // Artifacts: check DOM and PB
-  if(type === 'artifacts'){
-    const domCost = unit.domCost || 0;
-    if(domUsed + domCost > domAvailable){
-      alert('No tienes DOM suficiente en tu líder para adquirir este artefacto.');
-      return;
-    }
-    domUsed += domCost;
-    updateDOMInfo();
-  }
-
-  // add unit
-  selectedUnits.push({unit, type, adjustedPoints: adjusted, extra: {}});
-  selectedPointsRecalc();
-  renderSelectedList();
-
-  // If user added a leader (via second Soimi path) ensure behavior: handled separately
-}
-
-/* -------------------------
-   Veteranies (solo líder)
-*/
-function addVeteran(vet){
-  if(!selectedLeader){ alert('Selecciona un líder antes de añadir veteranías'); return; }
-  // can only add to leader; one copy each
-  const leaderEntry = selectedUnits.find(su=>su.type==='leader');
-  if(!leaderEntry) return;
-  if(leaderEntry.extra.veteranies.includes(vet.name)){
-    alert('Ya has añadido esa veteranía al líder.');
-    return;
-  }
-  // cost
-  if((selectedTotalPoints() + vet.points) > maxPoints){ alert('No hay PB suficientes'); return; }
-  leaderEntry.extra.veteranies.push(vet.name);
-  // veteranías cost in PB accounted in total by adding a synthetic unit entry for display
-  selectedUnits.push({unit: vet, type:'veteran', adjustedPoints: vet.points, extra: { attachedToLeader: true }});
-  selectedPointsRecalc();
-  renderSelectedList();
-}
-
-/* -------------------------
-   Remover unidades desde la lista
-*/
-function removeFromSelected(index){
-  if(index <0 || index >= selectedUnits.length) return;
-  const entry = selectedUnits[index];
-  // if veteran attached: remove from leader's list as well if necessary
-  if(entry.type==='veteran' && entry.extra && entry.extra.attachedToLeader){
-    // remove name from leader.extra.veteranies
-    const leaderEntry = selectedUnits.find(su=>su.type==='leader');
-    if(leaderEntry){
-      leaderEntry.extra.veteranies = leaderEntry.extra.veteranies.filter(vn => vn !== entry.unit.name);
-    }
-  }
-  // If artifact, free DOM
-  if(entry.type === 'artifacts'){
-    domUsed -= (entry.unit.domCost || 0);
-    if(domUsed < 0) domUsed = 0;
-  }
-  // remove the item
-  selectedUnits.splice(index,1);
-  selectedPointsRecalc();
-  renderSelectedList();
-  updateDOMInfo();
-}
-
-/* -------------------------
-   Rendering selected list and totals
-*/
-function renderSelectedList(){
-  const list = el('selected-list');
-  clearChildren(list);
-  selectedUnits.forEach((entry, idx)=>{
-    const li = document.createElement('li');
-    const u = entry.unit;
-    const pts = entry.adjustedPoints || (u.points || 0);
-    let html = `<strong>${u.displayName || u.name}</strong> - PB:${pts} <span class="muted">(${entry.type})</span>`;
-    if(entry.type === 'leader' && entry.extra.veteranies && entry.extra.veteranies.length){
-      html += `<div class="muted">Veteranías: ${entry.extra.veteranies.join(', ')}</div>`;
-    }
-    li.innerHTML = html;
-    li.onclick = ()=> {
-      if(confirm(`Quitar ${u.name} de la lista?`)) removeFromSelected(idx);
-    };
-    list.appendChild(li);
-  });
-  el('total-points').textContent = `Total de puntos: ${selectedTotalPoints()} / ${maxPoints}`;
-  updateDOMInfo();
-  showLeaders(); showCombatants(); showArtifacts(); showVeterans();
-  updateSummary();
-}
-
-function selectedTotalPoints(){
-  return selectedUnits.reduce((s, e)=> s + (e.adjustedPoints || (e.unit.points || 0)), 0);
-}
-function selectedPointsRecalc(){
-  // recompute adjustedPoints if devotos affects
-  const subrules = (factions[selectedFaction].subfactions[selectedSubfaction] || {}).rules || {};
-  selectedUnits.forEach(e=>{
-    if(e.type==='combatants' && subrules.nonLeaderExtraCost && !e.unit.leader && !e.unit.unique){
-      e.adjustedPoints = e.unit.points + subrules.nonLeaderExtraCost;
-    } else if(e.type!=='veteran'){
-      e.adjustedPoints = e.unit.points || 0;
-    } // veterans already have points set on push
-  });
-}
-
-/* -------------------------
-   DOM info
-*/
-function updateDOMInfo(){
-  if(!selectedLeader){
-    el('dom-info').classList.add('hidden');
-    return;
-  }
-  el('dom-info').classList.remove('hidden');
-  el('dom-info').textContent = `DOM usado / disponible: ${domUsed} / ${domAvailable}`;
-}
-
-/* -------------------------
-   Soimi: añadir segundo líder modificado
-   (solo visible si subfaction Soimi)
-*/
-function addSecondSoimiIfAvailable(){
-  // only for Vástagos de Kurgan and Soimi
-  if(selectedFaction!=='Vástagos de Kurgan' || selectedSubfaction!=='Soimi') return;
-  // need a leader chosen that is Soimi? The rule said: if the leader is a Soimi, you can recruit a second leader Soimi
-  // We'll allow adding a second leader from the pool of leaders of Vástagos that are Soimi-type (we'll assume all leaders in this faction are Soimi-capable)
-  // The second leader will be converted: loses EST and ORD (we'll symbolize by appending note)
-  const possible = factions[selectedFaction].leaders.filter(l => l.name !== (selectedLeader && selectedLeader.name));
-  if(possible.length===0) return;
-  // Show an option in UI inside leader list
-  const list = el('leader-list');
   const li = document.createElement('li');
-  li.innerHTML = `<strong>Añadir Segundo Líder Soimi (convertido)</strong><div class="muted">Permite elegir entre líderes disponibles para convertir</div>`;
-  li.onclick = ()=> {
-    // present quick chooser
-    const names = possible.map(p=>p.name).join('\n');
-    const pick = prompt(`Introduce el nombre exacto del líder Soimi a añadir:\n${names}`);
-    const chosen = possible.find(p=>p.name===pick);
-    if(!chosen){ alert('Elección inválida'); return; }
-    // create modified copy
-    const copy = JSON.parse(JSON.stringify(chosen));
-    copy._isSecondSoimi = true;
-    copy.displayName = (copy.displayName || copy.name) + ' (Segundo Soimi — convertido)';
-    // second leader counts as combatant entry, loses EST and ORD in description (we won't alter underlying numbers except mark)
-    copy.points = chosen.points; // cost is original
-    // Add as combatant-type entry (not leader)
-    // check PB cap
-    if((selectedTotalPoints() + copy.points) > maxPoints){ alert('No hay PB suficientes para añadir este segundo líder'); return; }
-    selectedUnits.push({unit: copy, type:'combatants', adjustedPoints: copy.points, extra:{isSecondSoimi:true}});
-    renderSelectedList();
-  };
-  // insert at top for attention, but avoid duplicates
-  const exists = Array.from(list.children).some(li => li.textContent.includes('Segundo Líder Soimi'));
-  if(!exists) list.insertBefore(li, list.firstChild);
+  li.innerHTML = `<strong>${faction}</strong><br>${factions[faction].description}`;
+  factionList.appendChild(li);
+
+  const optionsTitle = document.getElementById('options-title');
+  const optionsList = document.getElementById('options-list');
+  if (optionsTitle) optionsTitle.classList.remove('hidden');
+  if (optionsList) optionsList.classList.remove('hidden');
+  showOptions(faction);
 }
 
-/* -------------------------
-   PDF Generation
-   - Visual PDF: html2canvas snapshot of .selected-list-content
-   - Legal PDF: jsPDF text A4 with structured listing + DOM/PB totals
-*/
-document.addEventListener('DOMContentLoaded', ()=>{
-  // wire buttons
-  const btnV = el('visualPDF');
-  const btnL = el('legalPDF');
-  if(btnV) btnV.addEventListener('click', generateVisualPDF);
-  if(btnL) btnL.addEventListener('click', generateLegalPDF);
-  // initial UI
-  showFactions();
-});
+function showOptions(faction) {
+  const optionsList = document.getElementById('options-list');
+  if (!optionsList) return;
+  optionsList.innerHTML = ''; // Limpiar la lista
 
-function generateVisualPDF(){
-  if(selectedUnits.length===0){ alert('Lista vacía'); return; }
-  const user = prompt('Introduce tu nombre de usuario:');
-  if(!user) return;
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({unit:'cm',format:'a4',orientation:'portrait'});
-  const node = document.querySelector('.selected-list-content');
-  if(!node){ alert('No se encuentra el contenido a exportar'); return; }
-  html2canvas(node, {scale:2}).then(canvas=>{
-    const img = canvas.toDataURL('image/png');
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const margin = 1.5;
-    const maxW = pageW - margin*2;
-    const maxH = pageH - margin*2;
-    const ratio = Math.min(maxW / canvas.width, maxH / canvas.height);
-    const w = canvas.width * ratio;
-    const h = canvas.height * ratio;
-    doc.setFontSize(12);
-    doc.text(`Usuario: ${user}`, margin, 1);
-    doc.text(`Facción: ${selectedFaction}`, margin, 1.8);
-    doc.text(`Subfacción: ${selectedSubfaction}`, margin, 2.6);
-    doc.addImage(img,'PNG', margin, 3.4, w, h);
-    doc.save('lista_visual.pdf');
-  }).catch(err=>{ console.error(err); alert('Error generando PDF visual'); });
-}
-
-function generateLegalPDF(){
-  if(selectedUnits.length===0){ alert('Lista vacía'); return; }
-  const user = prompt('Introduce tu nombre de usuario:');
-  if(!user) return;
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({unit:'cm',format:'a4',orientation:'portrait'});
-  let y = 1;
-  doc.setFontSize(12);
-  doc.setFont('helvetica','bold');
-  doc.text(`BANDA (${maxPoints} PB)`, 1, y); y += 0.8;
-  doc.setFont('helvetica','normal');
-  doc.text(`Usuario: ${user}`, 1, y); y += 0.7;
-  doc.text(`Facción: ${selectedFaction}`, 1, y); y += 0.7;
-  doc.text(`Subfacción: ${selectedSubfaction}`, 1, y); y += 0.9;
-  // Active rules
-  const active = getActiveRules();
-  if(active.length){
-    doc.setFont('helvetica','bold'); doc.text('Reglas activas:', 1, y); y+=0.6;
-    doc.setFont('helvetica','normal');
-    active.forEach(r=>{ doc.text(`- ${stripHtml(r)}`,1,y); y+=0.5; if(y>27){ doc.addPage(); y=1; }});
-    y+=0.2;
-  }
-  // Items by category
-  const grouped = { leader:[], veterans:[], artifacts:[], combatants:[], others:[] };
-  selectedUnits.forEach(e=>{
-    if(e.type==='leader') grouped.leader.push(e);
-    else if(e.type==='veteran') grouped.veterans.push(e);
-    else if(e.type==='artifacts') grouped.artifacts.push(e);
-    else if(e.type==='combatants') grouped.combatants.push(e);
-    else grouped.others.push(e);
+  if (!options[faction]) return;
+  options[faction].forEach(option => {
+    const li = document.createElement('li');
+    li.textContent = option.name;
+    li.onclick = () => selectOption(faction, option);
+    optionsList.appendChild(li);
   });
-  // Leader
-  if(grouped.leader.length){
-    doc.setFont('helvetica','bold'); doc.text('Líder:',1,y); y+=0.6;
-    doc.setFont('helvetica','normal');
-    grouped.leader.forEach(e=>{
-      doc.text(`${e.unit.displayName || e.unit.name} — PB:${e.adjustedPoints}`,1,y); y+=0.6;
-      if(e.extra.veteranies && e.extra.veteranies.length){
-        doc.text(`Veteranías: ${e.extra.veteranies.join(', ')}`,1,y); y+=0.5;
-      }
-      if(y>27){ doc.addPage(); y=1; }
-    });
-  }
-  // Veteranías (others already listed)
-  if(grouped.veterans.length){
-    doc.setFont('helvetica','bold'); doc.text('Veteranías (detached):',1,y); y+=0.6;
-    doc.setFont('helvetica','normal');
-    grouped.veterans.forEach(e=>{ doc.text(`${e.unit.displayName} — PB:${e.adjustedPoints}`,1,y); y+=0.5; if(y>27){ doc.addPage(); y=1; }});
-  }
-  // Artifacts (list DOM)
-  if(grouped.artifacts.length){
-    doc.setFont('helvetica','bold'); doc.text('Artefactos:',1,y); y+=0.6;
-    doc.setFont('helvetica','normal');
-    grouped.artifacts.forEach(e=>{
-      const domC = e.unit.domCost || 0;
-      doc.text(`${e.unit.displayName || e.unit.name} — PB:${e.adjustedPoints} — DOM:${domC}`,1,y); y+=0.5;
-      if(y>27){ doc.addPage(); y=1; }
-    });
-  }
-  // Combatientes
-  if(grouped.combatants.length){
-    doc.setFont('helvetica','bold'); doc.text('Combatientes:',1,y); y+=0.6;
-    doc.setFont('helvetica','normal');
-    grouped.combatants.forEach(e=>{
-      doc.text(`${e.unit.displayName || e.unit.name} — PB:${e.adjustedPoints}`,1,y); y+=0.5;
-      if(y>27){ doc.addPage(); y=1; }
-    });
-  }
-  // Totals
-  y += 0.6;
-  doc.setFont('helvetica','bold'); doc.text(`TOTAL PB: ${selectedTotalPoints()} / ${maxPoints}`,1,y); y+=0.6;
-  doc.text(`DOM usado: ${domUsed} / ${domAvailable}`,1,y);
-  doc.save('lista_legal.pdf');
 }
 
-function stripHtml(s){ return s.replace(/<\/?[^>]+(>|$)/g, ""); }
+function selectOption(faction, option) {
+  selectedOption = option.name;
+  chicaErizaCount = 0;
+  const optionsList = document.getElementById('options-list');
+  if (optionsList) optionsList.innerHTML = ''; // Limpiar la lista
 
+  const li = document.createElement('li');
+  li.innerHTML = `<strong>${option.name}</strong><br>${option.description}`;
+  if (optionsList) optionsList.appendChild(li);
+
+  const leaderTitle = document.getElementById('leader-title');
+  const leaderList = document.getElementById('leader-list');
+  const veteranTitle = document.getElementById('veteran-title');
+  const veteranList = document.getElementById('veteran-list');
+  const combatantTitle = document.getElementById('combatant-title');
+  const combatantList = document.getElementById('combatant-list');
+  const artifactTitle = document.getElementById('artifact-title');
+  const artifactList = document.getElementById('artifact-list');
+
+  if (leaderTitle) leaderTitle.classList.remove('hidden');
+  if (leaderList) leaderList.classList.remove('hidden');
+  if (veteranTitle) veteranTitle.classList.remove('hidden');
+  if (veteranList) veteranList.classList.remove('hidden');
+  if (combatantTitle) combatantTitle.classList.remove('hidden');
+  if (combatantList) combatantList.classList.remove('hidden');
+  if (artifactTitle) artifactTitle.classList.remove('hidden');
+  if (artifactList) artifactList.classList.remove('hidden');
+
+  showLeaders(faction);
+  showVeterans(faction);
+  showCombatants(faction);
+  showArtifacts(faction);
+
+  // Mostrar la facción y la opción seleccionadas
+  const selectedFactionDiv = document.getElementById('selected-faction');
+  if (selectedFactionDiv) {
+    selectedFactionDiv.innerHTML = `<strong>${faction}</strong><br>${factions[faction].description}`;
+    selectedFactionDiv.classList.remove('hidden');
+  }
+
+  const selectedOptionDiv = document.getElementById('selected-option');
+  if (selectedOptionDiv) {
+    selectedOptionDiv.innerHTML = `<strong>${option.name}</strong><br>${option.description}`;
+    selectedOptionDiv.classList.remove('hidden');
+  }
+}
+
+function showLeaders(faction) {
+  const leaderList = document.getElementById('leader-list');
+  if (!leaderList) return;
+  leaderList.innerHTML = ''; // Limpiar la lista
+
+  factions[faction].leaders.forEach(leader => {
+    const li = document.createElement('li');
+    const display = leader.displayName || leader.name;
+    li.innerHTML = `${display} - PB:${leader.points} ${leader.characteristics.replace(/\n/g, '<br>')}`;
+    li.title = leader.comment || '';
+    li.onclick = () => addToSelectedList(leader);
+    leaderList.appendChild(li);
+  });
+}
+
+function showVeterans(faction) {
+  const veteranList = document.getElementById('veteran-list');
+  if (!veteranList) return;
+  veteranList.innerHTML = ''; // Limpiar la lista
+
+  if (factions[faction].veterans) {
+    factions[faction].veterans.forEach(veteran => {
+      const li = document.createElement('li');
+      const display = veteran.displayName || veteran.name;
+      li.innerHTML = `${display} - PB:${veteran.points} ${veteran.characteristics.replace(/\n/g, '<br>')}`;
+      li.title = veteran.comment || '';
+      li.onclick = () => addToSelectedList(veteran);
+      veteranList.appendChild(li);
+    });
+  }
+}
+
+function showCombatants(faction) {
+  const combatantList = document.getElementById('combatant-list');
+  if (!combatantList) return;
+  combatantList.innerHTML = '';
+
+  factions[faction].combatants.forEach(combatant => {
+    // Filtros por subfacción
+    if (selectedOption === 'Devotos de Malesur' && combatant.name === 'Chica Eriza') {
+      return; // No mostrar Chica Eriza para Devotos de Malesur
+    }
+    if (selectedOption === 'Legión de los Mil Corazones' && combatant.gender && combatant.gender !== 'Hombre') {
+      return; // Mostrar solo hombres para Legión de los Mil Corazones
+    }
+    if (selectedOption === 'Mercenarias de Isha' && combatant.gender && combatant.gender !== 'Mujer') {
+      return; // Mostrar solo mujeres para Mercenarias de Isha
+    }
+    const li = document.createElement('li');
+    const display = combatant.displayName || combatant.name;
+    li.innerHTML = `${display} - PB:${combatant.points} ${combatant.characteristics.replace(/\n/g, '<br>')}`;
+    li.title = combatant.comment || '';
+    li.onclick = () => addToSelectedList(combatant);
+    combatantList.appendChild(li);
+  });
+}
+
+function showArtifacts(faction) {
+  const artifactList = document.getElementById('artifact-list');
+  if (!artifactList) return;
+  artifactList.innerHTML = ''; // Limpiar la lista
+
+  factions[faction].artifacts.forEach(artifact => {
+    const li = document.createElement('li');
+    const display = artifact.displayName || artifact.name;
+    li.innerHTML = `${display} - PB:${artifact.points} ${artifact.characteristics.replace(/\n/g, '<br>')}`;
+    li.title = artifact.comment || '';
+    li.onclick = () => addToSelectedList(artifact);
+    artifactList.appendChild(li);
+  });
+}
+
+function addToSelectedList(unit) {
+  // Validación para Chica Eriza en Iniciados de Malesur (ejemplo original)
+  if (selectedOption === 'Iniciados de Malesur' && unit.name === 'Chica Eriza') {
+    if (chicaErizaCount >= 2) {
+      alert('Solo puedes añadir un máximo de 2 Chica Eriza.');
+      return;
+    }
+    chicaErizaCount++;
+  }
+
+  const selectedList = document.getElementById('selected-list');
+  if (!selectedList) return;
+
+  const li = document.createElement('li');
+  const display = unit.displayName || unit.name;
+  li.innerHTML = `${display} - PB:${unit.points} ${unit.characteristics.replace(/\n/g, '<br>')}<br>${unit.extraInfo ? unit.extraInfo.replace(/\n/g, '<br>') : ''}`;
+  li.onclick = () => removeFromSelectedList(unit, li);
+  selectedList.appendChild(li);
+
+  selectedPoints += unit.points || 0;
+  updateTotalPoints();
+}
+
+function removeFromSelectedList(unit, listItem) {
+  const selectedList = document.getElementById('selected-list');
+  if (!selectedList) return;
+  selectedList.removeChild(listItem);
+
+  if (unit.name === 'Chica Eriza') {
+    chicaErizaCount = Math.max(0, chicaErizaCount - 1);
+  }
+
+  selectedPoints -= unit.points || 0;
+  updateTotalPoints();
+}
+
+function updateTotalPoints() {
+  const totalPointsElement = document.getElementById('total-points');
+  if (!totalPointsElement) return;
+  totalPointsElement.textContent = `Total de puntos: ${selectedPoints}`;
+
+  if (selectedPoints > maxPoints) {
+    totalPointsElement.classList.add('over-limit');
+  } else {
+    totalPointsElement.classList.remove('over-limit');
+  }
+}
+
+/* --- Generar PDF (corregido y cerrado correctamente) --- */
+const generateBtn = document.getElementById('generatePDF');
+if (generateBtn) {
+  generateBtn.addEventListener('click', function () {
+    const userName = prompt("Por favor, introduce tu nombre de usuario:");
+    if (!userName) {
+      alert("El nombre de usuario es obligatorio.");
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'cm',
+      format: 'a4'
+    });
+
+    // Selecciona el contenido debajo de la lista seleccionada
+    const selectedContent = document.querySelector('.selected-list-content');
+    if (!selectedContent) {
+      alert('No se ha encontrado el contenido a exportar.');
+      return;
+    }
+
+    // Usar html2canvas para capturar el contenido
+    html2canvas(selectedContent).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdfWidth = doc.internal.pageSize.getWidth() - 3; // márgenes laterales de 1.5 cm
+      const pdfHeight = doc.internal.pageSize.getHeight() - 3; // márgenes superior e inferior de 1.5 cm
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const scaleFactor = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+
+      // Añadir la información del usuario, facción, subfacción y tamaño de lista
+      const faction = selectedFaction || '';
+      const subfaction = selectedOption || '';
+      const listSize = maxPoints + " puntos";
+
+      // Añadir la información en negrita y en tamaño legible
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      let yPosition = 1;
+      doc.text("Usuario:", 1, yPosition);
+      yPosition += 1.2;
+      doc.text("Facción:", 1, yPosition);
+      yPosition += 1.2;
+      doc.text("Subfacción:", 1, yPosition);
+      yPosition += 1.2;
+      doc.text("Tamaño de lista:", 1, yPosition);
+      yPosition += 0.2;
+
+      // Añadir la información del usuario
+      doc.setFont("helvetica", "normal");
+      yPosition = 1.6;
+      doc.text(userName, 1, yPosition);
+      yPosition += 1.2;
+      doc.text(faction, 1, yPosition);
+      yPosition += 1.2;
+      doc.text(subfaction, 1, yPosition);
+      yPosition += 1.2;
+      doc.text(listSize, 1, yPosition);
+      yPosition += 0.2;
+
+      // Añadir la imagen escalada al PDF con márgenes
+      doc.addImage(imgData, 'PNG', 2.5, yPosition + 1, imgWidth * scaleFactor, imgHeight * scaleFactor);
+      doc.save('lista.pdf');
+    }).catch(err => {
+      console.error(err);
+      alert('Error al generar el PDF.');
+    });
+  });
+}
