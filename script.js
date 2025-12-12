@@ -244,8 +244,8 @@ const factions = {
       {
         name: 'Laroc, la seductora',
         displayName: '<strong>Laroc, la seductora</strong>',
-        points: 14,
-        characteristics: '\nDOM:4 EST:2 ORD:3 \nMOV:4 DES:2 POT:2 CON:2 ARC:5 HER:4 TAM:3 AME:1 COR:4',
+        points: 12,
+        characteristics: '\nMOV:4 DES:2 POT:2 CON:2 ARC:5 HER:4 TAM:3 AME:1 COR:4',
         extraInfo:
           '<strong>Armas:</strong>\n' +
           '<strong>Báculo Ungido:</strong> <em>Golpe Arcano</em>. Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
@@ -259,7 +259,18 @@ const factions = {
           'Esfera protectora - 10": Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.',
         gender: 'Mujer'
       },
-      { name: 'Combatiente 2', displayName: 'Combatiente 2', points: 4, characteristics: 'H', gender: 'Hombre' },
+      {
+        name: 'Róxter, el piloto',
+        displayName: '',
+        points: 11,
+        characteristics: '\nMOV:5 DES:4 POT:3 CON:4 ARC:4 HER:6 TAM:4 AME:1 AGA:2',
+        extraInfo:
+          '<strong>Armas:</strong>\n' +
+          '<strong>Espolones/strong><em>Descenso poderoso<\em> Cuando este combatiente efectúe una carga, este arma obriene <strong>POT+1</strong> hasta el final de la activcion \n' +
+          '<em>Impactante:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)' +
+          '<strong>Cañones Icaro</strong> hasta el final de la activación. \n<strong>-Lealtad- Carga Fervorosa: </strong> si la banda tiene suficiente Cohesión, este combatiente se desplaza 1" adicional siempre que cargue. \n<strong>Aguijones:</strong>Causa una herida automática al objetivo. Sphere: este combatiente se cura una herida. ',
+        comment: 'Armas: Espadon diente \n Impactante:Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2). \nIntimidante: Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene AME 1 hasta el final de la activación. \nComunicación Sensorial: Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8”. \nDemostración de Poder: Cuando un enemigo(no invocación) muera a causa de un hechizo a 8" o menos de estecombatiente, esta banda aumenta en 1 su Cohesión. \nLealtad Magia Instintiva: Si la banda tiene suficiente Cohesión, este combatiente puede correr al doble y lanzar hechizos.'
+        },
       { name: 'Combatiente 1', displayName: 'Combatiente 1', points: 6, characteristics: 'I', gender: 'Mujer' }
     ],
 
