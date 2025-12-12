@@ -261,16 +261,22 @@ const factions = {
       },
       {
         name: 'Róxter, el piloto',
-        displayName: '',
+        displayName: '<strong>Róxter, el piloto<\strong>',
         points: 11,
         characteristics: '\nMOV:5 DES:4 POT:3 CON:4 ARC:4 HER:6 TAM:4 AME:1 AGA:2',
         extraInfo:
           '<strong>Armas:</strong>\n' +
-          '<strong>Espolones/strong><em>Descenso poderoso<\em> Cuando este combatiente efectúe una carga, este arma obriene <strong>POT+1</strong> hasta el final de la activcion \n' +
+          '<strong>Espolones</strong>-<em>Descenso poderoso:<\em> Cuando este combatiente efectúe una carga, este arma obriene <strong>POT+1</strong> hasta el final de la activcion \n' +
           '<em>Impactante:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)' +
-          '<strong>Cañones Icaro</strong> hasta el final de la activación. \n<strong>-Lealtad- Carga Fervorosa: </strong> si la banda tiene suficiente Cohesión, este combatiente se desplaza 1" adicional siempre que cargue. \n<strong>Aguijones:</strong>Causa una herida automática al objetivo. Sphere: este combatiente se cura una herida. ',
-        comment: 'Armas: Espadon diente \n Impactante:Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2). \nIntimidante: Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene AME 1 hasta el final de la activación. \nComunicación Sensorial: Si el objetivo es un Soimi, la distancia para dar órdenes de este combatiente es de 8”. \nDemostración de Poder: Cuando un enemigo(no invocación) muera a causa de un hechizo a 8" o menos de estecombatiente, esta banda aumenta en 1 su Cohesión. \nLealtad Magia Instintiva: Si la banda tiene suficiente Cohesión, este combatiente puede correr al doble y lanzar hechizos.'
-        },
+          '<strong>Cañones Icaro - 10" DES:4 POT:3</strong>\n' +
+          '<em>Penetracion:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)',
+        comment: 
+          'Armas:' +
+          'Espolones - Descenso poderoso: Cuando este combatiente efectúe una carga, este arma obriene POT+1 hasta el final de la activcion \n' +
+          'Impactante: Reduce en -1 el numero objetivo de la tirada de daño (min. 2)' +
+          'Cañones Icaro - 10" DES:4 POT:3 \n' +
+          'Penetracion: Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)'
+      },
       { name: 'Combatiente 1', displayName: 'Combatiente 1', points: 6, characteristics: 'I', gender: 'Mujer' }
     ],
 
