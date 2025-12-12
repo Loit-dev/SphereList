@@ -20,11 +20,11 @@ const factions = {
       }
     ],
     combatants: [
-      { name: 'Chico Topo', displayName: 'Chico Topo', points: 10, characteristics: 'a2', gender: 'Hombre' },
-      { name: 'Chica Eriza', displayName: 'Chica Eriza', points: 10, characteristics: 'a2', gender: 'Mujer' },
-      { name: 'Chicos Mangosta', displayName: 'Chicos Mangosta', points: 10, characteristics: 'Ma2', gender: 'Hombre' },
-      { name: 'Hombre Águila', displayName: 'Hombre Águila', points: 10, characteristics: 'a:2', gender: 'Hombre' },
-      { name: 'Hombre Toro', displayName: 'Hombre Toro', points: 15, characteristics: 'a', gender: 'Hombre' }
+      { name: 'Chico Topo', displayName: 'Chico Topo', points: 10, characteristics: 'a2',},
+      { name: 'Chica Eriza', displayName: 'Chica Eriza', points: 10, characteristics: 'a2',},
+      { name: 'Chicos Mangosta', displayName: 'Chicos Mangosta', points: 10, characteristics: 'Ma2',},
+      { name: 'Hombre Águila', displayName: 'Hombre Águila', points: 10, characteristics: 'a:2',},
+      { name: 'Hombre Toro', displayName: 'Hombre Toro', points: 15, characteristics: 'a',}
     ],
     artifacts: [
       { name: 'Artefacto 1', displayName: 'Artefacto 1', points: 3, characteristics: 'aM' },
@@ -477,10 +477,10 @@ function showCombatants(faction) {
     if (selectedOption === 'Devotos de Malesur' && combatant.name === 'Chica Eriza') {
       return; // No mostrar Chica Eriza para Devotos de Malesur
     }
-    if (selectedOption === 'Legión de los Mil Corazones' && leader.gender && leader.gender !== 'Hombre') {
+    if (selectedOption === 'Legión de los Mil Corazones' && leaders.gender && leaders.gender !== 'Hombre') {
       return; // Mostrar solo hombres para Legión de los Mil Corazones
     }
-    if (selectedOption === 'Mercenarias de Isha' && leader.gender && leader.gender !== 'Mujer') {
+    if (selectedOption === 'Mercenarias de Isha' && leaders.gender && leaders.gender !== 'Mujer') {
       return; // Mostrar solo mujeres para Mercenarias de Isha
     }
     if (selectedOption === 'Legión de los Mil Corazones' && combatant.gender && combatant.gender !== 'Hombre') {
