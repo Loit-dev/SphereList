@@ -1,80 +1,181 @@
+/* ------------------------------------------------------
+   ESTILOS BASE (Tu versión + mejoras de la nueva propuesta)
+--------------------------------------------------------- */
+
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    color: #333;
 }
+
 .container {
     width: 80%;
     margin: auto;
     overflow: hidden;
 }
-header {
+
+/* ------------------------------------------------------
+   HEADER (mantengo tu estilo original)
+--------------------------------------------------------- */
+header, .site-header {
     background: #333;
     color: #fff;
-    padding-top: 30px;
-    min-height: 70px;
+    padding: 20px 0;
     border-bottom: #77aaff 3px solid;
 }
+
 header a {
     color: #fff;
     text-decoration: none;
     text-transform: uppercase;
     font-size: 16px;
 }
+
 header ul {
     padding: 0;
     list-style: none;
 }
+
 header li {
     float: left;
     display: inline;
-    padding: 0 20px 0 20px;
+    padding: 0 20px;
 }
+
+/* ------------------------------------------------------
+   LOGO
+--------------------------------------------------------- */
+.logo {
+    max-width: 230px;
+    display: block;
+    margin: 0 auto 10px auto;
+}
+
+/* ------------------------------------------------------
+   CONTENIDO PRINCIPAL
+--------------------------------------------------------- */
 .main {
     padding: 20px;
     background: #fff;
     margin-top: 20px;
+    border-radius: 8px;
 }
-.faction-list, .leader-list, .combatant-list, .selected-list, .points-list, .options-list, .artifact-list, .veteran-list {
+
+/* ------------------------------------------------------
+   PANEL (estilo del sistema nuevo aplicado al tuyo)
+--------------------------------------------------------- */
+.panel {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 8px;
+}
+
+/* ------------------------------------------------------
+   LISTAS (todas unificadas)
+--------------------------------------------------------- */
+.faction-list, .leader-list, .combatant-list, .selected-list,
+.points-list, .options-list, .artifact-list, .veteran-list {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
-.faction-list li, .leader-list li, .combatant-list li, .selected-list li, .points-list li, .options-list li, .artifact-list li, .veteran-list li {
+
+.faction-list li, .leader-list li, .combatant-list li, .selected-list li,
+.points-list li, .options-list li, .artifact-list li, .veteran-list li {
     background: #e4e4e4;
-    margin: 5px 0;
+    margin: 6px 0;
     padding: 10px;
-    border: #ccc 1px solid;
+    border: 1px solid #ccc;
     cursor: pointer;
+    border-radius: 6px;
+    transition: 0.2s;
 }
+
+.faction-list li:hover,
+.leader-list li:hover,
+.combatant-list li:hover,
+.selected-list li:hover,
+.options-list li:hover,
+.artifact-list li:hover,
+.veteran-list li:hover {
+    background: #d6e7ff;
+    border-color: #77aaff;
+}
+
+/* ------------------------------------------------------
+   INFO
+--------------------------------------------------------- */
 .total-points {
     font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 10px;
 }
+
 .over-limit {
     color: red;
+    font-weight: bold;
 }
-.logo {
-    max-width: 350px;
-    display: block;
-    margin: 0 auto;
+
+.info-box {
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 6px;
 }
+
 .hidden {
     display: none;
 }
-.reset-button {
-    margin-top: 20px;
+
+/* ------------------------------------------------------
+   BOTONES
+--------------------------------------------------------- */
+.btn, .reset-button {
     padding: 10px 20px;
     background-color: #333;
     color: #fff;
     border: none;
     cursor: pointer;
+    margin-right: 10px;
+    border-radius: 6px;
+    transition: 0.2s;
 }
-.info-box {
-    background: #f9f9f9;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 20px;
-}
-```
 
-Este archivo CSS contiene todos los estilos necesarios para tu web. Si necesitas más ayuda o tienes alguna pregunta específica sobre el código, ¡no dudes en preguntar!
+.btn:hover, .reset-button:hover {
+    background-color: #444;
+}
+
+.reset-button {
+    margin-top: 20px;
+}
+
+/* ------------------------------------------------------
+   COLUMNS (versión moderna adaptada a tu diseño claro)
+--------------------------------------------------------- */
+.columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.col {
+    flex: 1;
+    min-width: 280px;
+}
+
+/* ------------------------------------------------------
+   FOOTER
+--------------------------------------------------------- */
+.site-footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 12px 0;
+    margin-top: 25px;
+}
+
