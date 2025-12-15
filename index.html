@@ -1,75 +1,84 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listas de Facciones</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SphereWars — Generador de Bandas</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <img src="https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png" alt="SphereWars Logo" class="logo">
-            <h1>Listas de Facciones</h1>
-            <nav>
-                <ul>
-                    <li><a href="#"></a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-    <div class="container main">
-        <h2>Selecciona el tamaño de la lista</h2>
-        <ul class="points-list" id="points-list">
-            <li onclick="setPoints(60)">60 puntos</li>
-            <li onclick="setPoints(90)">90 puntos</li>
-            <li onclick="setPoints(120)">120 puntos</li>
-        </ul>
-        <h2 class="hidden" id="faction-title">Facciones</h2>
-        <ul class="faction-list hidden" id="faction-list">
-            <!-- Aquí se mostrarán las facciones -->
-        </ul>
-        <h2 class="hidden" id="options-title">Opciones</h2>
-        <ul class="options-list hidden" id="options-list">
-            <!-- Aquí se mostrarán las opciones específicas -->
-        </ul>
-        <h2 class="hidden" id="leader-title">Líderes</h2>
-        <ul class="leader-list hidden" id="leader-list">
-            <!-- Aquí se mostrarán los líderes -->
-        </ul>
-        <h2 class="hidden" id="artifact-title">Arts</h2>
-        <ul class="artifact-list hidden" id="artifact-list">
-            <!-- Aquí se mostrarán los Artefactos -->
-        </ul>
-        <h2 class="hidden" id="veteran-title">Veteranías</h2>
-        <ul class="veteran-list hidden" id="veteran-list">
-            <!-- Aquí se mostrarán las veteranías -->
-        </ul>
-        <h2 class="hidden" id="combatant-title">Combatientes</h2>
-        <ul class="combatant-list hidden" id="combatant-list">
-            <!-- Aquí se mostrarán los combatientes -->
-        </ul>
-        <div class="lista-seleccionada">
-            <div class="selected-list-content">
-                <h2>Lista Seleccionada</h2>
-                <div class="info-box hidden" id="selected-faction">
-                    <!-- Aquí se mostrará la facción seleccionada -->
-                </div>
-                <div class="info-box hidden" id="selected-option">
-                    <!-- Aquí se mostrará la opción seleccionada -->
-                </div>
-                <ul class="selected-list" id="selected-list">
-                    <!-- Aquí se mostrarán los combatientes seleccionados -->
-                </ul>
-                <p class="total-points" id="total-points">Total de puntos: 0</p>
-            </div>
-        </div>
-        <button class="reset-button" onclick="location.reload();">Reiniciar Lista</button>
-        <button class="reset-button" id="generatePDF">Generar PDF</button>
+  <header class="site-header">
+    <div class="container header-inner">
+      <img class="logo" src="https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png" alt="SphereWars">
+      <h1>SphereWars — Generador de Bandas</h1>
     </div>
-    <script src="script.js"></script>
+  </header>
+
+  <main class="container main">
+    <section class="panel">
+      <h2>1) Selecciona tamaño de lista</h2>
+      <ul id="points-list" class="points-list">
+        <li data-points="60" onclick="setPoints(60)">60 puntos</li>
+        <li data-points="90" onclick="setPoints(90)">90 puntos</li>
+        <li data-points="120" onclick="setPoints(120)">120 puntos</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2 id="faction-title" class="muted hidden">2) Facciones</h2>
+      <ul id="faction-list" class="list faction-list"></ul>
+
+      <h2 id="options-title" class="muted hidden">3) Subfacción / Opciones</h2>
+      <ul id="options-list" class="list options-list"></ul>
+
+      <div id="rules-summary" class="info-box hidden"></div>
+    </section>
+
+    <section class="panel columns">
+      <div class="col">
+        <h3 id="leader-title" class="muted hidden">Líderes</h3>
+        <ul id="leader-list" class="list"></ul>
+
+        <h3 id="veteran-title" class="muted hidden">Veteranías</h3>
+        <ul id="veteran-list" class="list"></ul>
+
+        <h3 id="artifact-title" class="muted hidden">Artefactos</h3>
+        <ul id="artifact-list" class="list"></ul>
+      </div>
+
+      <div class="col">
+        <h3 id="combatant-title" class="muted hidden">Combatientes</h3>
+        <ul id="combatant-list" class="list"></ul>
+      </div>
+    </section>
+
+    <section class="panel selected-panel">
+      <div class="selected-list-content">
+        <h2>Lista Seleccionada</h2>
+        <div id="selected-faction" class="info-box hidden"></div>
+        <div id="selected-option" class="info-box hidden"></div>
+        <div id="active-rules" class="info-box hidden"></div>
+
+        <ul id="selected-list" class="selected-list"></ul>
+        <p id="total-points" class="total-points">Total de puntos: 0</p>
+        <p id="dom-info" class="dom-info hidden">DOM usado / disponible: 0 / 0</p>
+
+        <div class="buttons">
+          <button id="visualPDF" class="btn">Generar PDF Visual</button>
+          <button id="legalPDF" class="btn">Generar PDF Legal (lista)</button>
+          <button class="btn reset" onclick="location.reload()">Reiniciar</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">Generador de listas — SphereWars</div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
