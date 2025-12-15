@@ -317,7 +317,6 @@ const options = {
     { name: 'Legión de los Mil Corazones', description: 'Esta subfacción se centra en unidades masculinas y reglas de transfusión de heridas.' },
     { name: 'Mercenarias de Isha', description: 'Esta subfacción se centra en combatientes femeninas y reglas de apoyo de Isha.' }
   ]};
-
 /* ==========================
    VARIABLES GLOBALES
 ========================== */
@@ -333,7 +332,7 @@ let selectedVeterans = new Set();
 let selectedArtifacts = [];
 let hasSecondSoimi = false;
 
-/* ==========================
+/* =======================
    HELPERS
 ========================== */
 
@@ -422,10 +421,6 @@ function showLeaders(faction) {
   const list = document.getElementById('leader-list');
   list.innerHTML = '';
   factions[faction].leaders.forEach(l => {
-
-    if (selectedOption === 'Legión de los Mil Corazones' && c.gender && c.gender !== 'Hombre') return;
-    if (selectedOption === 'Mercenarias de Isha' && c.gender && c.gender !== 'Mujer') return;
-      
     const li = document.createElement('li');
     li.innerHTML = `${l.displayName} - PB:${l.points}<br>${l.characteristics.replace(/\n/g,'<br>')}`;
     li.onclick = () => addToSelectedList(l, 'leader');
