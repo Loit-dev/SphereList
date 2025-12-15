@@ -424,7 +424,7 @@ function showLeaders(faction) {
   factions[faction].leaders.forEach(l => {
     const li = document.createElement('li');
     li.innerHTML = `${l.displayName} - PB:${l.points}<br>${l.characteristics.replace(/\n/g,'<br>')}`;
-    li.onclick = () => addToSelectedList(l);
+    li.onclick = () => addToSelectedList(l, 'leader');
     list.appendChild(li);
   });
 }
@@ -439,7 +439,7 @@ function showCombatants(faction) {
 
     const li = document.createElement('li');
     li.innerHTML = `${c.displayName} - PB:${c.points}<br>${c.characteristics.replace(/\n/g,'<br>')}`;
-    li.onclick = () => addToSelectedList(c);
+    li.onclick = () => addToSelectedList(c, 'combatant');
     list.appendChild(li);
   });
 }
@@ -450,7 +450,7 @@ function showArtifacts(faction) {
   factions[faction].artifacts.forEach(a => {
     const li = document.createElement('li');
     li.innerHTML = `${a.displayName}<br>${a.characteristics}`;
-    li.onclick = () => addToSelectedList(a);
+    li.onclick = () => addToSelectedList(a, 'artifact');
     list.appendChild(li);
   });
 }
@@ -461,7 +461,7 @@ function showVeterans(faction) {
   factions[faction].veterans.forEach(v => {
     const li = document.createElement('li');
     li.innerHTML = `${v.displayName} - PB:${v.points}`;
-    li.onclick = () => addToSelectedList(v);
+    li.onclick = () => addToSelectedList(v, 'veteran');
     list.appendChild(li);
   });
 }
@@ -470,76 +470,103 @@ function showVeterans(faction) {
    LÓGICA DE REGLAS
 ========================== */
 
-function addToSelectedList(unit) {
-  const type = getUnitType(unit);
+function addToSelectedList(unit, type) {
+
   let cost = unit.points || 0;
 
-  /* LÍDER */
+  /* ========= LÍDER ========= */
   if (type === 'leader') {
-    if (selectedLeader && !(selectedFaction === 'Vástagos de Kurgan' && selectedOption === 'Soimi' && !hasSecondSoimi)) {
-      alert('Solo puedes tener un líder.');
-      return;
-    }
-    if (!selectedLeader) {
-      selectedLeader = unit;
-      currentDOM = extractDOM(unit.characteristics);
+    if (selectedLeader) {
+      // excepción Soimi
+      if (
+        selectedFaction === 'Vástagos de Kurgan' &&
+        selectedOption === 'Soimi' &&
+        !hasSecondSoimi
+      ) {
+        hasSecondSoimi = true;
+      } else {
+        alert('Solo puedes tener un líder.');
+        return;
+      }
     } else {
-      hasSecondSoimi = true;
+      selectedLeader = unit;
+      const domMatch = unit.characteristics.match(/DOM:(\d+)/);
+      currentDOM = domMatch ? parseInt(domMatch[1]) : 0;
     }
   }
 
-  /* VETERANÍAS */
+  /* ========= VETERANÍAS ========= */
   if (type === 'veteran') {
     if (!selectedLeader) {
-      alert('Debes elegir un líder.');
+      alert('Debes elegir un líder antes de añadir veteranías.');
       return;
     }
     if (selectedVeterans.has(unit.name)) {
-      alert('No puedes repetir veteranías.');
+      alert('No puedes repetir la misma veteranía.');
       return;
     }
     selectedVeterans.add(unit.name);
   }
 
-  /* ARTEFACTOS */
+  /* ========= ARTEFACTOS ========= */
   if (type === 'artifact') {
-    const domCost = extractDOMCost(unit.displayName);
-    const usedDOM = selectedArtifacts.reduce((a,b)=>a+b,0);
+    if (!selectedLeader) {
+      alert('Necesitas un líder para usar artefactos.');
+      return;
+    }
+
+    const domCost = parseInt(
+      unit.displayName.match(/-(\d)\s*DOM/i)?.[1] || 0
+    );
+
+    const usedDOM = selectedArtifacts.reduce((a, b) => a + b, 0);
     if (usedDOM + domCost > currentDOM) {
-      alert('DOM insuficiente.');
+      alert('DOM insuficiente para este artefacto.');
       return;
     }
     selectedArtifacts.push(domCost);
   }
 
-  /* DEVOTOS */
+  /* ========= DEVOTOS ========= */
   if (selectedOption === 'Devotos de Malesur' && type === 'combatant') {
     cost += 1;
   }
 
-  /* AÑADIR */
+  /* ========= AÑADIR A LISTA ========= */
+  const selectedList = document.getElementById('selected-list');
   const li = document.createElement('li');
-  li.innerHTML = `${unit.displayName} - PB:${cost}<br>${unit.characteristics.replace(/\n/g,'<br>')}<br>${unit.extraInfo || ''}`;
-  li.onclick = () => removeFromSelectedList(unit, li, cost);
-  document.getElementById('selected-list').appendChild(li);
+
+  li.innerHTML = `
+    ${unit.displayName || unit.name} - PB:${cost}<br>
+    ${unit.characteristics.replace(/\n/g, '<br>')}<br>
+    ${unit.extraInfo ? unit.extraInfo.replace(/\n/g, '<br>') : ''}
+  `;
+
+  li.onclick = () => removeFromSelectedList(unit, type, li, cost);
+  selectedList.appendChild(li);
 
   selectedPoints += cost;
   updateTotalPoints();
 }
 
-function removeFromSelectedList(unit, li, cost) {
+function removeFromSelectedList(unit, type, li, cost) {
   li.remove();
   selectedPoints -= cost;
   updateTotalPoints();
 
-  const type = getUnitType(unit);
   if (type === 'leader') {
     selectedLeader = null;
     currentDOM = 0;
     hasSecondSoimi = false;
   }
-  if (type === 'veteran') selectedVeterans.delete(unit.name);
-  if (type === 'artifact') selectedArtifacts.pop();
+
+  if (type === 'veteran') {
+    selectedVeterans.delete(unit.name);
+  }
+
+  if (type === 'artifact') {
+    selectedArtifacts.pop();
+  }
 }
 
 function updateTotalPoints() {
