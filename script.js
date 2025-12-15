@@ -1,5 +1,4 @@
-const factions = {
-  'Adeptos de Malesur': {
+const factions = {'Adeptos de Malesur': {
     description: 'Los Adeptos de Malesur.',
     leaders: [
       { name: 'Yenay', displayName: 'Yenay', points: 5, characteristics: 'Característica X' },
@@ -293,10 +292,8 @@ const factions = {
       { name: 'Veterano 7', displayName: 'Veterano 7', points: 6, characteristics: 'K' },
       { name: 'Veterano 8', displayName: 'Veterano 8', points: 9, characteristics: 'L' }
     ]
-  }
-};
-
-const options = {
+  }};
+const options = { 
   'Adeptos de Malesur': [
     { name: 'Devotos de Malesur', description: 'Los devotos de Malesur.' },
     { name: 'Iniciados de Malesur', description: 'Los iniciados de Malesur.' }
@@ -319,312 +316,235 @@ const options = {
     { name: 'La Alianza', description: 'Esta subfacción tiene acceso a todos los combatientes de la facción, pero no obtiene ninguna regla especial.' },
     { name: 'Legión de los Mil Corazones', description: 'Esta subfacción se centra en unidades masculinas y reglas de transfusión de heridas.' },
     { name: 'Mercenarias de Isha', description: 'Esta subfacción se centra en combatientes femeninas y reglas de apoyo de Isha.' }
-  ]
-};
+  ]};
 
-/* --- Variables globales --- */
+/* ==========================
+   VARIABLES GLOBALES
+========================== */
+
 let selectedPoints = 0;
 let maxPoints = 0;
-let selectedOption = '';
 let selectedFaction = '';
-let chicaErizaCount = 0;
+let selectedOption = '';
 
-/* --- Funciones UI (sin cambios lógicos, pero usando displayName para mostrar) --- */
+let selectedLeader = null;
+let currentDOM = 0;
+let selectedVeterans = new Set();
+let selectedArtifacts = [];
+let hasSecondSoimi = false;
+
+/* ==========================
+   HELPERS
+========================== */
+
+function getUnitType(unit) {
+  if (factions[selectedFaction].leaders.includes(unit)) return 'leader';
+  if (factions[selectedFaction].veterans?.includes(unit)) return 'veteran';
+  if (factions[selectedFaction].artifacts?.includes(unit)) return 'artifact';
+  return 'combatant';
+}
+
+function extractDOM(text) {
+  const match = text.match(/DOM:(\d+)/);
+  return match ? parseInt(match[1]) : 0;
+}
+
+function extractDOMCost(displayName) {
+  const match = displayName.match(/-(\d)\s*DOM/i);
+  return match ? parseInt(match[1]) : 0;
+}
+
+/* ==========================
+   FLUJO UI (TU CÓDIGO)
+========================== */
 
 function setPoints(points) {
   maxPoints = points;
-  const pointsList = document.getElementById('points-list');
-  if (pointsList) {
-    pointsList.innerHTML = `<li>${points} puntos</li>`;
-  }
-  const factionTitle = document.getElementById('faction-title');
-  const factionListEl = document.getElementById('faction-list');
-  if (factionTitle) factionTitle.classList.remove('hidden');
-  if (factionListEl) factionListEl.classList.remove('hidden');
+  document.getElementById('points-list').innerHTML = `<li>${points} puntos</li>`;
+  document.getElementById('faction-title').classList.remove('hidden');
+  document.getElementById('faction-list').classList.remove('hidden');
   showFactions();
 }
 
 function showFactions() {
-  const factionList = document.getElementById('faction-list');
-  if (!factionList) return;
-  factionList.innerHTML = ''; // Limpiar la lista
-
-  for (const faction in factions) {
+  const list = document.getElementById('faction-list');
+  list.innerHTML = '';
+  Object.keys(factions).forEach(f => {
     const li = document.createElement('li');
-    li.textContent = faction;
-    li.onclick = () => selectFaction(faction);
-    factionList.appendChild(li);
-  }
+    li.textContent = f;
+    li.onclick = () => selectFaction(f);
+    list.appendChild(li);
+  });
 }
 
 function selectFaction(faction) {
   selectedFaction = faction;
-  const factionList = document.getElementById('faction-list');
-  if (!factionList) return;
-  factionList.innerHTML = ''; // Limpiar la lista
-
-  const li = document.createElement('li');
-  li.innerHTML = `<strong>${faction}</strong><br>${factions[faction].description}`;
-  factionList.appendChild(li);
-
-  const optionsTitle = document.getElementById('options-title');
-  const optionsList = document.getElementById('options-list');
-  if (optionsTitle) optionsTitle.classList.remove('hidden');
-  if (optionsList) optionsList.classList.remove('hidden');
+  document.getElementById('faction-list').innerHTML =
+    `<li><strong>${faction}</strong><br>${factions[faction].description}</li>`;
+  document.getElementById('options-title').classList.remove('hidden');
+  document.getElementById('options-list').classList.remove('hidden');
   showOptions(faction);
 }
 
 function showOptions(faction) {
-  const optionsList = document.getElementById('options-list');
-  if (!optionsList) return;
-  optionsList.innerHTML = ''; // Limpiar la lista
-
-  if (!options[faction]) return;
-  options[faction].forEach(option => {
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  options[faction]?.forEach(opt => {
     const li = document.createElement('li');
-    li.textContent = option.name;
-    li.onclick = () => selectOption(faction, option);
-    optionsList.appendChild(li);
+    li.textContent = opt.name;
+    li.onclick = () => selectOption(faction, opt);
+    list.appendChild(li);
   });
 }
 
 function selectOption(faction, option) {
   selectedOption = option.name;
-  chicaErizaCount = 0;
-  const optionsList = document.getElementById('options-list');
-  if (optionsList) optionsList.innerHTML = ''; // Limpiar la lista
 
-  const li = document.createElement('li');
-  li.innerHTML = `<strong>${option.name}</strong><br>${option.description}`;
-  if (optionsList) optionsList.appendChild(li);
+  document.getElementById('options-list').innerHTML =
+    `<li><strong>${option.name}</strong><br>${option.description}</li>`;
 
-  const leaderTitle = document.getElementById('leader-title');
-  const leaderList = document.getElementById('leader-list');
-  const veteranTitle = document.getElementById('veteran-title');
-  const veteranList = document.getElementById('veteran-list');
-  const combatantTitle = document.getElementById('combatant-title');
-  const combatantList = document.getElementById('combatant-list');
-  const artifactTitle = document.getElementById('artifact-title');
-  const artifactList = document.getElementById('artifact-list');
-
-  if (leaderTitle) leaderTitle.classList.remove('hidden');
-  if (leaderList) leaderList.classList.remove('hidden');
-  if (veteranTitle) veteranTitle.classList.remove('hidden');
-  if (veteranList) veteranList.classList.remove('hidden');
-  if (combatantTitle) combatantTitle.classList.remove('hidden');
-  if (combatantList) combatantList.classList.remove('hidden');
-  if (artifactTitle) artifactTitle.classList.remove('hidden');
-  if (artifactList) artifactList.classList.remove('hidden');
+  ['leader','combatant','artifact','veteran'].forEach(type => {
+    document.getElementById(`${type}-title`).classList.remove('hidden');
+    document.getElementById(`${type}-list`).classList.remove('hidden');
+  });
 
   showLeaders(faction);
-  showVeterans(faction);
   showCombatants(faction);
   showArtifacts(faction);
-
-  // Mostrar la facción y la opción seleccionadas
-  const selectedFactionDiv = document.getElementById('selected-faction');
-  if (selectedFactionDiv) {
-    selectedFactionDiv.innerHTML = `<strong>${faction}</strong><br>${factions[faction].description}`;
-    selectedFactionDiv.classList.remove('hidden');
-  }
-
-  const selectedOptionDiv = document.getElementById('selected-option');
-  if (selectedOptionDiv) {
-    selectedOptionDiv.innerHTML = `<strong>${option.name}</strong><br>${option.description}`;
-    selectedOptionDiv.classList.remove('hidden');
-  }
+  showVeterans(faction);
 }
 
-function showLeaders(faction) {
-  const leaderList = document.getElementById('leader-list');
-  if (!leaderList) return;
-  leaderList.innerHTML = ''; // Limpiar la lista
+/* ==========================
+   MOSTRAR UNIDADES
+========================== */
 
-  factions[faction].leaders.forEach(leader => {
+function showLeaders(faction) {
+  const list = document.getElementById('leader-list');
+  list.innerHTML = '';
+  factions[faction].leaders.forEach(l => {
     const li = document.createElement('li');
-    const display = leader.displayName || leader.name;
-    li.innerHTML = `${display} - PB:${leader.points} ${leader.characteristics.replace(/\n/g, '<br>')}`;
-    li.title = leader.comment || '';
-    li.onclick = () => addToSelectedList(leader);
-    leaderList.appendChild(li);
+    li.innerHTML = `${l.displayName} - PB:${l.points}<br>${l.characteristics.replace(/\n/g,'<br>')}`;
+    li.onclick = () => addToSelectedList(l);
+    list.appendChild(li);
   });
 }
 
-function showVeterans(faction) {
-  const veteranList = document.getElementById('veteran-list');
-  if (!veteranList) return;
-  veteranList.innerHTML = ''; // Limpiar la lista
-
-  if (factions[faction].veterans) {
-    factions[faction].veterans.forEach(veteran => {
-      const li = document.createElement('li');
-      const display = veteran.displayName || veteran.name;
-      li.innerHTML = `${display} - PB:${veteran.points} ${veteran.characteristics.replace(/\n/g, '<br>')}`;
-      li.title = veteran.comment || '';
-      li.onclick = () => addToSelectedList(veteran);
-      veteranList.appendChild(li);
-    });
-  }
-}
-
 function showCombatants(faction) {
-  const combatantList = document.getElementById('combatant-list');
-  if (!combatantList) return;
-  combatantList.innerHTML = '';
+  const list = document.getElementById('combatant-list');
+  list.innerHTML = '';
+  factions[faction].combatants.forEach(c => {
 
-  factions[faction].combatants.forEach(combatant => {
-    // Filtros por subfacción
-    if (selectedOption === 'Devotos de Malesur' && combatant.name === 'Chica Eriza') {
-      return; // No mostrar Chica Eriza para Devotos de Malesur
-    }
-    if (selectedOption === 'Legión de los Mil Corazones' && combatant.gender && combatant.gender !== 'Hombre') {
-      return; // Mostrar solo hombres para Legión de los Mil Corazones
-    }
-    if (selectedOption === 'Mercenarias de Isha' && combatant.gender && combatant.gender !== 'Mujer') {
-      return; // Mostrar solo mujeres para Mercenarias de Isha
-    }
+    if (selectedOption === 'Legión de los Mil Corazones' && c.gender && c.gender !== 'Hombre') return;
+    if (selectedOption === 'Mercenarias de Isha' && c.gender && c.gender !== 'Mujer') return;
+
     const li = document.createElement('li');
-    const display = combatant.displayName || combatant.name;
-    li.innerHTML = `${display} - PB:${combatant.points} ${combatant.characteristics.replace(/\n/g, '<br>')}`;
-    li.title = combatant.comment || '';
-    li.onclick = () => addToSelectedList(combatant);
-    combatantList.appendChild(li);
+    li.innerHTML = `${c.displayName} - PB:${c.points}<br>${c.characteristics.replace(/\n/g,'<br>')}`;
+    li.onclick = () => addToSelectedList(c);
+    list.appendChild(li);
   });
 }
 
 function showArtifacts(faction) {
-  const artifactList = document.getElementById('artifact-list');
-  if (!artifactList) return;
-  artifactList.innerHTML = ''; // Limpiar la lista
-
-  factions[faction].artifacts.forEach(artifact => {
+  const list = document.getElementById('artifact-list');
+  list.innerHTML = '';
+  factions[faction].artifacts.forEach(a => {
     const li = document.createElement('li');
-    const display = artifact.displayName || artifact.name;
-    li.innerHTML = `${display} - PB:${artifact.points} ${artifact.characteristics.replace(/\n/g, '<br>')}`;
-    li.title = artifact.comment || '';
-    li.onclick = () => addToSelectedList(artifact);
-    artifactList.appendChild(li);
+    li.innerHTML = `${a.displayName}<br>${a.characteristics}`;
+    li.onclick = () => addToSelectedList(a);
+    list.appendChild(li);
   });
 }
 
+function showVeterans(faction) {
+  const list = document.getElementById('veteran-list');
+  list.innerHTML = '';
+  factions[faction].veterans.forEach(v => {
+    const li = document.createElement('li');
+    li.innerHTML = `${v.displayName} - PB:${v.points}`;
+    li.onclick = () => addToSelectedList(v);
+    list.appendChild(li);
+  });
+}
+
+/* ==========================
+   LÓGICA DE REGLAS
+========================== */
+
 function addToSelectedList(unit) {
-  // Validación para Chica Eriza en Iniciados de Malesur (ejemplo original)
-  if (selectedOption === 'Iniciados de Malesur' && unit.name === 'Chica Eriza') {
-    if (chicaErizaCount >= 2) {
-      alert('Solo puedes añadir un máximo de 2 Chica Eriza.');
+  const type = getUnitType(unit);
+  let cost = unit.points || 0;
+
+  /* LÍDER */
+  if (type === 'leader') {
+    if (selectedLeader && !(selectedFaction === 'Vástagos de Kurgan' && selectedOption === 'Soimi' && !hasSecondSoimi)) {
+      alert('Solo puedes tener un líder.');
       return;
     }
-    chicaErizaCount++;
+    if (!selectedLeader) {
+      selectedLeader = unit;
+      currentDOM = extractDOM(unit.characteristics);
+    } else {
+      hasSecondSoimi = true;
+    }
   }
 
-  const selectedList = document.getElementById('selected-list');
-  if (!selectedList) return;
+  /* VETERANÍAS */
+  if (type === 'veteran') {
+    if (!selectedLeader) {
+      alert('Debes elegir un líder.');
+      return;
+    }
+    if (selectedVeterans.has(unit.name)) {
+      alert('No puedes repetir veteranías.');
+      return;
+    }
+    selectedVeterans.add(unit.name);
+  }
 
+  /* ARTEFACTOS */
+  if (type === 'artifact') {
+    const domCost = extractDOMCost(unit.displayName);
+    const usedDOM = selectedArtifacts.reduce((a,b)=>a+b,0);
+    if (usedDOM + domCost > currentDOM) {
+      alert('DOM insuficiente.');
+      return;
+    }
+    selectedArtifacts.push(domCost);
+  }
+
+  /* DEVOTOS */
+  if (selectedOption === 'Devotos de Malesur' && type === 'combatant') {
+    cost += 1;
+  }
+
+  /* AÑADIR */
   const li = document.createElement('li');
-  const display = unit.displayName || unit.name;
-  li.innerHTML = `${display} - PB:${unit.points} ${unit.characteristics.replace(/\n/g, '<br>')}<br>${unit.extraInfo ? unit.extraInfo.replace(/\n/g, '<br>') : ''}`;
-  li.onclick = () => removeFromSelectedList(unit, li);
-  selectedList.appendChild(li);
+  li.innerHTML = `${unit.displayName} - PB:${cost}<br>${unit.characteristics.replace(/\n/g,'<br>')}<br>${unit.extraInfo || ''}`;
+  li.onclick = () => removeFromSelectedList(unit, li, cost);
+  document.getElementById('selected-list').appendChild(li);
 
-  selectedPoints += unit.points || 0;
+  selectedPoints += cost;
   updateTotalPoints();
 }
 
-function removeFromSelectedList(unit, listItem) {
-  const selectedList = document.getElementById('selected-list');
-  if (!selectedList) return;
-  selectedList.removeChild(listItem);
-
-  if (unit.name === 'Chica Eriza') {
-    chicaErizaCount = Math.max(0, chicaErizaCount - 1);
-  }
-
-  selectedPoints -= unit.points || 0;
+function removeFromSelectedList(unit, li, cost) {
+  li.remove();
+  selectedPoints -= cost;
   updateTotalPoints();
+
+  const type = getUnitType(unit);
+  if (type === 'leader') {
+    selectedLeader = null;
+    currentDOM = 0;
+    hasSecondSoimi = false;
+  }
+  if (type === 'veteran') selectedVeterans.delete(unit.name);
+  if (type === 'artifact') selectedArtifacts.pop();
 }
 
 function updateTotalPoints() {
-  const totalPointsElement = document.getElementById('total-points');
-  if (!totalPointsElement) return;
-  totalPointsElement.textContent = `Total de puntos: ${selectedPoints}`;
-
-  if (selectedPoints > maxPoints) {
-    totalPointsElement.classList.add('over-limit');
-  } else {
-    totalPointsElement.classList.remove('over-limit');
-  }
-}
-
-/* --- Generar PDF (corregido y cerrado correctamente) --- */
-const generateBtn = document.getElementById('generatePDF');
-if (generateBtn) {
-  generateBtn.addEventListener('click', function () {
-    const userName = prompt("Por favor, introduce tu nombre de usuario:");
-    if (!userName) {
-      alert("El nombre de usuario es obligatorio.");
-      return;
-    }
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'cm',
-      format: 'a4'
-    });
-
-    // Selecciona el contenido debajo de la lista seleccionada
-    const selectedContent = document.querySelector('.selected-list-content');
-    if (!selectedContent) {
-      alert('No se ha encontrado el contenido a exportar.');
-      return;
-    }
-
-    // Usar html2canvas para capturar el contenido
-    html2canvas(selectedContent).then(canvas => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdfWidth = doc.internal.pageSize.getWidth() - 3; // márgenes laterales de 1.5 cm
-      const pdfHeight = doc.internal.pageSize.getHeight() - 3; // márgenes superior e inferior de 1.5 cm
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const scaleFactor = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-
-      // Añadir la información del usuario, facción, subfacción y tamaño de lista
-      const faction = selectedFaction || '';
-      const subfaction = selectedOption || '';
-      const listSize = maxPoints + " puntos";
-
-      // Añadir la información en negrita y en tamaño legible
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      let yPosition = 1;
-      doc.text("Usuario:", 1, yPosition);
-      yPosition += 1.2;
-      doc.text("Facción:", 1, yPosition);
-      yPosition += 1.2;
-      doc.text("Subfacción:", 1, yPosition);
-      yPosition += 1.2;
-      doc.text("Tamaño de lista:", 1, yPosition);
-      yPosition += 0.2;
-
-      // Añadir la información del usuario
-      doc.setFont("helvetica", "normal");
-      yPosition = 1.6;
-      doc.text(userName, 1, yPosition);
-      yPosition += 1.2;
-      doc.text(faction, 1, yPosition);
-      yPosition += 1.2;
-      doc.text(subfaction, 1, yPosition);
-      yPosition += 1.2;
-      doc.text(listSize, 1, yPosition);
-      yPosition += 0.2;
-
-      // Añadir la imagen escalada al PDF con márgenes
-      doc.addImage(imgData, 'PNG', 2.5, yPosition + 1, imgWidth * scaleFactor, imgHeight * scaleFactor);
-      doc.save('lista.pdf');
-    }).catch(err => {
-      console.error(err);
-      alert('Error al generar el PDF.');
-    });
-  });
+  const el = document.getElementById('total-points');
+  el.textContent = `Total: ${selectedPoints}`;
+  el.classList.toggle('over-limit', selectedPoints > maxPoints);
 }
 
