@@ -2,121 +2,74 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SphereList – Generador de Bandas</title>
-
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-
-    <!-- CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listas de Facciones</title>
     <link rel="stylesheet" href="styles.css">
-
-    <!-- jsPDF + html2canvas (PDFs) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
-
 <body>
-
-<header>
-    <div class="container">
-        <img src="logo.png" alt="SphereList" class="logo">
-    </div>
-</header>
-
-<div class="container">
-
-    <!-- ======================
-         PASO 1: PUNTOS
-    ======================= -->
-    <section class="main">
-        <h2>1️⃣ Selecciona el límite de Puntos de Banda</h2>
+    <header>
+        <div class="container">
+            <img src="https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png" alt="SphereWars Logo" class="logo">
+            <h1>Listas de Facciones</h1>
+            <nav>
+                <ul>
+                    <li><a href="#"></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="container main">
+        <h2>Selecciona el tamaño de la lista</h2>
         <ul class="points-list" id="points-list">
-            <li onclick="setPoints(40)">40 PB</li>
-            <li onclick="setPoints(50)">50 PB</li>
-            <li onclick="setPoints(60)">60 PB (Recomendado)</li>
-            <li onclick="setPoints(70)">70 PB</li>
+            <li onclick="setPoints(60)">60 puntos</li>
+            <li onclick="setPoints(90)">90 puntos</li>
+            <li onclick="setPoints(120)">120 puntos</li>
         </ul>
-        <div class="total-points" id="total-points">Total de puntos: 0 / 0</div>
-    </section>
-
-    <!-- ======================
-         PASO 2: FACCIÓN
-    ======================= -->
-    <section class="main">
-        <h2 id="faction-title" class="hidden">2️⃣ Selecciona Facción</h2>
-        <ul class="faction-list hidden" id="faction-list"></ul>
-    </section>
-
-    <!-- ======================
-         PASO 3: SUBFACCIÓN
-    ======================= -->
-    <section class="main">
-        <h2 id="options-title" class="hidden">3️⃣ Selecciona Subfacción</h2>
-        <ul class="options-list hidden" id="options-list"></ul>
-        <div id="selected-option" class="info-box hidden"></div>
-    </section>
-
-    <!-- ======================
-         REGLAS ACTIVAS
-    ======================= -->
-    <section class="main hidden" id="rules-summary"></section>
-
-    <!-- ======================
-         PASO 4: LÍDER
-    ======================= -->
-    <section class="main">
-        <h2 id="leader-title" class="hidden">👑 Líder</h2>
-        <ul class="leader-list hidden" id="leader-list"></ul>
-    </section>
-
-    <!-- ======================
-         PASO 5: VETERANÍAS
-    ======================= -->
-    <section class="main">
-        <h2 id="veteran-title" class="hidden">⭐ Veteranías (solo líder)</h2>
-        <ul class="veteran-list hidden" id="veteran-list"></ul>
-    </section>
-
-    <!-- ======================
-         PASO 6: ARTEFACTOS
-    ======================= -->
-    <section class="main">
-        <h2 id="artifact-title" class="hidden">🧿 Artefactos</h2>
-        <div id="dom-info" class="info-box hidden"></div>
-        <ul class="artifact-list hidden" id="artifact-list"></ul>
-    </section>
-
-    <!-- ======================
-         PASO 7: COMBATIENTES
-    ======================= -->
-    <section class="main">
-        <h2 id="combatant-title" class="hidden">⚔️ Combatientes</h2>
-        <ul class="combatant-list hidden" id="combatant-list"></ul>
-    </section>
-
-    <!-- ======================
-         LISTA FINAL
-    ======================= -->
-    <section class="main">
-        <h2>📋 Banda seleccionada</h2>
-
-        <div class="selected-list-content">
-            <ul class="selected-list" id="selected-list"></ul>
+        <h2 class="hidden" id="faction-title">Facciones</h2>
+        <ul class="faction-list hidden" id="faction-list">
+            <!-- Aquí se mostrarán las facciones -->
+        </ul>
+        <h2 class="hidden" id="options-title">Opciones</h2>
+        <ul class="options-list hidden" id="options-list">
+            <!-- Aquí se mostrarán las opciones específicas -->
+        </ul>
+        <h2 class="hidden" id="leader-title">Líderes</h2>
+        <ul class="leader-list hidden" id="leader-list">
+            <!-- Aquí se mostrarán los líderes -->
+        </ul>
+        <h2 class="hidden" id="artifact-title">Arts</h2>
+        <ul class="artifact-list hidden" id="artifact-list">
+            <!-- Aquí se mostrarán los Artefactos -->
+        </ul>
+        <h2 class="hidden" id="veteran-title">Veteranías</h2>
+        <ul class="veteran-list hidden" id="veteran-list">
+            <!-- Aquí se mostrarán las veteranías -->
+        </ul>
+        <h2 class="hidden" id="combatant-title">Combatientes</h2>
+        <ul class="combatant-list hidden" id="combatant-list">
+            <!-- Aquí se mostrarán los combatientes -->
+        </ul>
+        <div class="lista-seleccionada">
+            <div class="selected-list-content">
+                <h2>Lista Seleccionada</h2>
+                <div class="info-box hidden" id="selected-faction">
+                    <!-- Aquí se mostrará la facción seleccionada -->
+                </div>
+                <div class="info-box hidden" id="selected-option">
+                    <!-- Aquí se mostrará la opción seleccionada -->
+                </div>
+                <ul class="selected-list" id="selected-list">
+                    <!-- Aquí se mostrarán los combatientes seleccionados -->
+                </ul>
+                <p class="total-points" id="total-points">Total de puntos: 0</p>
+            </div>
         </div>
-
-        <button class="reset-button" onclick="location.reload()">Reiniciar banda</button>
-
-        <div style="margin-top:20px;">
-            <button id="visualPDF" class="reset-button">Exportar PDF visual</button>
-            <button id="legalPDF" class="reset-button">Exportar PDF legal</button>
-        </div>
-    </section>
-
-</div>
-
-<!-- JS -->
-<script src="script.js"></script>
-
+        <button class="reset-button" onclick="location.reload();">Reiniciar Lista</button>
+        <button class="reset-button" id="generatePDF">Generar PDF</button>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
-
