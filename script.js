@@ -319,11 +319,11 @@ const options = {
     { name: 'La Alianza', 
      description: 'Esta subfacción tiene acceso a todos los combatientes de la facción, pero no obtiene <strong>ninguna regla especial</strong>.'},
     { name: 'Legión de los Mil Corazones', 
-     description: 'Si se elige esta subfacción, solo se pueden reclutar combatientes <strong>Legión de los Cien Corazones</strong>. A cambio, se obtiene la regla especial:\n' +
-                  '<strong>Latir del Corazón</strong>: \n Cuando un aliado vaya a sufrir una herida, puede prevenirse dicha herida y elegir un aliado a hasta 4" para que sufra una herida en su lugar.\n' +
-                  'Un combatiente no puede ser elegido para sufrir heridas de esta forma si solo le queda una.\n' +
-                  'Si un combatiente sufre múltiples heridas a la vez, puede transferir solo la primera.'+
-                  '\n <strong>Grito de la Legión (Orden)</strong>: \n El aliado que reciba esta orden obtiene <strong>DES +1</strong> y <strong>AME +1</strong> en sus armas cuerpo a cuerpo hasta el final de la activación.\n'
+     description: 'Si se elige esta subfacción, solo se pueden reclutar combatientes <strong>Legión de los Cien Corazones</strong>. A cambio, se obtiene la regla especial:\n<br>' +
+                  '<strong>Latir del Corazón</strong>: \n Cuando un aliado vaya a sufrir una herida, puede prevenirse dicha herida y elegir un aliado a hasta 4" para que sufra una herida en su lugar.\n<br>' +
+                  'Un combatiente no puede ser elegido para sufrir heridas de esta forma si solo le queda una.\n<br>' +
+                  'Si un combatiente sufre múltiples heridas a la vez, puede transferir solo la primera.<br>'+
+                  '\n<br> <strong>Grito de la Legión (Orden)</strong>: \n El aliado que reciba esta orden obtiene <strong>DES +1</strong> y <strong>AME +1</strong> en sus armas cuerpo a cuerpo hasta el final de la activación.<br>\n'
           },
     { name: 'Mercenarias de Isha', description: 'Si se elige esta subfacción, solo se pueden reclutar combatientes <strong>Mercenaria de Isha</strong>. A cambio, se obtiene la regla especial <strong>Inquebrantables</strong>.' }
   ]};
