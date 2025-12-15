@@ -151,8 +151,9 @@ const factions = {'Adeptos de Malesur': {
     ],
 
     veterans: [
-      { name: 'Veterano 3', displayName: 'Veterano 3', points: 4, characteristics: 'Ca' },
-      { name: 'Veterano 4', displayName: 'Veterano 4', points: 6, characteristics: 'CaF' }
+      { name: 'Artífice veterano', displayName: 'Artífice veterano', points: 1, characteristics: 'El líder obtiene DOM +1' },
+      { name: 'Mando veterano', displayName: 'Mando veterano', points: 1, characteristics: 'El líder obtiene ORD +1' },
+      { name: 'Arcanista veterano', displayName: 'Arcanista veterano', points: 1, characteristics: 'El líder obtiene POD +2' }
     ]
   },
 
@@ -171,8 +172,9 @@ const factions = {'Adeptos de Malesur': {
       { name: 'Artefacto 6', displayName: 'Artefacto 6', points: 6, characteristics: 'R' }
     ],
     veterans: [
-      { name: 'Veterano 5', displayName: 'Veterano 5', points: 5, characteristics: 'G' },
-      { name: 'Veterano 6', displayName: 'Veterano 6', points: 8, characteristics: 'H' }
+      { name: 'Artífice veterano', displayName: 'Artífice veterano', points: 1, characteristics: 'El líder obtiene DOM +1' },
+      { name: 'Mando veterano', displayName: 'Mando veterano', points: 1, characteristics: 'El líder obtiene ORD +1' },
+      { name: 'Arcanista veterano', displayName: 'Arcanista veterano', points: 1, characteristics: 'El líder obtiene POD +2' }
     ]
   },
 
@@ -289,8 +291,9 @@ const factions = {'Adeptos de Malesur': {
     ],
 
     veterans: [
-      { name: 'Veterano 7', displayName: 'Veterano 7', points: 6, characteristics: 'K' },
-      { name: 'Veterano 8', displayName: 'Veterano 8', points: 9, characteristics: 'L' }
+      { name: 'Artífice veterano', displayName: 'Artífice veterano', points: 1, characteristics: 'El líder obtiene DOM +1' },
+      { name: 'Mando veterano', displayName: 'Mando veterano', points: 1, characteristics: 'El líder obtiene ORD +1' },
+      { name: 'Arcanista veterano', displayName: 'Arcanista veterano', points: 1, characteristics: 'El líder obtiene POD +2' }
     ]
   }};
 const options = { 
