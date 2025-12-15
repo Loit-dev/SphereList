@@ -589,3 +589,35 @@ function updateTotalPoints() {
   el.textContent = `Total: ${selectedPoints}`;
   el.classList.toggle('over-limit', selectedPoints > maxPoints);
 }
+/* ==========================
+   PDF
+========================== */
+
+function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p','mm','a4');
+
+  let y = 10;
+
+  doc.setFontSize(16);
+  doc.text('SphereWars - Lista de Banda', 10, y);
+  y += 10;
+
+  doc.setFontSize(10);
+  doc.text(`Facción: ${selectedFaction}`, 10, y); y+=6;
+  doc.text(`Subfacción: ${selectedOption}`, 10, y); y+=6;
+  doc.text(`Puntos: ${selectedPoints}/${maxPoints}`, 10, y); y+=10;
+
+  document.querySelectorAll('#selected-list li').forEach(li => {
+    const lines = doc.splitTextToSize(li.innerText, 180);
+    doc.text(lines, 10, y);
+    y += lines.length * 5;
+
+    if (y > 270) {
+      doc.addPage();
+      y = 10;
+    }
+  });
+
+  doc.save('SphereWars_Lista.pdf');
+}
