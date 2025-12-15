@@ -30,9 +30,9 @@ const factions = {'Adeptos de Malesur': {
       { name: 'Artefacto 2', displayName: 'Artefacto 2', points: 4, characteristics: 'Ca N' }
     ],
     veterans: [
-      { name: 'Artífice veterano', displayName: 'Artífice veterano', points: 1, characteristics: 'El líder obtiene DOM +1' },
-      { name: 'Mando veterano', displayName: 'Mando veterano', points: 1, characteristics: 'El líder obtiene ORD +1' },
-      { name: 'Arcanista veterano', displayName: 'Arcanista veterano', points: 1, characteristics: 'El líder obtiene POD +2' }
+      { name: 'Artífice veterano', displayName: '<strong>Artífice veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>DOM +1</strong>' },
+      { name: 'Mando veterano', displayName: '<strong>Mando veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>ORD +1</strong>' },
+      { name: 'Arcanista veterano', displayName: '<strong>Arcanista veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>POD +2</strong>' }
     ]
   },
 
@@ -151,9 +151,9 @@ const factions = {'Adeptos de Malesur': {
     ],
 
     veterans: [
-      { name: 'Artífice veterano', displayName: 'Artífice veterano', points: 1, characteristics: 'El líder obtiene DOM +1' },
-      { name: 'Mando veterano', displayName: 'Mando veterano', points: 1, characteristics: 'El líder obtiene ORD +1' },
-      { name: 'Arcanista veterano', displayName: 'Arcanista veterano', points: 1, characteristics: 'El líder obtiene POD +2' }
+      { name: 'Artífice veterano', displayName: '<strong>Artífice veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>DOM +1</strong>' },
+      { name: 'Mando veterano', displayName: '<strong>Mando veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>ORD +1</strong>' },
+      { name: 'Arcanista veterano', displayName: '<strong>Arcanista veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>POD +2</strong>' }
     ]
   },
 
@@ -172,9 +172,9 @@ const factions = {'Adeptos de Malesur': {
       { name: 'Artefacto 6', displayName: 'Artefacto 6', points: 6, characteristics: 'R' }
     ],
     veterans: [
-      { name: 'Artífice veterano', displayName: 'Artífice veterano', points: 1, characteristics: 'El líder obtiene DOM +1' },
-      { name: 'Mando veterano', displayName: 'Mando veterano', points: 1, characteristics: 'El líder obtiene ORD +1' },
-      { name: 'Arcanista veterano', displayName: 'Arcanista veterano', points: 1, characteristics: 'El líder obtiene POD +2' }
+      { name: 'Artífice veterano', displayName: '<strong>Artífice veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>DOM +1</strong>' },
+      { name: 'Mando veterano', displayName: '<strong>Mando veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>ORD +1</strong>' },
+      { name: 'Arcanista veterano', displayName: '<strong>Arcanista veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>POD +2</strong>' }
     ]
   },
 
@@ -291,9 +291,9 @@ const factions = {'Adeptos de Malesur': {
     ],
 
     veterans: [
-      { name: 'Artífice veterano', displayName: 'Artífice veterano', points: 1, characteristics: 'El líder obtiene DOM +1' },
-      { name: 'Mando veterano', displayName: 'Mando veterano', points: 1, characteristics: 'El líder obtiene ORD +1' },
-      { name: 'Arcanista veterano', displayName: 'Arcanista veterano', points: 1, characteristics: 'El líder obtiene POD +2' }
+      { name: 'Artífice veterano', displayName: '<strong>Artífice veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>DOM +1</strong>' },
+      { name: 'Mando veterano', displayName: '<strong>Mando veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>ORD +1</strong>' },
+      { name: 'Arcanista veterano', displayName: '<strong>Arcanista veterano</strong>', points: 1, characteristics: 'El líder obtiene <strong>POD +2</strong>' }
     ]
   }};
 const options = { 
