@@ -422,6 +422,10 @@ function showLeaders(faction) {
   const list = document.getElementById('leader-list');
   list.innerHTML = '';
   factions[faction].leaders.forEach(l => {
+
+    if (selectedOption === 'Legión de los Mil Corazones' && c.gender && c.gender !== 'Hombre') return;
+    if (selectedOption === 'Mercenarias de Isha' && c.gender && c.gender !== 'Mujer') return;
+      
     const li = document.createElement('li');
     li.innerHTML = `${l.displayName} - PB:${l.points}<br>${l.characteristics.replace(/\n/g,'<br>')}`;
     li.onclick = () => addToSelectedList(l, 'leader');
