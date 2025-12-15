@@ -418,13 +418,31 @@ function selectOption(faction, option) {
 ========================== */
 
 function showLeaders(faction) {
-  const list = document.getElementById('leader-list');
-  list.innerHTML = '';
-  factions[faction].leaders.forEach(l => {
+  const leaderList = document.getElementById('leader-list');
+  if (!leaderList) return;
+
+  leaderList.innerHTML = '';
+
+  factions[faction].leaders.forEach(leader => {
+
+    // 🔒 FILTROS POR SUBFACCIÓN (CLAVE)
+    if (selectedOption === 'Legión de los Mil Corazones' && leader.gender && leader.gender !== 'Hombre') {
+      return;
+    }
+    if (selectedOption === 'Mercenarias de Isha' && leader.gender && leader.gender !== 'Mujer') {
+      return;
+    }
+
     const li = document.createElement('li');
-    li.innerHTML = `${l.displayName} - PB:${l.points}<br>${l.characteristics.replace(/\n/g,'<br>')}`;
-    li.onclick = () => addToSelectedList(l, 'leader');
-    list.appendChild(li);
+    const display = leader.displayName || leader.name;
+
+    li.innerHTML = `
+      ${display} - PB:${leader.points}
+      ${leader.characteristics.replace(/\n/g, '<br>')}
+    `;
+
+    li.onclick = () => addToSelectedList(leader, 'leader');
+    leaderList.appendChild(li);
   });
 }
 
