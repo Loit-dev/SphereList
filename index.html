@@ -4,30 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SphereList</title>
-
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 
 <body>
+
 <header>
   <div class="container">
-    <img src="https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png" class="logo">
+    <img
+      src="https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png"
+      alt="SphereWars Logo"
+      class="logo"
+    >
     <h1>SphereList</h1>
   </div>
 </header>
 
 <div class="container main">
-
   <h2>Selecciona el tamaño de la lista</h2>
   <ul class="points-list" id="points-list">
     <li onclick="setPoints(60)">60 puntos</li>
     <li onclick="setPoints(90)">90 puntos</li>
     <li onclick="setPoints(120)">120 puntos</li>
   </ul>
-
   <h2 id="faction-title" class="hidden">Facciones</h2>
   <ul id="faction-list" class="faction-list hidden"></ul>
 
@@ -50,11 +52,13 @@
   <ul id="selected-list" class="selected-list"></ul>
   <p id="total-points" class="total-points">Total: 0</p>
 
+
   <button class="reset-button" onclick="location.reload()">Reiniciar</button>
   <button class="reset-button" id="generatePDF">Generar PDF</button>
 
 </div>
 
 <script src="script.js"></script>
+
 </body>
 </html>
