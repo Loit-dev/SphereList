@@ -601,19 +601,33 @@ function updateTotalPoints() {
 }
 
 /* ==========================
-   PDF
+   PDF NIVEL PRO
 ========================== */
 
-function generatePDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  doc.text(`Facción: ${selectedFaction}`, 10, 10);
-  doc.text(`Subfacción: ${selectedOption}`, 10, 20);
-  doc.text(`Puntos: ${selectedPoints}/${maxPoints}`, 10, 30);
-
-  doc.save('lista.pdf');
+async function generatePDF() {
+  await generateVisualPDF();
+  await generateTextPDF();
 }
+
+/* ==========================
+   PDF VISUAL (BONITO)
+========================== */
+
+async function generateVisualPDF() {
+  ...
+}
+
+/* ==========================
+   PDF TEXTO LIMPIO (TORNEO)
+========================== */
+
+async function generateTextPDF() {
+  ...
+}
+
+/* ==========================
+   EVENTO BOTÓN
+========================== */
 
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('generatePDF');
