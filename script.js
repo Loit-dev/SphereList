@@ -262,6 +262,7 @@ const factions = {'Adeptos de Malesur': {
           'Aura de devoción a Laroc: Las otras aliadas Mercenarias de Isha a 4" o menos de esta combatiente obtienen CON+1 y ARC+1.\n' +
           'Descarga fulminante - 10": Proyectil arcano. El objetivo enemigo recibe una tirada de daño de 3d6 contra su ARC. Sphere: Aumenta el daño a 5d6.\n' +
           'Esfera protectora - 10": Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.',
+        unique: true, 
         gender: 'Mujer'
       },
       {
@@ -331,41 +332,46 @@ const options = {
    VARIABLES GLOBALES
 ========================== */
 
-let maxPoints = 0;
 let selectedPoints = 0;
-
-let selectedFaction = null;
-let selectedOption = null;
+let maxPoints = 0;
+let selectedFaction = '';
+let selectedOption = '';
 
 let selectedLeader = null;
 let currentDOM = 0;
+let selectedVeterans = new Set();
+let selectedArtifactsDOM = [];
+let selectedUniques = new Set();
 let hasSecondSoimi = false;
 
-let selectedVeterans = new Set();
-let selectedUniques = new Set();
-let selectedArtifactsDOM = [];
-
-/**************************************************
- * HELPERS
- **************************************************/
-
-function uniqueKey(unit) {
-  return unit.name.toLowerCase();
-}
+/* ==========================
+   HELPERS
+========================== */
 
 function extractDOM(text) {
-  const match = text?.match(/DOM\s*:?(\d+)/i);
+  const match = text?.match(/DOM:(\d+)/);
   return match ? parseInt(match[1]) : 0;
 }
 
-function extractDOMCost(text) {
-  const match = text?.match(/-(\d+)\s*DOM/i);
+function extractDOMCost(displayName) {
+  const match = displayName?.match(/-(\d)\s*DOM/i);
   return match ? parseInt(match[1]) : 0;
 }
 
-/**************************************************
- * FLUJO PRINCIPAL
- **************************************************/
+function isUnique(unit) {
+  return unit && unit.unique === true;
+}
+
+/* Tooltip helper */
+function applyTooltip(li, unit) {
+  if (unit.comment) {
+    li.title = unit.comment;
+  }
+}
+
+/* ==========================
+   UI BASE
+========================== */
 
 function setPoints(points) {
   maxPoints = points;
@@ -390,128 +396,139 @@ function selectFaction(faction) {
   selectedFaction = faction;
   document.getElementById('faction-list').innerHTML =
     `<li><strong>${faction}</strong><br>${factions[faction].description}</li>`;
-
   document.getElementById('options-title').classList.remove('hidden');
   document.getElementById('options-list').classList.remove('hidden');
-  showOptions();
+  showOptions(faction);
 }
 
-function showOptions() {
+function showOptions(faction) {
   const list = document.getElementById('options-list');
   list.innerHTML = '';
-  options[selectedFaction].forEach(opt => {
+  options[faction]?.forEach(opt => {
     const li = document.createElement('li');
     li.textContent = opt.name;
-    li.onclick = () => selectOption(opt);
+    li.onclick = () => selectOption(faction, opt);
     list.appendChild(li);
   });
 }
 
-function selectOption(option) {
+function selectOption(faction, option) {
   selectedOption = option.name;
 
   document.getElementById('options-list').innerHTML =
     `<li><strong>${option.name}</strong><br>${option.description}</li>`;
 
-  ['leader','combatant','artifact','veteran'].forEach(id => {
-    document.getElementById(`${id}-title`).classList.remove('hidden');
-    document.getElementById(`${id}-list`).classList.remove('hidden');
+  ['leader','combatant','artifact','veteran'].forEach(type => {
+    document.getElementById(`${type}-title`).classList.remove('hidden');
+    document.getElementById(`${type}-list`).classList.remove('hidden');
   });
 
-  showLeaders();
-  showCombatants();
-  showArtifacts();
-  showVeterans();
+  showLeaders(faction);
+  showCombatants(faction);
+  showArtifacts(faction);
+  showVeterans(faction);
 }
 
-/**************************************************
- * MOSTRAR UNIDADES
- **************************************************/
+/* ==========================
+   MOSTRAR UNIDADES
+========================== */
 
-function showLeaders() {
+function showLeaders(faction) {
   const list = document.getElementById('leader-list');
   list.innerHTML = '';
 
-  factions[selectedFaction].leaders.forEach(l => {
-    if (selectedOption === 'Mercenarias de Isha' && l.gender !== 'Mujer') return;
-    if (selectedOption === 'Legión de los Mil Corazones' && l.gender !== 'Hombre') return;
+  factions[faction].leaders.forEach(leader => {
+    if (selectedOption === 'Legión de los Mil Corazones' && leader.gender && leader.gender !== 'Hombre') return;
+    if (selectedOption === 'Mercenarias de Isha' && leader.gender && leader.gender !== 'Mujer') return;
 
     const li = document.createElement('li');
-    li.innerHTML = `${l.displayName} - PB:${l.points}<br>${l.characteristics.replace(/\n/g,'<br>')}`;
-    li.onclick = () => addUnit(l, 'leader');
+    li.innerHTML = `${leader.displayName} - PB:${leader.points}<br>${leader.characteristics.replace(/\n/g,'<br>')}`;
+    applyTooltip(li, leader);
+    li.onclick = () => addToSelectedList(leader, 'leader');
     list.appendChild(li);
   });
 }
 
-function showCombatants() {
+function showCombatants(faction) {
   const list = document.getElementById('combatant-list');
   list.innerHTML = '';
 
-  factions[selectedFaction].combatants.forEach(c => {
-    if (selectedOption === 'Mercenarias de Isha' && c.gender !== 'Mujer') return;
-    if (selectedOption === 'Legión de los Mil Corazones' && c.gender !== 'Hombre') return;
+  factions[faction].combatants.forEach(c => {
+    if (selectedOption === 'Legión de los Mil Corazones' && c.gender && c.gender !== 'Hombre') return;
+    if (selectedOption === 'Mercenarias de Isha' && c.gender && c.gender !== 'Mujer') return;
 
     const li = document.createElement('li');
     li.innerHTML = `${c.displayName} - PB:${c.points}<br>${c.characteristics.replace(/\n/g,'<br>')}`;
-    li.onclick = () => addUnit(c, 'combatant');
+    applyTooltip(li, c);
+    li.onclick = () => addToSelectedList(c, 'combatant');
     list.appendChild(li);
   });
 }
 
-function showArtifacts() {
+function showArtifacts(faction) {
   const list = document.getElementById('artifact-list');
   list.innerHTML = '';
 
-  factions[selectedFaction].artifacts.forEach(a => {
+  factions[faction].artifacts.forEach(a => {
     const li = document.createElement('li');
     li.innerHTML = `${a.displayName}<br>${a.characteristics}`;
-    li.onclick = () => addUnit(a, 'artifact');
+    applyTooltip(li, a);
+    li.onclick = () => addToSelectedList(a, 'artifact');
     list.appendChild(li);
   });
 }
 
-function showVeterans() {
+function showVeterans(faction) {
   const list = document.getElementById('veteran-list');
   list.innerHTML = '';
 
-  factions[selectedFaction].veterans.forEach(v => {
+  factions[faction].veterans.forEach(v => {
     const li = document.createElement('li');
     li.innerHTML = `${v.displayName} - PB:${v.points}`;
-    li.onclick = () => addUnit(v, 'veteran');
+    applyTooltip(li, v);
+    li.onclick = () => addToSelectedList(v, 'veteran');
     list.appendChild(li);
   });
 }
 
-/**************************************************
- * AÑADIR / QUITAR UNIDADES (REGLAS)
- **************************************************/
+/* ==========================
+   SELECCIÓN + REGLAS
+========================== */
 
-function addUnit(unit, type) {
-  const key = uniqueKey(unit);
-  if (selectedUniques.has(key)) {
-    alert('Este personaje es único y ya está en la banda.');
+function addToSelectedList(unit, type) {
+
+  if (isUnique(unit) && selectedUniques.has(unit.name)) {
+    alert('Este personaje único ya ha sido seleccionado.');
     return;
   }
 
   let cost = unit.points || 0;
 
   if (type === 'leader') {
-    if (selectedLeader && !(selectedFaction === 'Vástagos de Kurgan' && !hasSecondSoimi)) {
-      alert('Solo puede haber un líder.');
-      return;
-    }
-
-    if (!selectedLeader) {
+    if (selectedLeader) {
+      if (
+        selectedFaction === 'Vástagos de Kurgan' &&
+        selectedOption === 'Soimi' &&
+        !hasSecondSoimi
+      ) {
+        hasSecondSoimi = true;
+      } else {
+        alert('Solo puedes tener un líder.');
+        return;
+      }
+    } else {
       selectedLeader = unit;
       currentDOM = extractDOM(unit.characteristics);
-    } else {
-      hasSecondSoimi = true;
     }
   }
 
   if (type === 'veteran') {
-    if (!selectedLeader || selectedVeterans.has(unit.name)) {
-      alert('Veteranía inválida.');
+    if (!selectedLeader) {
+      alert('Necesitas un líder.');
+      return;
+    }
+    if (selectedVeterans.has(unit.name)) {
+      alert('No puedes repetir veteranías.');
       return;
     }
     selectedVeterans.add(unit.name);
@@ -519,12 +536,12 @@ function addUnit(unit, type) {
 
   if (type === 'artifact') {
     if (!selectedLeader) {
-      alert('Necesitas líder.');
+      alert('Necesitas líder para artefactos.');
       return;
     }
     const domCost = extractDOMCost(unit.displayName);
-    const used = selectedArtifactsDOM.reduce((a,b)=>a+b,0);
-    if (used + domCost > currentDOM) {
+    const usedDOM = selectedArtifactsDOM.reduce((a,b)=>a+b,0);
+    if (usedDOM + domCost > currentDOM) {
       alert('DOM insuficiente.');
       return;
     }
@@ -535,21 +552,34 @@ function addUnit(unit, type) {
     cost += 1;
   }
 
+  const list = document.getElementById('selected-list');
   const li = document.createElement('li');
-  li.innerHTML = `${unit.displayName} - PB:${cost}<br>${unit.characteristics.replace(/\n/g,'<br>')}`;
-  li.onclick = () => removeUnit(unit, type, li, cost);
 
-  document.getElementById('selected-list').appendChild(li);
+  li.innerHTML = `
+    ${unit.displayName || unit.name} - PB:${cost}<br>
+    ${unit.characteristics.replace(/\n/g,'<br>')}
+    ${unit.extraInfo ? '<br>' + unit.extraInfo.replace(/\n/g,'<br>') : ''}
+  `;
+  applyTooltip(li, unit);
 
-  selectedUniques.add(key);
+  li.onclick = () => removeFromSelectedList(unit, type, li, cost);
+  list.appendChild(li);
+
+  if (isUnique(unit)) {
+    selectedUniques.add(unit.name);
+  }
+
   selectedPoints += cost;
-  updatePoints();
+  updateTotalPoints();
 }
 
-function removeUnit(unit, type, li, cost) {
+function removeFromSelectedList(unit, type, li, cost) {
   li.remove();
   selectedPoints -= cost;
-  selectedUniques.delete(uniqueKey(unit));
+
+  if (isUnique(unit)) {
+    selectedUniques.delete(unit.name);
+  }
 
   if (type === 'leader') {
     selectedLeader = null;
@@ -558,25 +588,20 @@ function removeUnit(unit, type, li, cost) {
   }
 
   if (type === 'veteran') selectedVeterans.delete(unit.name);
+  if (type === 'artifact') selectedArtifactsDOM.pop();
 
-  if (type === 'artifact') {
-    const d = extractDOMCost(unit.displayName);
-    const i = selectedArtifactsDOM.indexOf(d);
-    if (i !== -1) selectedArtifactsDOM.splice(i,1);
-  }
-
-  updatePoints();
+  updateTotalPoints();
 }
 
-function updatePoints() {
+function updateTotalPoints() {
   const el = document.getElementById('total-points');
-  el.textContent = `Total de puntos: ${selectedPoints}`;
+  el.textContent = `Total: ${selectedPoints}`;
   el.classList.toggle('over-limit', selectedPoints > maxPoints);
 }
 
-/**************************************************
- * PDF
- **************************************************/
+/* ==========================
+   PDF
+========================== */
 
 function generatePDF() {
   const { jsPDF } = window.jspdf;
@@ -586,7 +611,10 @@ function generatePDF() {
   doc.text(`Subfacción: ${selectedOption}`, 10, 20);
   doc.text(`Puntos: ${selectedPoints}/${maxPoints}`, 10, 30);
 
-  doc.save('SphereList.pdf');
+  doc.save('lista.pdf');
 }
 
-document.getElementById('generatePDF').addEventListener('click', generatePDF);
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('generatePDF');
+  if (btn) btn.addEventListener('click', generatePDF);
+});
