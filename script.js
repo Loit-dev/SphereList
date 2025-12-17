@@ -614,7 +614,65 @@ async function generatePDF() {
 ========================== */
 
 async function generateVisualPDF() {
-  ...
+  const list = document.getElementById('selected-list');
+  if (!list || list.children.length === 0) {
+    alert('La lista está vacía');
+    return;
+  }
+
+  // Wrapper temporal
+  const wrapper = document.createElement('div');
+  wrapper.style.background = '#ffffff';
+  wrapper.style.padding = '20px';
+  wrapper.style.width = '800px';
+
+  wrapper.innerHTML = `
+    <div style="text-align:center; margin-bottom:20px;">
+      <img src="https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png"
+           style="max-width:160px; margin-bottom:10px;">
+      <h2>Sphere Wars – Lista de Banda</h2>
+      <p>
+        <strong>Facción:</strong> ${selectedFaction}<br>
+        <strong>Subfacción:</strong> ${selectedOption}<br>
+        <strong>Puntos:</strong> ${selectedPoints} / ${maxPoints}
+      </p>
+      <hr>
+    </div>
+  `;
+
+  wrapper.appendChild(list.cloneNode(true));
+  document.body.appendChild(wrapper);
+
+  const canvas = await html2canvas(wrapper, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: '#ffffff'
+  });
+
+  document.body.removeChild(wrapper);
+
+  const imgData = canvas.toDataURL('image/png');
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p', 'mm', 'a4');
+
+  const pdfWidth = 210;
+  const pdfHeight = 297;
+  const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+  let heightLeft = imgHeight;
+  let position = 0;
+
+  pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+  heightLeft -= pdfHeight;
+
+  while (heightLeft > 0) {
+    position -= pdfHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+    heightLeft -= pdfHeight;
+  }
+
+  pdf.save(`SphereList_${selectedFaction}_visual.pdf`);
 }
 
 /* ==========================
@@ -622,7 +680,43 @@ async function generateVisualPDF() {
 ========================== */
 
 async function generateTextPDF() {
-  ...
+  const listItems = document.querySelectorAll('#selected-list li');
+  if (listItems.length === 0) return;
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p', 'mm', 'a4');
+
+  let y = 15;
+
+  pdf.setFontSize(14);
+  pdf.text('Sphere Wars – Lista Legal', 10, y);
+  y += 10;
+
+  pdf.setFontSize(10);
+  pdf.text(`Facción: ${selectedFaction}`, 10, y); y += 6;
+  pdf.text(`Subfacción: ${selectedOption}`, 10, y); y += 6;
+  pdf.text(`Puntos: ${selectedPoints} / ${maxPoints}`, 10, y); y += 10;
+
+  pdf.setFontSize(12);
+  pdf.text('UNIDADES', 10, y);
+  y += 6;
+
+  pdf.setFontSize(9);
+
+  listItems.forEach(li => {
+    const text = li.innerText.replace(/\s+/g, ' ');
+    const lines = pdf.splitTextToSize(text, 180);
+
+    if (y + lines.length * 4 > 280) {
+      pdf.addPage();
+      y = 15;
+    }
+
+    pdf.text(lines, 10, y);
+    y += lines.length * 4 + 2;
+  });
+
+  pdf.save(`SphereList_${selectedFaction}_torneo.pdf`);
 }
 
 /* ==========================
