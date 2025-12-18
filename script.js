@@ -747,4 +747,3 @@ async function generatePDF() {
   section('VETERANÍAS', items.filter(t => t.includes('veterano')));
 
   pdf.save('SphereList.pdf');
-}
