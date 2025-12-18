@@ -550,7 +550,7 @@ function showLeaders(faction) {
     if (selectedOption === 'Mercenarias de Isha' && leader.gender && leader.gender !== 'Mujer') return;
 
     const li = document.createElement('li');
-    li.innerHTML = `${leader.displayName} - PB:${leader.points}<br>${leader.characteristics.replace(/\n/g,'<br>')}`;
+    li.innerHTML = `${leader.displayName} - PB:${leader.points}<br>${leader.characteristics.replace(/\n/g,'<br>')}<br>${leader.extraInfo.replace(/\n/g,'<br>')}`;
     applyTooltip(li, leader);
     li.onclick = () => addToSelectedList(leader, 'leader');
     list.appendChild(li);
@@ -566,7 +566,7 @@ function showCombatants(faction) {
     if (selectedOption === 'Mercenarias de Isha' && c.gender && c.gender !== 'Mujer') return;
 
     const li = document.createElement('li');
-    li.innerHTML = `${c.displayName} - PB:${c.points}<br>${c.characteristics.replace(/\n/g,'<br>')}`;
+    li.innerHTML = `${c.displayName} - PB:${c.points}<br>${c.characteristics.replace(/\n/g,'<br>')}<br>${c.extraInfo.replace(/\n/g,'<br>')}`;
     applyTooltip(li, c);
     li.onclick = () => addToSelectedList(c, 'combatant');
     list.appendChild(li);
@@ -632,7 +632,7 @@ function addToSelectedList(unit, type) {
   }
 
   const li = document.createElement('li');
-  li.innerHTML = `${unit.displayName} - PB:${cost} <br> ${unit.characteristics.replace(/\n/g, '<br>')}`;
+  li.innerHTML = `${unit.displayName} - PB:${cost} <br> ${unit.characteristics.replace(/\n/g, '<br>')} <br> ${unit.extraInfo.replace(/\n/g,'<br>')}`;
   li.onclick = () => removeFromSelectedList(unit, type, li, cost);
   document.getElementById('selected-list').appendChild(li);
 
