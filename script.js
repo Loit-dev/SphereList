@@ -632,7 +632,7 @@ function addToSelectedList(unit, type) {
   }
 
   const li = document.createElement('li');
-  li.innerHTML =${display} - PB:${unit.points} <br> ${unit.characteristics.replace(/\n/g, '<br>')};
+  li.innerHTML = `${unit.displayName} - PB:${cost} <br> ${unit.characteristics.replace(/\n/g, '<br>')}`;
   li.onclick = () => removeFromSelectedList(unit, type, li, cost);
   document.getElementById('selected-list').appendChild(li);
 
