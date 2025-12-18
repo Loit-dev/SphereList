@@ -578,6 +578,9 @@ function showArtifacts(faction) {
   list.innerHTML = '';
     
   factions[faction].artifacts.forEach(a => {
+     if (selectedOption === 'Legión de los Mil Corazones' && c.gender && c.gender !== 'Hombre') return;
+     if (selectedOption === 'Mercenarias de Isha' && c.gender && c.gender !== 'Mujer') return;
+      
     const li = document.createElement('li');
     li.innerHTML = `${a.displayName}<br>${a.characteristics}`;
     applyTooltip(li, a);
