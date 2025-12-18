@@ -188,13 +188,13 @@ const factions = {'Adeptos de Malesur': {
         characteristics: '\nDOM:2 EST:3 ORD:3 \nMOV:3 DES:4 POT:3 CON:5 ARC:4 HER:6 TAM:3 AME:1 COR:5',
         extraInfo:
           '<strong>Habilidades:</strong>\n' +
-          '<strong>Formación de ataque:</strong> Mientras dos aliados <strong>Legión de los Cien Corazones</strong> estén en contacto, ignora la distancia maxima para considerar su carga impetuosa.\n' +
-          '<strong>Posición ofensiva:</strong> Este combatiente ignora la distancia maxima para considear su carga impetuosa.\n' +
+          '<strong>- Formación de ataque:</strong> Mientras dos aliados <strong>Legión de los Cien Corazones</strong> estén en contacto, ignora la distancia maxima para considerar su carga impetuosa.\n' +
+          '<strong>- Posición ofensiva:</strong> Este combatiente ignora la distancia maxima para considear su carga impetuosa.\n' +
           '<strong>Armas:</strong>\n' +
-          '<strong>Ajusticiadora:</strong> <em>Contundente:</em> Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2); si el ataque tiene POT 4 o más, recibe 1 adicional (2 en total).\n' +
-          '<strong>Bastión de la Verdad:</strong><em> Defensiva:</em> Esta arma no hace tiradas de daño ni provoca tiradas de moral por ganar la tirada en combate.\n' +
+          '<strong>- Ajusticiadora:</strong> <em>Contundente:</em> Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2); si el ataque tiene POT 4 o más, recibe 1 adicional (2 en total).\n' +
+          '<strong>- Bastión de la Verdad:</strong><em> Defensiva:</em> Esta arma no hace tiradas de daño ni provoca tiradas de moral por ganar la tirada en combate.\n' +
           '<strong>Hazañas:</strong>\n' +
-          '<strong>¡Levántate y lucha! - 4"</strong>: El objetivo aliado que no sea este combatiente sana 1 herida. <strong>Sphere:</strong> Elige un objetivo aliado adicional que no sea este combatiente.',
+          '<strong>- ¡Levántate y lucha! - 4"</strong>: El objetivo aliado que no sea este combatiente sana 1 herida. <strong>Sphere:</strong> Elige un objetivo aliado adicional que no sea este combatiente.',
         comment:
           'Armas: Ajusticiadora (Contundente): Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2); si el ataque tiene POT 4 o más, recibe 1 adicional (2 en total).\n' +
           'Bastión de la Verdad (Defensiva): Esta arma no hace tiradas de daño ni provoca tiradas de moral por ganar la tirada en combate.\n' +
@@ -208,12 +208,12 @@ const factions = {'Adeptos de Malesur': {
         characteristics: '\nDOM:2 EST:4 ORD:4 \nMOV:3 DES:5 POT:3 CON:5 ARC:4 HER:6 TAM:3 AME:1 COR:5',
         extraInfo:
           '<strong>Habilidades:</strong>\n' +
-          '<strong>Formación de defensa:</strong>Mientras dos aliados <strong>Legión de los Cien Corazones</strong> estén en contacto, se anulan los modificadores por carga impetuosa de los enemigos en contacto.\n' +
-          '<strong>Posición defensiva:</strong>se anulan los modificadores por carga impetuosa de los enemigos en contacto.\n' +
+          '<strong>- Formación de defensa:</strong>Mientras dos aliados <strong>Legión de los Cien Corazones</strong> estén en contacto, se anulan los modificadores por carga impetuosa de los enemigos en contacto.\n' +
+          '<strong>- Posición defensiva:</strong>se anulan los modificadores por carga impetuosa de los enemigos en contacto.\n' +
           '<strong>Armas:</strong>\n' +
-          '<strong>Integridad:</strong> <em>Intimidante:</em>. Si se obtiene al menos un <strong>Sphere</strong> en la tirada de ataque, este combatiente obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
+          '<strong>- Integridad:</strong> <em>Intimidante:</em>. Si se obtiene al menos un <strong>Sphere</strong> en la tirada de ataque, este combatiente obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
           '<strong>Hazañas:</strong>\n' +
-          '<strong>¡Legión, con el corazón! - 4":</strong> El objetivo aliado que no sea este combatiente deja de estar cansado. <strong>Sphere:</strong> Elige un objetivo aliado adicional que no sea este combatiente.',
+          '<strong>- ¡Legión, con el corazón! - 4":</strong> El objetivo aliado que no sea este combatiente deja de estar cansado. <strong>Sphere:</strong> Elige un objetivo aliado adicional que no sea este combatiente.',
         comment:
           'Armas: Integridad (Intimidante): Si se obtiene al menos un Sphere en la tirada de ataque, este combatiente obtiene AME +1 hasta el final de la activación.\n' +
           '¡Legión, con el corazón!: El objetivo aliado que no sea este combatiente deja de estar cansado. Sphere: Elige un objetivo aliado adicional que no sea este combatiente.',
@@ -226,12 +226,12 @@ const factions = {'Adeptos de Malesur': {
         characteristics: '\nDOM:2 EST:3 ORD:4 \nMOV:4 DES:4 POT:3 CON:4 ARC:4 HER:6 TAM:3 AME:1 COR:5',
         extraInfo:
           '<strong>Habilidades:</strong>\n' +
-          '<strong>Aura de devoción a Taem</strong>Las otras aliadas <strong>Mercenarias de Isha</strong> a 4" o menos de esta combatiente, obtienen <strong>AME+1</strong>.\n' +
-          '<strong>Corpulenta:</strong>Las tiradas de daño contra la CON de esta combatiente obtiene <strong>-1d6</strong>(mín.1).\n' +  
+          '<strong>- Aura de devoción a Taem</strong>Las otras aliadas <strong>Mercenarias de Isha</strong> a 4" o menos de esta combatiente, obtienen <strong>AME+1</strong>.\n' +
+          '<strong>- Corpulenta:</strong>Las tiradas de daño contra la CON de esta combatiente obtiene <strong>-1d6</strong>(mín.1).\n' +  
           '<strong>Armas:</strong>\n' +
-          '<strong>Hacha de carnicera:</strong> <em>Intimidante:</em> Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
+          '<strong>- Hacha de carnicera:</strong> <em>Intimidante:</em> Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
           '<strong>Hazañas:</strong>\n' +
-          '<strong>¡Ven aquí! - 4":</strong> Si el objetivo es de <strong>TAM 4</strong> o inferior, desplázalo 4" acercándolo hacia este combatiente. <strong>Sphere:</strong> El objetivo sufre 1 herida.',
+          '<strong>- ¡Ven aquí! - 4":</strong> Si el objetivo es de <strong>TAM 4</strong> o inferior, desplázalo 4" acercándolo hacia este combatiente. <strong>Sphere:</strong> El objetivo sufre 1 herida.',
         comment:
           'Armas: Hacha de carnicera (Intimidante): Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene AME +1 hasta el final de la activación.\n' +
           '¡Ven aquí!: Si el objetivo es de TAM 4 o inferior, desplázalo 4" acercándolo hacia este combatiente. Sphere: El objetivo sufre 1 herida.',
@@ -244,12 +244,12 @@ const factions = {'Adeptos de Malesur': {
         characteristics: '\nDOM:4 EST:2 ORD:3 \nMOV:4 DES:2 POT:2 CON:2 ARC:5 HER:4 TAM:3 AME:1 COR:4',
         extraInfo:
           '<strong>Armas:</strong>\n' +
-          '<strong>Báculo Ungido:</strong> <em>Golpe Arcano</em>. Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
+          '<strong>- Báculo Ungido:</strong> <em>Golpe Arcano</em>. Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
           '<strong>Habilidades:</strong>\n' +
-          '<strong>Aura de devoción a Laroc:</strong> Las otras aliadas <strong>Mercenarias de Isha</strong> a 4" o menos de esta combatiente obtienen <strong>CON+1</strong> y <strong>ARC+1</strong>.\n' +
+          '<strong>- Aura de devoción a Laroc:</strong> Las otras aliadas <strong>Mercenarias de Isha</strong> a 4" o menos de esta combatiente obtienen <strong>CON+1</strong> y <strong>ARC+1</strong>.\n' +
           '<strong>Hechizos:</strong>\n' +
-          '<strong>Descarga fulminante - 10":</strong> <em>Proyectil arcano:</em> El objetivo enemigo recibe una tirada de daño de <strong>3d6</strong> contra su <strong>ARC</strong>. <strong>Sphere:</strong> Aumenta el daño a <strong>5d6</strong>.\n' +
-          '<strong>Esfera protectora - 10":</strong> Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.',
+          '<strong>- Descarga fulminante - 10":</strong> <em>Proyectil arcano:</em> El objetivo enemigo recibe una tirada de daño de <strong>3d6</strong> contra su <strong>ARC</strong>. <strong>Sphere:</strong> Aumenta el daño a <strong>5d6</strong>.\n' +
+          '<strong>- Esfera protectora - 10":</strong> Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.',
         comment:
           'Armas: Báculo Ungido (Golpe Arcano): Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
           'Aura de devoción a Laroc: Las otras aliadas Mercenarias de Isha a 4" o menos de esta combatiente obtienen CON+1 y ARC+1.\n' +
@@ -268,12 +268,12 @@ const factions = {'Adeptos de Malesur': {
         characteristics: '\nMOV:4 DES:2 POT:2 CON:2 ARC:5 HER:4 TAM:3 AME:1 COR:4',
         extraInfo:
           '<strong>Armas:</strong>\n' +
-          '<strong>Báculo Ungido:</strong> <em>Golpe Arcano</em>. Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
+          '<strong>- Báculo Ungido:</strong> <em>Golpe Arcano</em>. Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
           '<strong>Habilidades:</strong>\n' +
-          '<strong>Aura de devoción a Laroc:</strong> Las otras aliadas <strong>Mercenarias de Isha</strong> a 4" o menos de esta combatiente obtienen <strong>CON+1</strong> y <strong>ARC+1</strong>.\n' +
+          '<strong>- Aura de devoción a Laroc:</strong> Las otras aliadas <strong>Mercenarias de Isha</strong> a 4" o menos de esta combatiente obtienen <strong>CON+1</strong> y <strong>ARC+1</strong>.\n' +
           '<strong>Hechizos:</strong>\n' +
-          '<strong>Descarga fulminante - 10":</strong> <em>Proyectil arcano:</em> El objetivo enemigo recibe una tirada de daño de <strong>3d6</strong> contra su <strong>ARC</strong>. <strong>Sphere:</strong> Aumenta el daño a <strong>5d6</strong>.\n' +
-          '<strong>Esfera protectora - 10":</strong> Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.',
+          '<strong>- Descarga fulminante - 10":</strong> <em>Proyectil arcano:</em> El objetivo enemigo recibe una tirada de daño de <strong>3d6</strong> contra su <strong>ARC</strong>. <strong>Sphere:</strong> Aumenta el daño a <strong>5d6</strong>.\n' +
+          '<strong>- Esfera protectora - 10":</strong> Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.',
         comment:
           'Armas: Báculo Ungido (Golpe Arcano): Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
           'Aura de devoción a Laroc: Las otras aliadas Mercenarias de Isha a 4" o menos de esta combatiente obtienen CON+1 y ARC+1.\n' +
@@ -289,11 +289,11 @@ const factions = {'Adeptos de Malesur': {
         characteristics: '\nMOV:5 DES:4 POT:3 CON:4 ARC:4 HER:6 TAM:4 AME:1 COR:5',
         extraInfo:
           '<strong>Habilidades:</strong>\n' +
-          '<em>Volador:</em> Durante su fase de movimiento, esta combatiente se reubica en lugar de desplazarse, además, no tiene área de defensa\n' +
+          '<em>- Volador:</em> Durante su fase de movimiento, esta combatiente se reubica en lugar de desplazarse, además, no tiene área de defensa\n' +
           '<strong>Armas:</strong>\n' +
-          '<strong>Espolones</strong>-<em>Descenso poderoso:</em> Cuando este combatiente efectúe una carga, este arma obriene <strong>POT+1</strong> hasta el final de la activcion \n' +
+          '<strong>- Espolones</strong>-<em>Descenso poderoso:</em> Cuando este combatiente efectúe una carga, este arma obriene <strong>POT+1</strong> hasta el final de la activcion \n' +
           '<em>Impactante:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)\n' +
-          '<strong>Cañones Icaro - 10" DES:4 POT:3</strong>\n' +
+          '<strong>- Cañones Icaro - 10" DES:4 POT:3</strong>\n' +
           '<em>Penetracion:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)',
         comment: 
           'Armas:' +
@@ -309,14 +309,14 @@ const factions = {'Adeptos de Malesur': {
         characteristics: '\nMOV:5 DES:4 POT:3 CON:4 ARC:5 HER:5 TAM:5 AME:1 COR:5',
         extraInfo:
           '<strong>Habilidades:</strong>\n' +
-          '<em>Voladora:</em> Durante su fase de movimiento, esta combatiente se reubica en lugar de desplazarse, además, no tiene área de defensa\n' +
+          '<em>- Voladora:</em> Durante su fase de movimiento, esta combatiente se reubica en lugar de desplazarse, además, no tiene área de defensa\n' +
           '<strong>Hechizos:</strong>\n' +
-          '<strong>Instigar duelo: - 4"<strong>El objetivo enemigo esdesplazado acercándose hacia este combatiente por la ruta mas corta hasta quedar en contacto. Este combatiente debe lucha contra el objetivo esta activacion, si puede.\n' +
+          '<strong>- Instigar duelo: - 4"<strong>El objetivo enemigo esdesplazado acercándose hacia este combatiente por la ruta mas corta hasta quedar en contacto. Este combatiente debe lucha contra el objetivo esta activacion, si puede.\n' +
           '<strong>Armas:</strong>\n' +
-          '<strong>Lanza de las Mercenarias</strong>' +
+          '<strong>- Lanza de las Mercenarias</strong>' +
           '<em>Impactante:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2).\n' +
           '<em>Contracarga:</em> anulan los modificadores por carga impetuosa de los enemigos contra los que se luche.\n' +
-          '<strong>Jabalina - 8" DES:4 POT:2</strong>\n' +
+          '<strong>- Jabalina - 8" DES:4 POT:2</strong>\n' +
           '<em>Disparo a la carrera:</em> Este combatiente obitiene el modificado de ataque a distancia po no haber movido, aunque lo haya hecho como maniobra.',
         comment: 
           'Voladora: Durante su fase de movimiento, esta combatiente se reubica en lugar de desplazarse, además, no tiene área de defensa\n' +
@@ -333,11 +333,12 @@ const factions = {'Adeptos de Malesur': {
         points: 4,
         characteristics: '\nMOV:4 DES:4 POT:2 CON:3 ARC:2 HER:5 TAM:3 AME:0 COR:3',
         extraInfo:
-          '<em>Luchador Inexperto:</em> Este combatiente no aporta modificadores de apoyo en ataques cuerpo a cuerpo.\n' +
-          '<em>Posicion segura:</em> Mientras este combatiente esté a 2" o menos de un objetivo obiene <strong>+1d6</strong> durante las tiradas de empujar.\n' +
-          '<em>Unidad (Cohorte):</em> Este combatiente solo puede reclutarse en unidades formadas por <strong>1 Corazon Postulante</strong> y <strong>1-2 Postulantes rasos</strong>\n' +
+          '<strong>Habilidades:</strong>\n' +
+          '<strong>- Luchador Inexperto:</strong> Este combatiente no aporta modificadores de apoyo en ataques cuerpo a cuerpo.\n' +
+          '<strong>- Posicion segura:</strong> Mientras este combatiente esté a 2" o menos de un objetivo obiene <strong>+1d6</strong> durante las tiradas de empujar.\n' +
+          '<strong>- Unidad (Cohorte):</strong> Este combatiente solo puede reclutarse en unidades formadas por <strong>1 Corazon Postulante</strong> y <strong>1-2 Postulantes rasos</strong>\n' +
           '<strong>Armas:</strong>\n' +
-          '<strong>Espada Larga</strong>',
+          '<strong>- Espada Larga</strong>',
         comment: 
           'Luchador Inexperto: Este combatiente no aporta modificadores de apoyo en ataques cuerpo a cuerpo.\n' +
           'Posicion segura: Mientras este combatiente esté a 2" o menos de un objetivo obiene <strong>+1d6</strong> durante las tiradas de empujar.\n' +
@@ -351,15 +352,17 @@ const factions = {'Adeptos de Malesur': {
         points: 5,
         characteristics: '\nMOV:4 DES:4 POT:2 CON:3 ARC:2 HER:5 TAM:3 AME:0 COR:3',
         extraInfo:
-          '<em>Posicion segura:</em> Mientras este combatiente esté a 2" o menos de un objetivo obiene <strong>+1d6</strong> durante las tiradas de empujar.\n' +
-          '<em>Unidad (Cohorte):</em> Este combatiente solo puede reclutarse en unidades formadas por <strong>1 Corazon Postulante</strong> y <strong>1-2 Postulantes rasos</strong>\n' +
+          '<strong>Habilidades:</strong>\n' +
+          '<strong>- Posicion segura:</strong> Mientras este combatiente esté a 2" o menos de un objetivo obiene <strong>+1d6</strong> durante las tiradas de empujar.\n' +
+          '<strong>- Unidad (Cohorte):</strong> Este combatiente solo puede reclutarse en unidades formadas por <strong>1 Corazon Postulante</strong> y <strong>1-2 Postulantes rasos</strong>\n' +
           '<strong>Armas:</strong>\n' +
-          '<strong>Espada Larga</strong>' +
-          '<strong>Escudo Corazón</strong>: <em>Defensiva:</em> Este arma no hace ninguna tirada de daño ni provoca tiradas de moral por ganar la tirada de combate.',
+          '<strong>- Espada Larga</strong>' +
+          '<strong>- Escudo Corazón</strong>: <em>Defensiva:</em> Este arma no hace ninguna tirada de daño ni provoca tiradas de moral por ganar la tirada de combate.',
         comment: 
           'Posicion segura: Mientras este combatiente esté a 2" o menos de un objetivo obiene <strong>+1d6</strong> durante las tiradas de empujar.\n' +
           'Unidad (Cohorte): Este combatiente solo puede reclutarse en unidades formadas por <strong>1 Corazon Postulante</strong> y <strong>1-2 Postulantes rasos</strong>\n' +
-          'Armas: Espada Larga',
+          'Armas: Espada Larga' +
+          'Escudo Corazón: Defensiva: Este arma no hace ninguna tirada de daño ni provoca tiradas de moral por ganar la tirada de combate.',
         gender: 'Hombre'
       },
     {
@@ -368,12 +371,13 @@ const factions = {'Adeptos de Malesur': {
         points: 6,
         characteristics: '\nMOV:4 DES:3 POT:2 CON:3 ARC:2 HER:5 TAM:3 AME:0 COR:3',
         extraInfo:
-          '<em>Cadena de mando:</em> Si tu <strong>Líder</strong> es retiirado como baja puedes elegir un aliado con esta regla para que se convierta en tu nuevo <strong>Líder</strong>, dicho combatiente obtiene <strong>EST +2</strong> y <strong>EST +2</strong> y <strong>ORD +1</strong> hasta el final de la partida. Además los aliados a 4" del aliado elegido no necesitan superar una tirada de moral (COR) por perder al anterior Líder\n' +
-          '<em>Consejo táctico:</em> Si tienes uno o más combatientes con esta habilidad a 6" o menos de tu <strong>Líder</strong> (que no sean tu propio Líder), tira <strong>+1d6</strong> en las tiradas de iniciativa\n' +
+          '<strong>Habilidades:</strong>\n' +
+          '<strong>- Cadena de mando:</strong> Si tu <strong>Líder</strong> es retiirado como baja puedes elegir un aliado con esta regla para que se convierta en tu nuevo <strong>Líder</strong>, dicho combatiente obtiene <strong>EST +2</strong> y <strong>EST +2</strong> y <strong>ORD +1</strong> hasta el final de la partida. Además los aliados a 4" del aliado elegido no necesitan superar una tirada de moral (COR) por perder al anterior Líder\n' +
+          '<strong>- Consejo táctico:</strong> Si tienes uno o más combatientes con esta habilidad a 6" o menos de tu <strong>Líder</strong> (que no sean tu propio Líder), tira <strong>+1d6</strong> en las tiradas de iniciativa\n' +
           '<strong>Armas:</strong>\n' +
-          '<strong>Espada corta</strong>' +
+          '<strong>- Espada corta</strong>' +
           '<strong>Hazañas:</strong>\n' +
-          '<strong>Escudo Corazón</strong>: <em>Defensiva:</em> Este arma no hace ninguna tirada de daño ni provoca tiradas de moral por ganar la tirada de combate.',
+          '<strong>Primeros auxilios</strong>: El objetivo aliado que no sea este combatiente sana 1 herida.',
         comment: 
           'Posicion segura: Mientras este combatiente esté a 2" o menos de un objetivo obiene <strong>+1d6</strong> durante las tiradas de empujar.\n' +
           'Unidad (Cohorte): Este combatiente solo puede reclutarse en unidades formadas por <strong>1 Corazon Postulante</strong> y <strong>1-2 Postulantes rasos</strong>\n' +
