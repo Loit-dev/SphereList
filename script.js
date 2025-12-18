@@ -767,7 +767,7 @@ async function generatePDF() {
   logoImg.src = 'https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png';
   await new Promise(res => logoImg.onload = res);
 
-  pdf.addImage(logoImg, 'PNG', 10, y, 30, 30);
+  pdf.addImage(logoImg, 'PNG', 10, y, 30,);
 
   pdf.setFontSize(14);
   pdf.text(listName, 45, y + 8);
