@@ -438,8 +438,8 @@ const options = {
    ESTADO GLOBAL
 ========================== */
 
-let selectedPoints = 0;
 let maxPoints = 0;
+let selectedPoints = 0;
 
 let selectedFaction = '';
 let selectedOption = '';
@@ -447,187 +447,274 @@ let selectedOption = '';
 let selectedLeader = null;
 let currentDOM = 0;
 
-let selectedVeterans = new Set();
 let selectedArtifacts = [];
+let selectedVeterans = new Set();
 let selectedUniques = new Set();
 
-let hasSecondSoimi = false;
+/* ==========================
+   INIT UI EXTRA
+========================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+  const main = document.querySelector('.container.main');
+
+  const status = document.createElement('div');
+  status.id = 'list-status';
+
+  const domInfo = document.createElement('div');
+  domInfo.id = 'dom-info';
+
+  const errorBox = document.createElement('div');
+  errorBox.id = 'error-box';
+
+  status.appendChild(domInfo);
+  status.appendChild(errorBox);
+  main.insertBefore(status, document.getElementById('selected-list'));
+
+  document.getElementById('generatePDF')
+    .addEventListener('click', generatePDF);
+
+  updateStatus();
+});
 
 /* ==========================
    HELPERS
 ========================== */
 
-function extractDOM(text) {
-  const match = text?.match(/DOM\s*:\s*(\d+)/i);
-  return match ? parseInt(match[1]) : 0;
+function extractDOM(text = '') {
+  const m = text.match(/DOM:(\d+)/);
+  return m ? parseInt(m[1]) : 0;
 }
 
-function extractArtifactDOM(unit) {
-  if (!unit.characteristics) return 0;
-  const match = unit.characteristics.match(/DOM\s*:\s*(\d+)/i);
-  return match ? parseInt(match[1]) : 0;
+function extractDOMCost(name = '') {
+  const m = name.match(/-(\d)\s*DOM/i);
+  return m ? parseInt(m[1]) : 0;
 }
 
 function isUnique(unit) {
   return unit?.unique === true;
 }
 
-function applyTooltip(li, unit) {
-  if (unit.comment) li.title = unit.comment;
+/* ==========================
+   VALIDACIÓN
+========================== */
+
+function validateList() {
+  const errors = [];
+
+  if (!selectedLeader) errors.push('Falta un líder');
+  if (selectedPoints > maxPoints)
+    errors.push(`Puntos excedidos (${selectedPoints}/${maxPoints})`);
+
+  const usedDOM = selectedArtifacts.reduce((a, b) => a + b, 0);
+  if (usedDOM > currentDOM)
+    errors.push(`DOM excedido (${usedDOM}/${currentDOM})`);
+
+  return errors;
+}
+
+function updateStatus() {
+  const usedDOM = selectedArtifacts.reduce((a, b) => a + b, 0);
+  const errors = validateList();
+
+  document.getElementById('dom-info').textContent =
+    `DOM: ${usedDOM} / ${currentDOM}`;
+
+  const box = document.getElementById('list-status');
+  const errorBox = document.getElementById('error-box');
+
+  if (errors.length === 0) {
+    box.className = 'legal';
+    errorBox.textContent = 'Lista legal';
+  } else {
+    box.className = 'illegal';
+    errorBox.textContent = errors.map(e => `• ${e}`).join('\n');
+  }
 }
 
 /* ==========================
-   UI FEEDBACK
+   SELECCIÓN DE PUNTOS
 ========================== */
 
-function showError(msg) {
-  const box = document.getElementById('error-box');
-  if (!box) return;
-  box.textContent = msg;
-  box.classList.add('visible');
-}
+function setPoints(points) {
+  maxPoints = points;
+  selectedPoints = 0;
 
-function clearError() {
-  const box = document.getElementById('error-box');
-  if (!box) return;
-  box.textContent = '';
-  box.classList.remove('visible');
-}
+  document.getElementById('points-list').innerHTML =
+    `<li class="locked">${points} puntos</li>`;
 
-function updateIndicators() {
-  /* DOM */
-  const domUsed = selectedArtifacts.reduce(
-    (sum, a) => sum + extractArtifactDOM(a), 0
-  );
+  document.getElementById('faction-title').classList.remove('hidden');
+  document.getElementById('faction-list').classList.remove('hidden');
 
-  const domEl = document.getElementById('dom-indicator');
-  if (domEl) {
-    domEl.textContent = `DOM: ${domUsed} / ${currentDOM}`;
-    domEl.className =
-      domUsed > currentDOM ? 'dom-bad' :
-      domUsed === currentDOM ? 'dom-ok' : 'dom-warn';
-  }
-
-  /* Legalidad */
-  const legal =
-    selectedLeader &&
-    selectedPoints <= maxPoints &&
-    domUsed <= currentDOM;
-
-  const legalEl = document.getElementById('legal-indicator');
-  if (legalEl) {
-    legalEl.textContent = legal ? 'LISTA LEGAL' : 'LISTA ILEGAL';
-    legalEl.className = legal ? 'legal' : 'illegal';
-  }
-
-  const pdfBtn = document.getElementById('generatePDF');
-  if (pdfBtn) pdfBtn.disabled = !legal;
+  showFactions();
 }
 
 /* ==========================
-   SELECCIÓN
+   FACCIÓN / OPCIÓN
 ========================== */
 
-function addToSelectedList(unit, type) {
-  clearError();
+function showFactions() {
+  const list = document.getElementById('faction-list');
+  list.innerHTML = '';
 
-  if (isUnique(unit) && selectedUniques.has(unit.name)) {
-    showError('Este personaje único ya está en la lista');
-    return;
-  }
+  Object.keys(factions).forEach(f => {
+    const li = document.createElement('li');
+    li.textContent = f;
+    li.onclick = () => selectFaction(f);
+    list.appendChild(li);
+  });
+}
 
-  let cost = unit.points || 0;
+function selectFaction(faction) {
+  selectedFaction = faction;
 
-  /* LÍDER */
+  document.getElementById('faction-list').innerHTML =
+    `<li><strong>${faction}</strong><br>${factions[faction].description}</li>`;
+
+  document.getElementById('options-title').classList.remove('hidden');
+  document.getElementById('options-list').classList.remove('hidden');
+
+  showOptions(faction);
+}
+
+function showOptions(faction) {
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+
+  options[faction]?.forEach(opt => {
+    const li = document.createElement('li');
+    li.textContent = opt.name;
+    li.onclick = () => selectOption(opt);
+    list.appendChild(li);
+  });
+}
+
+function selectOption(option) {
+  selectedOption = option.name;
+
+  document.getElementById('options-list').innerHTML =
+    `<li><strong>${option.name}</strong><br>${option.description}</li>`;
+
+  ['leader', 'combatant', 'artifact', 'veteran'].forEach(t => {
+    document.getElementById(`${t}-title`).classList.remove('hidden');
+    document.getElementById(`${t}-list`).classList.remove('hidden');
+  });
+
+  showLeaders();
+  showCombatants();
+  showArtifacts();
+  showVeterans();
+}
+
+/* ==========================
+   MOSTRAR UNIDADES
+========================== */
+
+function showLeaders() {
+  const list = document.getElementById('leader-list');
+  list.innerHTML = '';
+
+  factions[selectedFaction].leaders.forEach(l => {
+    const li = document.createElement('li');
+    li.innerHTML = `${l.displayName} - PB:${l.points}<br>${l.characteristics.replace(/\n/g,'<br>')}`;
+    li.onclick = () => addUnit(l, 'leader');
+    list.appendChild(li);
+  });
+}
+
+function showCombatants() {
+  const list = document.getElementById('combatant-list');
+  list.innerHTML = '';
+
+  factions[selectedFaction].combatants.forEach(c => {
+    const li = document.createElement('li');
+    li.innerHTML = `${c.displayName} - PB:${c.points}<br>${c.characteristics.replace(/\n/g,'<br>')}`;
+    li.onclick = () => addUnit(c, 'combatant');
+    list.appendChild(li);
+  });
+}
+
+function showArtifacts() {
+  const list = document.getElementById('artifact-list');
+  list.innerHTML = '';
+
+  factions[selectedFaction].artifacts.forEach(a => {
+    const li = document.createElement('li');
+    li.innerHTML = `${a.displayName}<br>${a.extraInfo || ''}`;
+    li.onclick = () => addUnit(a, 'artifact');
+    list.appendChild(li);
+  });
+}
+
+function showVeterans() {
+  const list = document.getElementById('veteran-list');
+  list.innerHTML = '';
+
+  factions[selectedFaction].veterans.forEach(v => {
+    const li = document.createElement('li');
+    li.innerHTML = `${v.displayName} - PB:${v.points}`;
+    li.onclick = () => addUnit(v, 'veteran');
+    list.appendChild(li);
+  });
+}
+
+/* ==========================
+   AÑADIR / QUITAR
+========================== */
+
+function addUnit(unit, type) {
+  if (isUnique(unit) && selectedUniques.has(unit.name)) return;
+
   if (type === 'leader') {
-    if (selectedLeader) {
-      if (
-        selectedFaction === 'Vástagos de Kurgan' &&
-        selectedOption === 'Soimi' &&
-        !hasSecondSoimi
-      ) {
-        hasSecondSoimi = true;
-      } else {
-        showError('Solo puedes tener un líder');
-        return;
-      }
-    } else {
-      selectedLeader = unit;
-      currentDOM = extractDOM(unit.characteristics);
-    }
+    if (selectedLeader) return;
+    selectedLeader = unit;
+    currentDOM = extractDOM(unit.characteristics);
   }
 
-  /* VETERANÍAS */
+  if (type === 'artifact') {
+    if (!selectedLeader) return;
+    const cost = extractDOMCost(unit.displayName);
+    if (selectedArtifacts.reduce((a,b)=>a+b,0) + cost > currentDOM) return;
+    selectedArtifacts.push(cost);
+  }
+
   if (type === 'veteran') {
-    if (!selectedLeader) {
-      showError('Necesitas un líder');
-      return;
-    }
-    if (selectedVeterans.has(unit.name)) {
-      showError('No puedes repetir veteranías');
-      return;
-    }
+    if (!selectedLeader || selectedVeterans.has(unit.name)) return;
     selectedVeterans.add(unit.name);
   }
 
-  /* ARTEFACTOS */
-  if (type === 'artifact') {
-    if (!selectedLeader) {
-      showError('Necesitas un líder para artefactos');
-      return;
-    }
+  const cost = unit.points || 0;
+  selectedPoints += cost;
 
-    const domCost = extractArtifactDOM(unit);
-    const usedDOM = selectedArtifacts.reduce(
-      (s, a) => s + extractArtifactDOM(a), 0
-    );
-
-    if (usedDOM + domCost > currentDOM) {
-      showError(`DOM insuficiente (${usedDOM + domCost}/${currentDOM})`);
-      return;
-    }
-
-    selectedArtifacts.push(unit);
-  }
-
-  /* LISTA */
   const li = document.createElement('li');
-  li.className = `selected ${type}`;
-  li.innerHTML = `
-    <strong>${unit.displayName || unit.name}</strong>
-    <span class="pb">PB:${cost}</span>
-    <div>${unit.characteristics?.replace(/\n/g,'<br>') || ''}</div>
-    ${unit.extraInfo ? `<div>${unit.extraInfo.replace(/\n/g,'<br>')}</div>` : ''}
-  `;
-  applyTooltip(li, unit);
-
-  li.onclick = () => removeFromSelectedList(unit, type, li, cost);
+  li.dataset.type = type;
+  li.innerHTML =
+    `${unit.displayName}${cost ? ` - PB:${cost}` : ''}<br>${unit.characteristics || ''}<br>${unit.extraInfo || ''}`;
+  li.onclick = () => removeUnit(unit, type, li, cost);
   document.getElementById('selected-list').appendChild(li);
 
   if (isUnique(unit)) selectedUniques.add(unit.name);
 
-  selectedPoints += cost;
   updateTotal();
 }
 
-function removeFromSelectedList(unit, type, li, cost) {
+function removeUnit(unit, type, li, cost) {
   li.remove();
   selectedPoints -= cost;
-
-  if (isUnique(unit)) selectedUniques.delete(unit.name);
-  if (type === 'veteran') selectedVeterans.delete(unit.name);
-
-  if (type === 'artifact') {
-    const i = selectedArtifacts.indexOf(unit);
-    if (i !== -1) selectedArtifacts.splice(i, 1);
-  }
 
   if (type === 'leader') {
     selectedLeader = null;
     currentDOM = 0;
-    hasSecondSoimi = false;
     selectedArtifacts = [];
     selectedVeterans.clear();
+    selectedUniques.clear();
+    document.getElementById('selected-list').innerHTML = '';
+    selectedPoints = 0;
+  }
+
+  if (type === 'artifact') {
+    const d = extractDOMCost(unit.displayName);
+    selectedArtifacts.splice(selectedArtifacts.indexOf(d),1);
   }
 
   updateTotal();
@@ -635,92 +722,65 @@ function removeFromSelectedList(unit, type, li, cost) {
 
 function updateTotal() {
   document.getElementById('total-points').textContent =
-    `Total: ${selectedPoints} / ${maxPoints}`;
-  updateIndicators();
+    `Total: ${selectedPoints}`;
+  updateStatus();
 }
 
 /* ==========================
-   PDF PROFESIONAL
+   PDF FINAL
 ========================== */
 
 async function generatePDF() {
-  updateIndicators();
+  if (validateList().length) return;
 
-  const legal =
-    selectedLeader &&
-    selectedPoints <= maxPoints &&
-    selectedArtifacts.reduce((s,a)=>s+extractArtifactDOM(a),0) <= currentDOM;
-
-  if (!legal) {
-    showError('La lista no es legal. No se puede generar PDF.');
-    return;
-  }
-
-  const name = prompt('Nombre de la banda:');
+  const name = prompt('Nombre de la lista');
   if (!name) return;
 
-  const wrapper = document.createElement('div');
-  wrapper.style.width = '800px';
-  wrapper.style.padding = '20px';
-  wrapper.style.background = '#fff';
-
-  wrapper.innerHTML = `
-    <div style="display:flex;align-items:center;gap:15px;margin-bottom:10px">
-      <img src="https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png"
-           style="width:80px;height:auto">
-      <div>
-        <h2 style="margin:0;font-size:14px">${name}</h2>
-        <div style="font-size:10px">
-          ${selectedFaction} – ${selectedOption}<br>
-          ${selectedPoints} / ${maxPoints} puntos
-        </div>
-      </div>
-    </div>
-  `;
-
-  ['leader','combatant','artifact','veteran'].forEach(type => {
-    const items = [...document.querySelectorAll(`#selected-list .${type}`)];
-    if (!items.length) return;
-
-    const section = document.createElement('div');
-    section.innerHTML = `<h3 style="font-size:12px">${type.toUpperCase()}</h3>`;
-    items.forEach(i => section.appendChild(i.cloneNode(true)));
-    wrapper.appendChild(section);
-  });
-
-  document.body.appendChild(wrapper);
-
-  const canvas = await html2canvas(wrapper, { scale: 2 });
-  document.body.removeChild(wrapper);
-
   const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF('p','mm','a4');
+  const pdf = new jsPDF();
 
-  const img = canvas.toDataURL('image/png');
-  const w = 210;
-  const h = (canvas.height * w) / canvas.width;
+  const logo = new Image();
+  logo.src = 'https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png';
+  await new Promise(r => logo.onload = r);
 
-  let y = 0;
-  let left = h;
+  pdf.addImage(logo, 'PNG', 10, 10, 30, 30);
+  pdf.setFontSize(14);
+  pdf.text(name, 45, 18);
+  pdf.setFontSize(10);
+  pdf.text(`Puntos: ${selectedPoints}/${maxPoints}`, 45, 24);
+  pdf.text(`Facción: ${selectedFaction}`, 45, 29);
+  pdf.text(`Subfacción: ${selectedOption}`, 45, 34);
 
-  pdf.addImage(img,'PNG',0,y,w,h);
-  left -= 297;
+  let y = 45;
 
-  while (left > 0) {
-    y -= 297;
-    pdf.addPage();
-    pdf.addImage(img,'PNG',0,y,w,h);
-    left -= 297;
+  const groups = {
+    'LÍDER': [...document.querySelectorAll('#selected-list li[data-type="leader"]')],
+    'COMBATIENTES': [...document.querySelectorAll('#selected-list li[data-type="combatant"]')],
+    'ARTEFACTOS': [...document.querySelectorAll('#selected-list li[data-type="artifact"]')],
+    'VETERANÍAS': [...document.querySelectorAll('#selected-list li[data-type="veteran"]')]
+  };
+
+  for (const [title, items] of Object.entries(groups)) {
+    if (!items.length) continue;
+
+    pdf.setFontSize(12);
+    pdf.text(title, 10, y);
+    y += 4;
+
+    for (const el of items) {
+      const canvas = await html2canvas(el, { scale: 2 });
+      const w = pdf.internal.pageSize.getWidth() - 20;
+      const h = canvas.height * w / canvas.width;
+
+      if (y + h > 280) {
+        pdf.addPage();
+        y = 10;
+      }
+
+      pdf.addImage(canvas, 'PNG', 10, y, w, h);
+      y += h;
+    }
   }
 
-  pdf.save(`SphereList_${name}.pdf`);
+  pdf.save(`${name}.pdf`);
 }
-
-/* ==========================
-   BOTÓN
-========================== */
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('generatePDF')
-    ?.addEventListener('click', generatePDF);
-});
