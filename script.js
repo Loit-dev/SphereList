@@ -302,7 +302,8 @@ const factions = {'Adeptos de Malesur': {
           'Lanza de las Mercenarias' +
           'Impactante: Reduce en -1 el numero objetivo de la tirada de daño (min. 2)\n' +
           'Jabalina - 8" DES:4 POT:2\n' +
-          'Disparo a la carrera: Este combatiente obitiene el modificado de ataque a distancia po no haber movido, aunque lo haya hecho como maniobra.'
+          'Disparo a la carrera: Este combatiente obitiene el modificado de ataque a distancia po no haber movido, aunque lo haya hecho como maniobra.',
+        gender: 'Mujer'
       },
       { name: 'Combatiente 1', displayName: 'Combatiente 1', points: 6, characteristics: 'I', gender: 'Mujer' }
     ],
