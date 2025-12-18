@@ -645,30 +645,99 @@ function updateTotalPoints() {
 
 async function generatePDF() {
   const errors = validateList();
-  if (errors.length) return;
+  if (errors.length > 0) return;
+
+  const listName = prompt('Nombre de la lista:');
+  if (!listName) return;
 
   const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
-  let y = 15;
+  const pdf = new jsPDF('p', 'mm', 'a4');
 
-  function section(title, items) {
-    if (!items.length) return;
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  let y = 10;
+
+  /* ===== ENCABEZADO ===== */
+
+  const logoImg = new Image();
+  logoImg.src = 'https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png';
+  await new Promise(res => logoImg.onload = res);
+
+  pdf.addImage(logoImg, 'PNG', 10, y, 30, 30);
+
+  pdf.setFontSize(14);
+  pdf.text(listName, 45, y + 8);
+
+  pdf.setFontSize(10);
+  pdf.text(`Puntos: ${selectedPoints}/${maxPoints}`, 45, y + 14);
+  pdf.text(`Facción: ${selectedFaction}`, 45, y + 19);
+  pdf.text(`Subfacción: ${selectedOption}`, 45, y + 24);
+
+  y += 40;
+
+  /* ===== FUNCIÓN PARA BLOQUES ===== */
+
+  async function addSection(title, elements) {
+    if (!elements.length) return;
+
+    if (y + 20 > pageHeight) {
+      pdf.addPage();
+      y = 10;
+    }
+
     pdf.setFontSize(12);
     pdf.text(title, 10, y);
     y += 6;
-    pdf.setFontSize(9);
 
-    items.forEach(t => {
-      const lines = pdf.splitTextToSize(t, 180);
-      if (y + lines.length * 4 > 280) {
+    for (const el of elements) {
+      const canvas = await html2canvas(el, { scale: 2 });
+      const imgData = canvas.toDataURL('image/png');
+
+      const imgWidth = pageWidth - 20;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+
+      if (y + imgHeight > pageHeight - 10) {
         pdf.addPage();
-        y = 15;
+        y = 10;
       }
-      pdf.text(lines, 10, y);
-      y += lines.length * 4 + 2;
-    });
-    y += 4;
+
+      pdf.addImage(imgData, 'PNG', 10, y, imgWidth, imgHeight);
+      y += imgHeight + 6;
+    }
   }
+
+  /* ===== RECOGER BLOQUES ===== */
+
+  const selectedItems = [...document.querySelectorAll('#selected-list li')];
+
+  const leaderEls = selectedItems.filter(li =>
+    li.textContent.includes('DOM')
+  );
+
+  const artifactEls = selectedItems.filter(li =>
+    li.textContent.includes('DOM-')
+  );
+
+  const veteranEls = selectedItems.filter(li =>
+    li.textContent.toLowerCase().includes('veteran')
+  );
+
+  const combatantEls = selectedItems.filter(li =>
+    !leaderEls.includes(li) &&
+    !artifactEls.includes(li) &&
+    !veteranEls.includes(li)
+  );
+
+  /* ===== AÑADIR SECCIONES ===== */
+
+  await addSection('LÍDER', leaderEls);
+  await addSection('COMBATIENTES', combatantEls);
+  await addSection('ARTEFACTOS', artifactEls);
+  await addSection('VETERANÍAS', veteranEls);
+
+  pdf.save(`${listName}.pdf`);
+}
 
   const items = [...document.querySelectorAll('#selected-list li')].map(li => li.innerText);
 
