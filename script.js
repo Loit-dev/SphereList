@@ -310,13 +310,13 @@ const factions = {'Adeptos de Malesur': {
 
     artifacts: [
       { name: '<strong>Anillo de sanación</strong>', displayName: 'Anillo de sanación', DOM: 1, characteristics: 'Una vez por partida, durante la activación de este combatiente, puede elegirse un aliado a 4" o menos para que sane una herida.' },
-      { name: '<strong>Cadena Lucidez Estratégica</strong>', displayName: 'Cadena Lucidez Estratégica', DOM: 2, characteristics: '<em>Solo líderes Mercenaria de Isha</em>. Este combatiente obtiene <strong>EST +1</strong>.' },
+      { name: '<strong>Cadena Lucidez Estratégica</strong>', displayName: 'Cadena Lucidez Estratégica', DOM: 2, characteristics: '<em>Solo líderes Mercenaria de Isha</em>. Este combatiente obtiene <strong>EST +1</strong>.', gender: 'Mujer' },
       { name: '<strong>Capa Comedolor</strong>', displayName: 'Capa Comedolor', DOM: 2, characteristics: 'Este combatiente obtiene <strong>HER +1</strong>.' },
       { name: '<strong>Medallón de ligereza</strong>', displayName: 'Medallón de ligereza', DOM: 1, characteristics: 'Durante su activación, este combatiente se desplaza 4” (en lugar de 2”) y tira <strong>+2d6</strong>.' },
-      { name: '<strong>Runa de protección</strong>', displayName: 'Runa de protección', DOM: 1, characteristics: '<em>Solo si la banda es Legión de los Cien Corazones</em>. Cuando este combatiente use el Latir del Corazón, podrá transferir o ser transeferido heridas a 8“ (en vez de 4“).' },
+      { name: '<strong>Runa de protección</strong>', displayName: 'Runa de protección', DOM: 1, characteristics: '<em>Solo si la banda es Legión de los Cien Corazones</em>. Cuando este combatiente use el Latir del Corazón, podrá transferir o ser transeferido heridas a 8“ (en vez de 4“).', gender: 'Hombre' },
       { name: '<strong>Sello de autoridad</strong>', displayName: 'Sello de autoridad', DOM: 1, characteristics: '<em>Solo si la banda es La Alianza</em>. Este combatiente cuenta como si costara PB +2 para capturar objetivos.' },
       { name: '<strong>Sortija reluciente</strong>', displayName: 'Sortija reluciente', DOM: 2, characteristics: '<em>Solo si la banda es La Alianza</em>. La distancia para dar órdenes de este combatiente es de 8”.' },
-      { name: '<strong>Colgante Brillo Carmesí</strong>', displayName: 'Colgante Brillo Carmesí', DOM: 1, characteristics: '<em>Solo líderes Legión de los Cien Corazones</em>. Este combatiente obtiene <strong>AME +1</strong> y supera automáticamente todas las tiradas de moral.' }
+      { name: '<strong>Colgante Brillo Carmesí</strong>', displayName: 'Colgante Brillo Carmesí', DOM: 1, characteristics: '<em>Solo líderes Legión de los Cien Corazones</em>. Este combatiente obtiene <strong>AME +1</strong> y supera automáticamente todas las tiradas de moral.', gender: 'Hombre' }
     ],
 
     veterans: [
@@ -576,6 +576,10 @@ function showCombatants(faction) {
 function showArtifacts(faction) {
   const list = document.getElementById('artifact-list');
   list.innerHTML = '';
+
+      factions[faction].artifacts.forEach(c => {
+    if (selectedOption === 'Legión de los Mil Corazones' && c.gender && c.gender !== 'Hombre') return;
+    if (selectedOption === 'Mercenarias de Isha' && c.gender && c.gender !== 'Mujer') return;
 
   factions[faction].artifacts.forEach(a => {
     const li = document.createElement('li');
