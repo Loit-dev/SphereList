@@ -383,14 +383,14 @@ const factions = {'Adeptos de Malesur': {
     ],
 
     artifacts: [
-      { name: 'Anillo de sanación', displayName: '<strong>Anillo de sanación</strong>', DOM: 1, characteristics: 'Una vez por partida, durante la activación de este combatiente, puede elegirse un aliado a 4" o menos para que sane una herida.' },
-      { name: 'Cadena Lucidez Estratégica', displayName: '<strong>Cadena Lucidez Estratégica</strong>', DOM: 2, characteristics: '<em>Solo líderes Mercenaria de Isha</em>. Este combatiente obtiene <strong>EST +1</strong>.', gender: 'Mujer' },
-      { name: 'Capa Comedolor', displayName: '<strong>Capa Comedolor</strong>', DOM: 2, characteristics: 'Este combatiente obtiene <strong>HER +1</strong>.' },
-      { name: 'Medallón de ligereza', displayName: '<strong>Medallón de ligereza</strong>', DOM: 1, characteristics: 'Durante su activación, este combatiente se desplaza 4” (en lugar de 2”) y tira <strong>+2d6</strong>.' },
-      { name: 'Runa de protección', displayName: '<strong>Runa de protección</strong>', DOM: 1, characteristics: '<em>Solo si la banda es Legión de los Cien Corazones</em>. Cuando este combatiente use el Latir del Corazón, podrá transferir o ser transeferido heridas a 8“ (en vez de 4“).', gender: 'Hombre' },
-      { name: 'Sello de autoridad', displayName: '<strong>Sello de autoridad</strong>', DOM: 1, characteristics: '<em>Solo si la banda es La Alianza</em>. Este combatiente cuenta como si costara PB +2 para capturar objetivos.',gender: 'Alianza' },
-      { name: 'Sortija reluciente', displayName: '<strong>Sortija reluciente</strong>', DOM: 2, characteristics: '<em>Solo si la banda es La Alianza</em>. La distancia para dar órdenes de este combatiente es de 8”.',gender: 'Alianza' },
-      { name: 'Colgante Brillo Carmesí', displayName: '<strong>Colgante Brillo Carmesí</strong>', DOM: 1, characteristics: '<em>Solo líderes Legión de los Cien Corazones</em>. Este combatiente obtiene <strong>AME +1</strong> y supera automáticamente todas las tiradas de moral.', gender: 'Hombre' }
+      { name: 'Anillo de sanación', displayName: '<strong>Anillo de sanación</strong>', characteristics: 'DOM:1', extraInfo: 'Una vez por partida, durante la activación de este combatiente, puede elegirse un aliado a 4" o menos para que sane una herida.' },
+      { name: 'Cadena Lucidez Estratégica', displayName: '<strong>Cadena Lucidez Estratégica</strong>', characteristics: 'DOM:2', extraInfo: '<em>Solo líderes Mercenaria de Isha</em>. Este combatiente obtiene <strong>EST +1</strong>.', gender: 'Mujer' },
+      { name: 'Capa Comedolor', displayName: '<strong>Capa Comedolor</strong>', characteristics: 'DOM:2', extraInfo: 'Este combatiente obtiene <strong>HER +1</strong>.' },
+      { name: 'Medallón de ligereza', displayName: '<strong>Medallón de ligereza</strong>', characteristics: 'DOM:1', extraInfo: 'Durante su activación, este combatiente se desplaza 4” (en lugar de 2”) y tira <strong>+2d6</strong>.' },
+      { name: 'Runa de protección', displayName: '<strong>Runa de protección</strong>', characteristics: 'DOM:1', extraInfo: '<em>Solo si la banda es Legión de los Cien Corazones</em>. Cuando este combatiente use el Latir del Corazón, podrá transferir o ser transeferido heridas a 8“ (en vez de 4“).', gender: 'Hombre' },
+      { name: 'Sello de autoridad', displayName: '<strong>Sello de autoridad</strong>', characteristics: 'DOM:1', extraInfo: '<em>Solo si la banda es La Alianza</em>. Este combatiente cuenta como si costara PB +2 para capturar objetivos.',gender: 'Alianza' },
+      { name: 'Sortija reluciente', displayName: '<strong>Sortija reluciente</strong>', characteristics: 'DOM:2', extraInfo: '<em>Solo si la banda es La Alianza</em>. La distancia para dar órdenes de este combatiente es de 8”.',gender: 'Alianza' },
+      { name: 'Colgante Brillo Carmesí', displayName: '<strong>Colgante Brillo Carmesí</strong>', characteristics: 'DOM:1', extraInfo: '<em>Solo líderes Legión de los Cien Corazones</em>. Este combatiente obtiene <strong>AME +1</strong> y supera automáticamente todas las tiradas de moral.', gender: 'Hombre' }
     ],
 
     veterans: [
