@@ -507,6 +507,21 @@ function isUnique(unit) {
 function applyTooltip(li, unit) {
   if (unit.comment) li.title = unit.comment;
 }
+function artifactSelectable(artifact) {
+  if (!selectedLeader) return { ok: false, reason: 'Necesitas un líder' };
+
+  const domCost = extractDOMCost(artifact.characteristics || artifact.displayName);
+  if (getUsedDOM() + domCost > currentDOM)
+    return { ok: false, reason: 'DOM insuficiente' };
+
+  if (selectedArtifacts.some(a => a.name === artifact.name))
+    return { ok: false, reason: 'Ya seleccionado' };
+
+  if (!genderAllowed(artifact))
+    return { ok: false, reason: 'No permitido en esta subfacción' };
+
+  return { ok: true };
+}
 
 /* =====================================================
    VALIDACIÓN
@@ -620,12 +635,21 @@ function selectOption(opt) {
 ===================================================== */
 
 function genderAllowed(unit) {
-  if (selectedOption === 'Mercenarias de Isha')
+  // Si no tiene género definido → siempre permitido
+  if (!unit.gender) return true;
+
+  if (selectedOption === 'Mercenarias de Isha') {
     return unit.gender === 'Mujer';
-  if (selectedOption === 'Legión de los Mil Corazones')
+  }
+
+  if (selectedOption === 'Legión de los Mil Corazones') {
     return unit.gender === 'Hombre';
+  }
+
+  // La Alianza y otras subfacciones → permitido
   return true;
 }
+
 
 function showLeaders() {
   const list = document.getElementById('leader-list');
@@ -662,15 +686,31 @@ function showArtifacts() {
   list.innerHTML = '';
 
   factions[selectedFaction].artifacts.forEach(a => {
-    if (!genderAllowed(a)) return;
+    const domCost = extractDOMCost(a.characteristics || a.displayName);
+    const check = artifactSelectable(a);
 
     const li = document.createElement('li');
-    li.innerHTML = `${a.displayName}<br>${a.extraInfo}`;
+    li.innerHTML = `
+      ${a.displayName}<br>
+      <strong>Coste DOM:</strong> ${domCost}<br>
+      ${a.extraInfo || ''}
+    `;
+
     applyTooltip(li, a);
-    li.onclick = () => addUnit(a, 'artifact');
+
+    if (!check.ok) {
+      li.style.opacity = '0.45';
+      li.style.cursor = 'not-allowed';
+      li.title = check.reason;
+    } else {
+      li.onclick = () => addUnit(a, 'artifact');
+    }
+
     list.appendChild(li);
   });
 }
+
+
 
 function showVeterans() {
   const list = document.getElementById('veteran-list');
