@@ -288,8 +288,10 @@ const factions = {'Adeptos de Malesur': {
     ],
 
     artifacts: [
-      { name: 'Artefacto 7', displayName: 'Artefacto 7', points: 4, characteristics: 'I' },
-      { name: 'Artefacto 8', displayName: 'Artefacto 8', points: 7, characteristics: 'J' }
+      { name: 'Artefacto 7', displayName: 'Artefacto 7', DOM: 1, characteristics: 'I' },
+      { name: 'Artefacto 7', displayName: 'Artefacto 5', DOM: 1, characteristics: 'I' },
+      { name: 'Artefacto 7', displayName: 'Artefacto 6', DOM: 3, characteristics: 'I' },
+      { name: 'Artefacto 8', displayName: 'Artefacto 8', DOM: 2, characteristics: 'J' }
     ],
 
     veterans: [
