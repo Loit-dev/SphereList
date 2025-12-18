@@ -435,70 +435,36 @@ const options = {
     { name: 'Mercenarias de Isha', description: 'Si se elige esta subfacción, solo se pueden reclutar combatientes <strong>Mercenaria de Isha</strong>. A cambio, se obtiene la regla especial <strong>Inquebrantables</strong>.' }
   ]};
 /* ==========================
-   VARIABLES GLOBALES
-========================== */
-
-/* ==========================
-   VARIABLES GLOBALES
+   ESTADO GLOBAL
 ========================== */
 
 let selectedPoints = 0;
 let maxPoints = 0;
+
 let selectedFaction = '';
 let selectedOption = '';
 
 let selectedLeader = null;
 let currentDOM = 0;
+
 let selectedVeterans = new Set();
-let selectedArtifactsDOM = [];
+let selectedArtifacts = [];
 let selectedUniques = new Set();
+
 let hasSecondSoimi = false;
-
-/* ==========================
-   UI EXTRA (SE CREA SOLO)
-========================== */
-
-document.addEventListener('DOMContentLoaded', () => {
-  const main = document.querySelector('.container.main');
-
-  const status = document.createElement('div');
-  status.id = 'list-status';
-  status.style.margin = '10px 0';
-  status.style.padding = '10px';
-  status.style.borderRadius = '8px';
-  status.style.fontWeight = 'bold';
-
-  const domInfo = document.createElement('div');
-  domInfo.id = 'dom-info';
-  domInfo.style.marginBottom = '6px';
-
-  const errorBox = document.createElement('div');
-  errorBox.id = 'error-box';
-  errorBox.style.color = '#b00020';
-  errorBox.style.whiteSpace = 'pre-line';
-
-  status.appendChild(domInfo);
-  status.appendChild(errorBox);
-
-  main.insertBefore(status, document.getElementById('selected-list'));
-
-  document.getElementById('generatePDF')
-    .addEventListener('click', generatePDF);
-
-  updateStatus();
-});
 
 /* ==========================
    HELPERS
 ========================== */
 
 function extractDOM(text) {
-  const match = text?.match(/DOM:(\d+)/);
+  const match = text?.match(/DOM\s*:\s*(\d+)/i);
   return match ? parseInt(match[1]) : 0;
 }
 
-function extractDOMCost(displayName) {
-  const match = displayName?.match(/-(\d)\s*DOM/i);
+function extractArtifactDOM(unit) {
+  if (!unit.characteristics) return 0;
+  const match = unit.characteristics.match(/DOM\s*:\s*(\d+)/i);
   return match ? parseInt(match[1]) : 0;
 }
 
@@ -511,213 +477,137 @@ function applyTooltip(li, unit) {
 }
 
 /* ==========================
-   ESTADO LEGAL
+   UI FEEDBACK
 ========================== */
 
-function validateList() {
-  const errors = [];
-
-  if (!selectedLeader) {
-    errors.push('Falta un líder.');
-  }
-
-  if (selectedPoints > maxPoints) {
-    errors.push(`Puntos excedidos (${selectedPoints}/${maxPoints}).`);
-  }
-
-  const usedDOM = selectedArtifactsDOM.reduce((a,b)=>a+b,0);
-  if (usedDOM > currentDOM) {
-    errors.push(`DOM excedido (${usedDOM}/${currentDOM}).`);
-  }
-
-  return errors;
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  if (!box) return;
+  box.textContent = msg;
+  box.classList.add('visible');
 }
 
-function updateStatus() {
-  const status = document.getElementById('list-status');
-  const domInfo = document.getElementById('dom-info');
-  const errorBox = document.getElementById('error-box');
+function clearError() {
+  const box = document.getElementById('error-box');
+  if (!box) return;
+  box.textContent = '';
+  box.classList.remove('visible');
+}
 
-  const usedDOM = selectedArtifactsDOM.reduce((a,b)=>a+b,0);
-  domInfo.textContent = `DOM: ${usedDOM} / ${currentDOM}`;
+function updateIndicators() {
+  /* DOM */
+  const domUsed = selectedArtifacts.reduce(
+    (sum, a) => sum + extractArtifactDOM(a), 0
+  );
 
-  const errors = validateList();
-
-  if (errors.length === 0) {
-    status.style.background = '#d4edda';
-    status.style.color = '#155724';
-    errorBox.textContent = 'Lista legal';
-  } else {
-    status.style.background = '#f8d7da';
-    status.style.color = '#721c24';
-    errorBox.textContent = errors.map(e => `• ${e}`).join('\n');
+  const domEl = document.getElementById('dom-indicator');
+  if (domEl) {
+    domEl.textContent = `DOM: ${domUsed} / ${currentDOM}`;
+    domEl.className =
+      domUsed > currentDOM ? 'dom-bad' :
+      domUsed === currentDOM ? 'dom-ok' : 'dom-warn';
   }
+
+  /* Legalidad */
+  const legal =
+    selectedLeader &&
+    selectedPoints <= maxPoints &&
+    domUsed <= currentDOM;
+
+  const legalEl = document.getElementById('legal-indicator');
+  if (legalEl) {
+    legalEl.textContent = legal ? 'LISTA LEGAL' : 'LISTA ILEGAL';
+    legalEl.className = legal ? 'legal' : 'illegal';
+  }
+
+  const pdfBtn = document.getElementById('generatePDF');
+  if (pdfBtn) pdfBtn.disabled = !legal;
 }
 
 /* ==========================
-   UI BASE
-========================== */
-
-function setPoints(points) {
-  maxPoints = points;
-  document.getElementById('points-list').innerHTML = `<li>${points} puntos</li>`;
-  document.getElementById('faction-title').classList.remove('hidden');
-  document.getElementById('faction-list').classList.remove('hidden');
-  showFactions();
-  updateStatus();
-}
-
-function showFactions() {
-  const list = document.getElementById('faction-list');
-  list.innerHTML = '';
-  Object.keys(factions).forEach(f => {
-    const li = document.createElement('li');
-    li.textContent = f;
-    li.onclick = () => selectFaction(f);
-    list.appendChild(li);
-  });
-}
-
-function selectFaction(faction) {
-  selectedFaction = faction;
-  document.getElementById('faction-list').innerHTML =
-    `<li><strong>${faction}</strong><br>${factions[faction].description}</li>`;
-  document.getElementById('options-title').classList.remove('hidden');
-  document.getElementById('options-list').classList.remove('hidden');
-  showOptions(faction);
-}
-
-function showOptions(faction) {
-  const list = document.getElementById('options-list');
-  list.innerHTML = '';
-  options[faction]?.forEach(opt => {
-    const li = document.createElement('li');
-    li.textContent = opt.name;
-    li.onclick = () => selectOption(faction, opt);
-    list.appendChild(li);
-  });
-}
-
-function selectOption(faction, option) {
-  selectedOption = option.name;
-
-  document.getElementById('options-list').innerHTML =
-    `<li><strong>${option.name}</strong><br>${option.description}</li>`;
-
-  ['leader','combatant','artifact','veteran'].forEach(type => {
-    document.getElementById(`${type}-title`).classList.remove('hidden');
-    document.getElementById(`${type}-list`).classList.remove('hidden');
-  });
-
-  showLeaders(faction);
-  showCombatants(faction);
-  showArtifacts(faction);
-  showVeterans(faction);
-}
-
-/* ==========================
-   MOSTRAR UNIDADES
-========================== */
-
-function showLeaders(faction) {
-  const list = document.getElementById('leader-list');
-  list.innerHTML = '';
-
-  factions[faction].leaders.forEach(leader => {
-    if (selectedOption === 'Legión de los Mil Corazones' && leader.gender && leader.gender !== 'Hombre') return;
-    if (selectedOption === 'Mercenarias de Isha' && leader.gender && leader.gender !== 'Mujer') return;
-
-    const li = document.createElement('li');
-    li.innerHTML = `${leader.displayName} - PB:${leader.points} <br> ${leader.characteristics.replace(/\n/g,'<br>')}`;
-    applyTooltip(li, leader);
-    li.onclick = () => addToSelectedList(leader, 'leader');
-    list.appendChild(li);
-  });
-}
-
-function showCombatants(faction) {
-  const list = document.getElementById('combatant-list');
-  list.innerHTML = '';
-
-  factions[faction].combatants.forEach(c => {
-    if (selectedOption === 'Legión de los Mil Corazones' && c.gender && c.gender !== 'Hombre') return;
-    if (selectedOption === 'Mercenarias de Isha' && c.gender && c.gender !== 'Mujer') return;
-
-    const li = document.createElement('li');
-    li.innerHTML = `${c.displayName} - PB:${c.points} <br> ${c.characteristics.replace(/\n/g,'<br>')}`;
-    applyTooltip(li, c);
-    li.onclick = () => addToSelectedList(c, 'combatant');
-    list.appendChild(li);
-  });
-}
-
-function showArtifacts(faction) {
-  const list = document.getElementById('artifact-list');
-  list.innerHTML = '';
-    
-  factions[faction].artifacts.forEach(a => {
-     if (selectedOption === 'Legión de los Mil Corazones' && a.gender && a.gender !== 'Hombre') return;
-     if (selectedOption === 'Mercenarias de Isha' && a.gender && a.gender !== 'Mujer') return;
-     if (selectedOption === 'La Alianza' && a.gender && a.gender !== 'Alianza') return;
-      
-    const li = document.createElement('li');
-    li.innerHTML = `${a.displayName}<br>${a.extraInfo}`;
-    applyTooltip(li, a);
-    li.onclick = () => addToSelectedList(a, 'artifact');
-    list.appendChild(li);
-  });
-}
-
-function showVeterans(faction) {
-  const list = document.getElementById('veteran-list');
-  list.innerHTML = '';
-
-  factions[faction].veterans.forEach(v => {
-    const li = document.createElement('li');
-    li.innerHTML = `${v.displayName} - PB:${v.points}`;
-    applyTooltip(li, v);
-    li.onclick = () => addToSelectedList(v, 'veteran');
-    list.appendChild(li);
-  });
-}
-
-/* ==========================
-   SELECCIÓN + REGLAS
+   SELECCIÓN
 ========================== */
 
 function addToSelectedList(unit, type) {
-  if (isUnique(unit) && selectedUniques.has(unit.name)) return;
+  clearError();
+
+  if (isUnique(unit) && selectedUniques.has(unit.name)) {
+    showError('Este personaje único ya está en la lista');
+    return;
+  }
 
   let cost = unit.points || 0;
 
+  /* LÍDER */
   if (type === 'leader') {
-    if (selectedLeader) return;
-    selectedLeader = unit;
-    currentDOM = extractDOM(unit.characteristics);
+    if (selectedLeader) {
+      if (
+        selectedFaction === 'Vástagos de Kurgan' &&
+        selectedOption === 'Soimi' &&
+        !hasSecondSoimi
+      ) {
+        hasSecondSoimi = true;
+      } else {
+        showError('Solo puedes tener un líder');
+        return;
+      }
+    } else {
+      selectedLeader = unit;
+      currentDOM = extractDOM(unit.characteristics);
+    }
   }
 
+  /* VETERANÍAS */
   if (type === 'veteran') {
-    if (!selectedLeader || selectedVeterans.has(unit.name)) return;
+    if (!selectedLeader) {
+      showError('Necesitas un líder');
+      return;
+    }
+    if (selectedVeterans.has(unit.name)) {
+      showError('No puedes repetir veteranías');
+      return;
+    }
     selectedVeterans.add(unit.name);
   }
 
+  /* ARTEFACTOS */
   if (type === 'artifact') {
-    if (!selectedLeader) return;
-    const domCost = extractDOMCost(unit.displayName);
-    const usedDOM = selectedArtifactsDOM.reduce((a,b)=>a+b,0);
-    if (usedDOM + domCost > currentDOM) return;
-    selectedArtifactsDOM.push(domCost);
+    if (!selectedLeader) {
+      showError('Necesitas un líder para artefactos');
+      return;
+    }
+
+    const domCost = extractArtifactDOM(unit);
+    const usedDOM = selectedArtifacts.reduce(
+      (s, a) => s + extractArtifactDOM(a), 0
+    );
+
+    if (usedDOM + domCost > currentDOM) {
+      showError(`DOM insuficiente (${usedDOM + domCost}/${currentDOM})`);
+      return;
+    }
+
+    selectedArtifacts.push(unit);
   }
 
+  /* LISTA */
   const li = document.createElement('li');
-  li.innerHTML = `${unit.displayName} - PB:${cost} <br> ${unit.characteristics.replace(/\n/g, '<br>')} <br> ${unit.extraInfo.replace(/\n/g,'<br>')}`;
+  li.className = `selected ${type}`;
+  li.innerHTML = `
+    <strong>${unit.displayName || unit.name}</strong>
+    <span class="pb">PB:${cost}</span>
+    <div>${unit.characteristics?.replace(/\n/g,'<br>') || ''}</div>
+    ${unit.extraInfo ? `<div>${unit.extraInfo.replace(/\n/g,'<br>')}</div>` : ''}
+  `;
+  applyTooltip(li, unit);
+
   li.onclick = () => removeFromSelectedList(unit, type, li, cost);
   document.getElementById('selected-list').appendChild(li);
 
   if (isUnique(unit)) selectedUniques.add(unit.name);
 
   selectedPoints += cost;
-  updateTotalPoints();
+  updateTotal();
 }
 
 function removeFromSelectedList(unit, type, li, cost) {
@@ -725,132 +615,112 @@ function removeFromSelectedList(unit, type, li, cost) {
   selectedPoints -= cost;
 
   if (isUnique(unit)) selectedUniques.delete(unit.name);
+  if (type === 'veteran') selectedVeterans.delete(unit.name);
+
+  if (type === 'artifact') {
+    const i = selectedArtifacts.indexOf(unit);
+    if (i !== -1) selectedArtifacts.splice(i, 1);
+  }
 
   if (type === 'leader') {
     selectedLeader = null;
     currentDOM = 0;
-    selectedArtifactsDOM = [];
+    hasSecondSoimi = false;
+    selectedArtifacts = [];
+    selectedVeterans.clear();
   }
 
-  if (type === 'artifact') {
-    const domCost = extractDOMCost(unit.displayName);
-    const i = selectedArtifactsDOM.indexOf(domCost);
-    if (i !== -1) selectedArtifactsDOM.splice(i,1);
-  }
-
-  updateTotalPoints();
+  updateTotal();
 }
 
-function updateTotalPoints() {
-  document.getElementById('total-points').textContent = `Total: ${selectedPoints}`;
-  updateStatus();
+function updateTotal() {
+  document.getElementById('total-points').textContent =
+    `Total: ${selectedPoints} / ${maxPoints}`;
+  updateIndicators();
 }
 
 /* ==========================
-   PDF (SEPARADO POR SECCIONES)
+   PDF PROFESIONAL
 ========================== */
 
 async function generatePDF() {
-  const errors = validateList();
-  if (errors.length > 0) return;
+  updateIndicators();
 
-  const listName = prompt('Nombre de la lista:');
-  if (!listName) return;
+  const legal =
+    selectedLeader &&
+    selectedPoints <= maxPoints &&
+    selectedArtifacts.reduce((s,a)=>s+extractArtifactDOM(a),0) <= currentDOM;
 
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF('p', 'mm', 'a4');
-
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-
-  let y = 10;
-
-  /* ===== ENCABEZADO ===== */
-
-  const logoImg = new Image();
-  logoImg.src = 'https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png';
-  await new Promise(res => logoImg.onload = res);
-
-  pdf.addImage(logoImg, 'PNG', 10, y, 30,);
-
-  pdf.setFontSize(14);
-  pdf.text(listName, 45, y + 8);
-
-  pdf.setFontSize(10);
-  pdf.text(`Puntos: ${selectedPoints}/${maxPoints}`, 45, y + 14);
-  pdf.text(`Facción: ${selectedFaction}`, 45, y + 19);
-  pdf.text(`Subfacción: ${selectedOption}`, 45, y + 24);
-
-  y += 40;
-
-  /* ===== FUNCIÓN PARA BLOQUES ===== */
-
-  async function addSection(title, elements) {
-    if (!elements.length) return;
-
-    if (y + 20 > pageHeight) {
-      pdf.addPage();
-      y = 10;
-    }
-
-    pdf.setFontSize(12);
-    pdf.text(title, 10, y);
-    y += 6;
-
-    for (const el of elements) {
-      const canvas = await html2canvas(el, { scale: 2 });
-      const imgData = canvas.toDataURL('image/png');
-
-      const imgWidth = pageWidth - 20;
-      const imgHeight = canvas.height * imgWidth / canvas.width;
-
-      if (y + imgHeight > pageHeight - 10) {
-        pdf.addPage();
-        y = 10;
-      }
-
-      pdf.addImage(imgData, 'PNG', 10, y, imgWidth, imgHeight);
-      y += imgHeight + 6;
-    }
+  if (!legal) {
+    showError('La lista no es legal. No se puede generar PDF.');
+    return;
   }
 
-  /* ===== RECOGER BLOQUES ===== */
+  const name = prompt('Nombre de la banda:');
+  if (!name) return;
 
-  const selectedItems = [...document.querySelectorAll('#selected-list li')];
+  const wrapper = document.createElement('div');
+  wrapper.style.width = '800px';
+  wrapper.style.padding = '20px';
+  wrapper.style.background = '#fff';
 
-  const leaderEls = selectedItems.filter(li =>
-    li.textContent.includes('DOM')
-  );
+  wrapper.innerHTML = `
+    <div style="display:flex;align-items:center;gap:15px;margin-bottom:10px">
+      <img src="https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png"
+           style="width:80px;height:auto">
+      <div>
+        <h2 style="margin:0;font-size:14px">${name}</h2>
+        <div style="font-size:10px">
+          ${selectedFaction} – ${selectedOption}<br>
+          ${selectedPoints} / ${maxPoints} puntos
+        </div>
+      </div>
+    </div>
+  `;
 
-  const artifactEls = selectedItems.filter(li =>
-    li.textContent.includes('DOM-')
-  );
+  ['leader','combatant','artifact','veteran'].forEach(type => {
+    const items = [...document.querySelectorAll(`#selected-list .${type}`)];
+    if (!items.length) return;
 
-  const veteranEls = selectedItems.filter(li =>
-    li.textContent.toLowerCase().includes('veteran')
-  );
+    const section = document.createElement('div');
+    section.innerHTML = `<h3 style="font-size:12px">${type.toUpperCase()}</h3>`;
+    items.forEach(i => section.appendChild(i.cloneNode(true)));
+    wrapper.appendChild(section);
+  });
 
-  const combatantEls = selectedItems.filter(li =>
-    !leaderEls.includes(li) &&
-    !artifactEls.includes(li) &&
-    !veteranEls.includes(li)
-  );
+  document.body.appendChild(wrapper);
 
-  /* ===== AÑADIR SECCIONES ===== */
+  const canvas = await html2canvas(wrapper, { scale: 2 });
+  document.body.removeChild(wrapper);
 
-  await addSection('LÍDER', leaderEls);
-  await addSection('COMBATIENTES', combatantEls);
-  await addSection('ARTEFACTOS', artifactEls);
-  await addSection('VETERANÍAS', veteranEls);
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p','mm','a4');
 
-  pdf.save(`${listName}.pdf`);
+  const img = canvas.toDataURL('image/png');
+  const w = 210;
+  const h = (canvas.height * w) / canvas.width;
+
+  let y = 0;
+  let left = h;
+
+  pdf.addImage(img,'PNG',0,y,w,h);
+  left -= 297;
+
+  while (left > 0) {
+    y -= 297;
+    pdf.addPage();
+    pdf.addImage(img,'PNG',0,y,w,h);
+    left -= 297;
+  }
+
+  pdf.save(`SphereList_${name}.pdf`);
 }
 
-  const items = [...document.querySelectorAll('#selected-list li')].map(li => li.innerText);
+/* ==========================
+   BOTÓN
+========================== */
 
-  section('LÍDER', items.filter(t => t.includes('DOM')));
-  section('COMBATIENTES', items.filter(t => !t.includes('DOM')));
-  section('ARTEFACTOS', items.filter(t => t.includes('DOM-')));
-  section('VETERANÍAS', items.filter(t => t.includes('veterano')));
-
-  pdf.save('SphereList.pdf');
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('generatePDF')
+    ?.addEventListener('click', generatePDF);
+});
