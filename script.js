@@ -434,151 +434,53 @@ const options = {
           },
     { name: 'Mercenarias de Isha', description: 'Si se elige esta subfacción, solo se pueden reclutar combatientes <strong>Mercenaria de Isha</strong>. A cambio, se obtiene la regla especial <strong>Inquebrantables</strong>.' }
   ]};
-/* =====================================================
-   VARIABLES GLOBALES
-===================================================== */
-
+/***********************
+ * ESTADO GLOBAL
+ ***********************/
 let maxPoints = 0;
-let selectedPoints = 0;
-
-let selectedFaction = '';
-let selectedOption = '';
-
-let selectedLeader = null;
+let usedPoints = 0;
 let currentDOM = 0;
 
-let selectedVeterans = new Set();
+let selectedFaction = null;
+let selectedOption = null;
+
+let selectedLeader = null;
+let selectedCombatants = [];
 let selectedArtifacts = [];
-let selectedUniques = new Set();
+let selectedVeterans = [];
 
-/* =====================================================
-   DOM READY
-===================================================== */
+const errorBox = createErrorBox();
 
-document.addEventListener('DOMContentLoaded', () => {
-  const main = document.querySelector('.container.main');
-
-  const status = document.createElement('div');
-  status.id = 'list-status';
-  status.style.margin = '10px 0';
-  status.style.padding = '10px';
-  status.style.borderRadius = '8px';
-  status.style.fontWeight = 'bold';
-
-  const domInfo = document.createElement('div');
-  domInfo.id = 'dom-info';
-
-  const errorBox = document.createElement('div');
-  errorBox.id = 'error-box';
-  errorBox.style.whiteSpace = 'pre-line';
-
-  status.appendChild(domInfo);
-  status.appendChild(errorBox);
-
-  main.insertBefore(status, document.getElementById('selected-list'));
-
-  document.getElementById('generatePDF').addEventListener('click', generatePDF);
-
-  updateStatus();
-});
-
-/* =====================================================
-   HELPERS
-===================================================== */
-
-function extractDOM(text) {
-  const m = text?.match(/DOM:(\d+)/);
-  return m ? parseInt(m[1]) : 0;
-}
-
-function extractDOMCost(text) {
-  const m = text?.match(/DOM[:\s-]*(\d+)/i);
-  return m ? parseInt(m[1]) : 0;
-}
-
-function getUsedDOM() {
-  return selectedArtifacts.reduce((a, b) => a + b.dom, 0);
-}
-
-function isUnique(unit) {
-  return unit.unique === true;
-}
-
-function applyTooltip(li, unit) {
-  if (unit.comment) li.title = unit.comment;
-}
-function artifactSelectable(artifact) {
-  if (!selectedLeader) return { ok: false, reason: 'Necesitas un líder' };
-
-  const domCost = extractDOMCost(artifact.characteristics || artifact.displayName);
-  if (getUsedDOM() + domCost > currentDOM)
-    return { ok: false, reason: 'DOM insuficiente' };
-
-  if (selectedArtifacts.some(a => a.name === artifact.name))
-    return { ok: false, reason: 'Ya seleccionado' };
-
-  if (!genderAllowed(artifact))
-    return { ok: false, reason: 'No permitido en esta subfacción' };
-
-  return { ok: true };
-}
-
-/* =====================================================
-   VALIDACIÓN
-===================================================== */
-
-function validateList() {
-  const errors = [];
-
-  if (!selectedLeader) errors.push('Falta líder.');
-  if (selectedPoints > maxPoints)
-    errors.push(`Puntos excedidos (${selectedPoints}/${maxPoints})`);
-
-  if (getUsedDOM() > currentDOM)
-    errors.push(`DOM excedido (${getUsedDOM()}/${currentDOM})`);
-
-  return errors;
-}
-
-function updateStatus() {
-  const domInfo = document.getElementById('dom-info');
-  const errorBox = document.getElementById('error-box');
-  const status = document.getElementById('list-status');
-
-  domInfo.textContent = `DOM: ${getUsedDOM()} / ${currentDOM}`;
-
-  const errors = validateList();
-
-  if (errors.length === 0) {
-    status.style.background = '#d4edda';
-    status.style.color = '#155724';
-    errorBox.textContent = 'Lista legal';
-  } else {
-    status.style.background = '#f8d7da';
-    status.style.color = '#721c24';
-    errorBox.textContent = errors.map(e => `• ${e}`).join('\n');
+/***********************
+ * DATOS (EJEMPLO)
+ * 👉 aquí conectas tu JSON real
+ ***********************/
+const factions = {
+  "La Alianza": {
+    options: ["La Alianza", "Mercenarias de Isha", "Legión de los Mil Corazones"],
+    leaders: [],
+    combatants: [],
+    artifacts: [],
+    veterans: []
   }
-}
+};
 
-/* =====================================================
-   FLUJO PRINCIPAL
-===================================================== */
-
+/***********************
+ * FLUJO PRINCIPAL
+ ***********************/
 function setPoints(points) {
   maxPoints = points;
-  document.getElementById('points-list').innerHTML = `<li>${points} puntos</li>`;
-  document.getElementById('faction-title').classList.remove('hidden');
-  document.getElementById('faction-list').classList.remove('hidden');
-  showFactions();
-  updateStatus();
+  usedPoints = 0;
+
+  show('faction-title');
+  show('faction-list');
+
+  renderFactions();
+  updatePoints();
 }
 
-/* =====================================================
-   MOSTRAR FACCIÓN / OPCIÓN
-===================================================== */
-
-function showFactions() {
-  const list = document.getElementById('faction-list');
+function renderFactions() {
+  const list = el('faction-list');
   list.innerHTML = '';
 
   Object.keys(factions).forEach(f => {
@@ -591,216 +493,272 @@ function showFactions() {
 
 function selectFaction(faction) {
   selectedFaction = faction;
+  selectedOption = null;
 
-  document.getElementById('faction-list').innerHTML =
-    `<li><strong>${faction}</strong><br>${factions[faction].description}</li>`;
+  show('options-title');
+  show('options-list');
 
-  document.getElementById('options-title').classList.remove('hidden');
-  document.getElementById('options-list').classList.remove('hidden');
-
-  showOptions(faction);
+  renderOptions();
 }
 
-function showOptions(faction) {
-  const list = document.getElementById('options-list');
+function renderOptions() {
+  const list = el('options-list');
   list.innerHTML = '';
 
-  options[faction].forEach(opt => {
+  factions[selectedFaction].options.forEach(opt => {
     const li = document.createElement('li');
-    li.textContent = opt.name;
+    li.textContent = opt;
     li.onclick = () => selectOption(opt);
     list.appendChild(li);
   });
 }
 
-function selectOption(opt) {
-  selectedOption = opt.name;
+function selectOption(option) {
+  selectedOption = option;
 
-  document.getElementById('options-list').innerHTML =
-    `<li><strong>${opt.name}</strong><br>${opt.description}</li>`;
+  show('leader-title');
+  show('leader-list');
 
-  ['leader', 'combatant', 'artifact', 'veteran'].forEach(t => {
-    document.getElementById(`${t}-title`).classList.remove('hidden');
-    document.getElementById(`${t}-list`).classList.remove('hidden');
-  });
-
-  showLeaders();
-  showCombatants();
-  showArtifacts();
-  showVeterans();
+  renderLeaders();
 }
 
-/* =====================================================
-   MOSTRAR UNIDADES
-===================================================== */
-
-function genderAllowed(unit) {
-  // Si no tiene género definido → siempre permitido
-  if (!unit.gender) return true;
-
-  if (selectedOption === 'Mercenarias de Isha') {
-    return unit.gender === 'Mujer';
-  }
-
-  if (selectedOption === 'Legión de los Mil Corazones') {
-    return unit.gender === 'Hombre';
-  }
-
-  // La Alianza y otras subfacciones → permitido
-  return true;
-}
-
-
-function showLeaders() {
-  const list = document.getElementById('leader-list');
+/***********************
+ * LÍDERES
+ ***********************/
+function renderLeaders() {
+  const list = el('leader-list');
   list.innerHTML = '';
 
   factions[selectedFaction].leaders.forEach(l => {
     if (!genderAllowed(l)) return;
+    if (selectedLeader) return;
 
-    const li = document.createElement('li');
-    li.innerHTML = `${l.displayName} - PB:${l.points}<br>${l.characteristics.replace(/\n/g,'<br>')}`;
-    applyTooltip(li, l);
-    li.onclick = () => addUnit(l, 'leader');
+    const li = createUnitLI(l, () => {
+      selectedLeader = l;
+      usedPoints += l.pb;
+      currentDOM = l.dom || 0;
+
+      show('artifact-title');
+      show('artifact-list');
+      show('veteran-title');
+      show('veteran-list');
+      show('combatant-title');
+      show('combatant-list');
+
+      renderArtifacts();
+      renderVeterans();
+      renderCombatants();
+      renderSelected();
+      updatePoints();
+    });
+
     list.appendChild(li);
   });
 }
 
-function showCombatants() {
-  const list = document.getElementById('combatant-list');
+/***********************
+ * ARTEFACTOS (DOM)
+ ***********************/
+function renderArtifacts() {
+  const list = el('artifact-list');
+  list.innerHTML = '';
+
+  if (!selectedLeader) return;
+
+  factions[selectedFaction].artifacts.forEach(a => {
+    if (!genderAllowed(a)) return;
+    if (selectedArtifacts.some(x => x.name === a.name)) return;
+
+    const cost = a.dom || 0;
+    if (getUsedDOM() + cost > currentDOM) return;
+
+    const li = createUnitLI(
+      `${a.name} (DOM ${cost})`,
+      () => {
+        selectedArtifacts.push(a);
+        renderArtifacts();
+        renderSelected();
+      }
+    );
+
+    list.appendChild(li);
+  });
+}
+
+/***********************
+ * VETERANÍAS
+ ***********************/
+function renderVeterans() {
+  const list = el('veteran-list');
+  list.innerHTML = '';
+
+  if (!selectedLeader) return;
+
+  factions[selectedFaction].veterans.forEach(v => {
+    if (selectedVeterans.some(x => x.name === v.name)) return;
+
+    const li = createUnitLI(v, () => {
+      selectedVeterans.push(v);
+      usedPoints += 1;
+      renderVeterans();
+      renderSelected();
+      updatePoints();
+    });
+
+    list.appendChild(li);
+  });
+}
+
+/***********************
+ * COMBATIENTES
+ ***********************/
+function renderCombatants() {
+  const list = el('combatant-list');
   list.innerHTML = '';
 
   factions[selectedFaction].combatants.forEach(c => {
     if (!genderAllowed(c)) return;
 
-    const li = document.createElement('li');
-    li.innerHTML = `${c.displayName} - PB:${c.points}<br>${c.characteristics.replace(/\n/g,'<br>')}`;
-    applyTooltip(li, c);
-    li.onclick = () => addUnit(c, 'combatant');
+    const li = createUnitLI(c, () => {
+      selectedCombatants.push(c);
+      usedPoints += c.pb;
+      renderCombatants();
+      renderSelected();
+      updatePoints();
+    });
+
     list.appendChild(li);
   });
 }
 
-function showArtifacts() {
-  const list = document.getElementById('artifact-list');
+/***********************
+ * SELECCIONADOS
+ ***********************/
+function renderSelected() {
+  const list = el('selected-list');
   list.innerHTML = '';
 
-  factions[selectedFaction].artifacts.forEach(a => {
-    const domCost = extractDOMCost(a.characteristics || a.displayName);
-    const check = artifactSelectable(a);
+  if (selectedLeader) addSelected(list, 'Líder', selectedLeader);
 
-    const li = document.createElement('li');
-    li.innerHTML = `
-      ${a.displayName}<br>
-      <strong>Coste DOM:</strong> ${domCost}<br>
-      ${a.extraInfo || ''}
-    `;
-
-    applyTooltip(li, a);
-
-    if (!check.ok) {
-      li.style.opacity = '0.45';
-      li.style.cursor = 'not-allowed';
-      li.title = check.reason;
-    } else {
-      li.onclick = () => addUnit(a, 'artifact');
-    }
-
-    list.appendChild(li);
-  });
+  selectedArtifacts.forEach(a => addSelected(list, 'Artefacto', a));
+  selectedVeterans.forEach(v => addSelected(list, 'Veteranía', v));
+  selectedCombatants.forEach(c => addSelected(list, 'Combatiente', c));
 }
 
-
-
-function showVeterans() {
-  const list = document.getElementById('veteran-list');
-  list.innerHTML = '';
-
-  factions[selectedFaction].veterans.forEach(v => {
-    const li = document.createElement('li');
-    li.innerHTML = `${v.displayName} - PB:${v.points}`;
-    applyTooltip(li, v);
-    li.onclick = () => addUnit(v, 'veteran');
-    list.appendChild(li);
-  });
-}
-
-/* =====================================================
-   AÑADIR / QUITAR
-===================================================== */
-
-function addUnit(unit, type) {
-  if (isUnique(unit) && selectedUniques.has(unit.name)) return;
-
-  let cost = unit.points || 0;
-
-  if (type === 'leader') {
-    if (selectedLeader) return;
-    selectedLeader = unit;
-    currentDOM = extractDOM(unit.characteristics);
-  }
-
-  if (type === 'veteran') {
-    if (!selectedLeader || selectedVeterans.has(unit.name)) return;
-    selectedVeterans.add(unit.name);
-  }
-
-  if (type === 'artifact') {
-    if (!selectedLeader) return;
-
-    const domCost = extractDOMCost(unit.characteristics || unit.displayName);
-    if (selectedArtifacts.some(a => a.name === unit.name)) return;
-    if (getUsedDOM() + domCost > currentDOM) return;
-
-    selectedArtifacts.push({ name: unit.name, dom: domCost });
-  }
-
+function addSelected(list, type, unit) {
   const li = document.createElement('li');
-  li.innerHTML = `
-    ${unit.displayName} - PB:${cost}<br>
-    ${(unit.characteristics || '').replace(/\n/g,'<br>')}
-    ${(unit.extraInfo || '').replace(/\n/g,'<br>')}
-  `;
-  li.onclick = () => removeUnit(unit, type, li, cost);
-
-  document.getElementById('selected-list').appendChild(li);
-
-  if (isUnique(unit)) selectedUniques.add(unit.name);
-
-  selectedPoints += cost;
-  updateTotalPoints();
+  li.innerHTML = `<strong>${type}</strong>: ${unit.name}`;
+  list.appendChild(li);
 }
 
-function removeUnit(unit, type, li, cost) {
-  li.remove();
-  selectedPoints -= cost;
-
-  if (isUnique(unit)) selectedUniques.delete(unit.name);
-
-  if (type === 'leader') {
-    selectedLeader = null;
-    currentDOM = 0;
-    selectedArtifacts = [];
-    selectedVeterans.clear();
-  }
-
-  if (type === 'artifact') {
-    selectedArtifacts = selectedArtifacts.filter(a => a.name !== unit.name);
-  }
-
-  updateTotalPoints();
-}
-
-function updateTotalPoints() {
-  document.getElementById('total-points').textContent = `Total: ${selectedPoints}`;
-  updateStatus();
-}
-
-/* =====================================================
-   PDF (placeholder funcional)
-===================================================== */
+/***********************
+ * PDF PRO
+ ***********************/
+document.getElementById('generatePDF').addEventListener('click', generatePDF);
 
 function generatePDF() {
-  if (validateList().length > 0) return;
-  alert('PDF OK (siguiente paso lo dejamos fino)');
+  clearError();
+
+  if (!selectedLeader) return showError('Falta líder');
+  if (usedPoints > maxPoints) return showError('Puntos excedidos');
+  if (getUsedDOM() > currentDOM) return showError('DOM excedido');
+
+  const name = prompt('Nombre de la lista');
+  if (!name) return;
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+
+  let y = 20;
+  pdf.setFontSize(14);
+  pdf.text(name, 15, y);
+
+  y += 6;
+  pdf.setFontSize(10);
+  pdf.text(`Puntos: ${usedPoints}/${maxPoints}`, 15, y);
+  y += 5;
+  pdf.text(`Facción: ${selectedFaction}`, 15, y);
+  y += 5;
+  pdf.text(`Subfacción: ${selectedOption}`, 15, y);
+  y += 10;
+
+  y = pdfSection(pdf, 'LÍDER', [selectedLeader], y);
+  y = pdfSection(pdf, 'COMBATIENTES', selectedCombatants, y);
+  y = pdfSection(pdf, 'ARTEFACTOS', selectedArtifacts, y);
+  y = pdfSection(pdf, 'VETERANÍAS', selectedVeterans, y);
+
+  pdf.save(`${name}.pdf`);
+}
+
+function pdfSection(pdf, title, items, y) {
+  if (!items.length) return y;
+
+  const h = pdf.internal.pageSize.height;
+  pdf.setFontSize(12);
+  pdf.text(title, 15, y);
+  y += 6;
+
+  pdf.setFontSize(10);
+  items.forEach(i => {
+    if (y > h - 20) {
+      pdf.addPage();
+      y = 20;
+    }
+    pdf.text(`- ${i.name}`, 15, y);
+    y += 5;
+  });
+
+  return y + 5;
+}
+
+/***********************
+ * HELPERS
+ ***********************/
+function genderAllowed(unit) {
+  if (!unit.gender) return true;
+  if (selectedOption === 'Mercenarias de Isha') return unit.gender === 'Mujer';
+  if (selectedOption === 'Legión de los Mil Corazones') return unit.gender === 'Hombre';
+  return true;
+}
+
+function getUsedDOM() {
+  return selectedArtifacts.reduce((s, a) => s + (a.dom || 0), 0);
+}
+
+function createUnitLI(content, onClick) {
+  const li = document.createElement('li');
+  li.innerHTML = typeof content === 'string' ? content : content.name;
+  li.onclick = onClick;
+  return li;
+}
+
+function el(id) {
+  return document.getElementById(id);
+}
+
+function show(id) {
+  el(id).classList.remove('hidden');
+}
+
+/***********************
+ * ERRORES
+ ***********************/
+function createErrorBox() {
+  const box = document.createElement('div');
+  box.style.color = 'red';
+  box.style.margin = '10px 0';
+  document.querySelector('.main').prepend(box);
+  return box;
+}
+
+function showError(msg) {
+  errorBox.textContent = msg;
+}
+
+function clearError() {
+  errorBox.textContent = '';
+}
+
+function updatePoints() {
+  el('total-points').textContent = `Total: ${usedPoints}/${maxPoints}`;
 }
