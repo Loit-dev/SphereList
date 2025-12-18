@@ -314,8 +314,8 @@ const factions = {'Adeptos de Malesur': {
       { name: 'Capa Comedolor', displayName: '<strong>Capa Comedolor</strong>', DOM: 2, characteristics: 'Este combatiente obtiene <strong>HER +1</strong>.' },
       { name: 'Medallón de ligereza', displayName: '<strong>Medallón de ligereza</strong>', DOM: 1, characteristics: 'Durante su activación, este combatiente se desplaza 4” (en lugar de 2”) y tira <strong>+2d6</strong>.' },
       { name: 'Runa de protección', displayName: '<strong>Runa de protección</strong>', DOM: 1, characteristics: '<em>Solo si la banda es Legión de los Cien Corazones</em>. Cuando este combatiente use el Latir del Corazón, podrá transferir o ser transeferido heridas a 8“ (en vez de 4“).', gender: 'Hombre' },
-      { name: 'Sello de autoridad', displayName: '<strong>Sello de autoridad</strong>', DOM: 1, characteristics: '<em>Solo si la banda es La Alianza</em>. Este combatiente cuenta como si costara PB +2 para capturar objetivos.' },
-      { name: 'Sortija reluciente', displayName: '<strong>Sortija reluciente</strong>', DOM: 2, characteristics: '<em>Solo si la banda es La Alianza</em>. La distancia para dar órdenes de este combatiente es de 8”.' },
+      { name: 'Sello de autoridad', displayName: '<strong>Sello de autoridad</strong>', DOM: 1, characteristics: '<em>Solo si la banda es La Alianza</em>. Este combatiente cuenta como si costara PB +2 para capturar objetivos.',gender: 'Alianza' },
+      { name: 'Sortija reluciente', displayName: '<strong>Sortija reluciente</strong>', DOM: 2, characteristics: '<em>Solo si la banda es La Alianza</em>. La distancia para dar órdenes de este combatiente es de 8”.',gender: 'Alianza' },
       { name: 'Colgante Brillo Carmesí', displayName: '<strong>Colgante Brillo Carmesí</strong>', DOM: 1, characteristics: '<em>Solo líderes Legión de los Cien Corazones</em>. Este combatiente obtiene <strong>AME +1</strong> y supera automáticamente todas las tiradas de moral.', gender: 'Hombre' }
     ],
 
@@ -580,6 +580,7 @@ function showArtifacts(faction) {
   factions[faction].artifacts.forEach(a => {
      if (selectedOption === 'Legión de los Mil Corazones' && a.gender && a.gender !== 'Hombre') return;
      if (selectedOption === 'Mercenarias de Isha' && a.gender && a.gender !== 'Mujer') return;
+     if (selectedOption === 'La Alianza' && a.gender && a.gender !== 'Alianza') return;
       
     const li = document.createElement('li');
     li.innerHTML = `${a.displayName}<br>${a.characteristics}`;
