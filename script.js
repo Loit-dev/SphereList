@@ -270,7 +270,7 @@ const factions = {'Adeptos de Malesur': {
         name: 'Róxter, el piloto',
         displayName: '<strong>Róxter, el piloto</strong>',
         points: 11,
-        characteristics: '\nMOV:5 DES:4 POT:3 CON:4 ARC:4 HER:6 TAM:4 AME:1 AGA:2',
+        characteristics: '\nMOV:5 DES:4 POT:3 CON:4 ARC:4 HER:6 TAM:4 AME:1 COR:5',
         extraInfo:
           '<strong>Armas:</strong>\n' +
           '<strong>Espolones</strong>-<em>Descenso poderoso:</em> Cuando este combatiente efectúe una carga, este arma obriene <strong>POT+1</strong> hasta el final de la activcion \n' +
@@ -284,14 +284,38 @@ const factions = {'Adeptos de Malesur': {
           'Cañones Icaro - 10" DES:4 POT:3 \n' +
           'Penetracion: Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)'
       },
+      {
+        name: 'Mayira y furia de Darlime',
+        displayName: '<strong>Mayira y furia de Darlime</strong>',
+        points: 11,
+        characteristics: '\nMOV:5 DES:4 POT:3 CON:4 ARC:5 HER:5 TAM:5 AME:1 COR:5',
+        extraInfo:
+          '<em>Voladora:</em> Durante su fase de movimiento, esta combatiente se reubica en lugar de desplazarse, además, no tiene área de defensa\n' +
+          '<strong>Armas:</strong>\n' +
+          '<strong>Lanza de las Mercenarias</strong>' +
+          '<em>Impactante:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2)\n' +
+          '<strong>Jabalina - 8" DES:4 POT:2</strong>\n' +
+          '<em>Disparo a la carrera:</em> Este combatiente obitiene el modificado de ataque a distancia po no haber movido, aunque lo haya hecho como maniobra.',
+        comment: 
+          'Voladora: Durante su fase de movimiento, esta combatiente se reubica en lugar de desplazarse, además, no tiene área de defensa\n' +
+          'Armas:\n' +
+          'Lanza de las Mercenarias' +
+          'Impactante: Reduce en -1 el numero objetivo de la tirada de daño (min. 2)\n' +
+          'Jabalina - 8" DES:4 POT:2\n' +
+          'Disparo a la carrera: Este combatiente obitiene el modificado de ataque a distancia po no haber movido, aunque lo haya hecho como maniobra.'
+      },
       { name: 'Combatiente 1', displayName: 'Combatiente 1', points: 6, characteristics: 'I', gender: 'Mujer' }
     ],
 
     artifacts: [
-      { name: 'Artefacto 7', displayName: 'Artefacto 7', DOM: 1, characteristics: 'I' },
-      { name: 'Artefacto 7', displayName: 'Artefacto 5', DOM: 1, characteristics: 'I' },
-      { name: 'Artefacto 7', displayName: 'Artefacto 6', DOM: 3, characteristics: 'I' },
-      { name: 'Artefacto 8', displayName: 'Artefacto 8', DOM: 2, characteristics: 'J' }
+      { name: 'Anillo de sanación', displayName: 'Anillo de sanación', DOM: 1, characteristics: 'Una vez por partida, durante la activación de este combatiente, puede elegirse un aliado a 4" o menos para que sane una herida.' },
+      { name: 'Cadena Lucidez Estratégica', displayName: 'Cadena Lucidez Estratégica', DOM: 2, characteristics: '<em>Solo líderes Mercenaria de Isha</em>. Este combatiente obtiene <strong>EST +1</strong>.' },
+      { name: 'Capa Comedolor', displayName: 'Capa Comedolor', DOM: 2, characteristics: 'Este combatiente obtiene <strong>HER +1</strong>.' },
+      { name: 'Medallón de ligereza', displayName: 'Medallón de ligereza', DOM: 1, characteristics: 'Durante su activación, este combatiente se desplaza 4” (en lugar de 2”) y tira <strong>+2d6</strong>.' },
+      { name: 'Runa de protección', displayName: 'Runa de protección', DOM: 1, characteristics: '<em>Solo si la banda es Legión de los Cien Corazones</em>. Cuando este combatiente use el Latir del Corazón, podrá transferir o ser transeferido heridas a 8“ (en vez de 4“).' },
+      { name: 'Sello de autoridad', displayName: 'Sello de autoridad', DOM: 1, characteristics: '<em>Solo si la banda es La Alianza</em>. Este combatiente cuenta como si costara PB +2 para capturar objetivos.' },
+      { name: 'Sortija reluciente', displayName: 'Sortija reluciente', DOM: 2, characteristics: '<em>Solo si la banda es La Alianza</em>. La distancia para dar órdenes de este combatiente es de 8”.' },
+      { name: 'Colgante Brillo Carmesí', displayName: 'Colgante Brillo Carmesí', DOM: 1, characteristics: '<em>Solo líderes Legión de los Cien Corazones</em>. Este combatiente obtiene <strong>AME +1</strong> y supera automáticamente todas las tiradas de moral.' }
     ],
 
     veterans: [
