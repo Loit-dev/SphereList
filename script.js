@@ -576,11 +576,7 @@ function showCombatants(faction) {
 function showArtifacts(faction) {
   const list = document.getElementById('artifact-list');
   list.innerHTML = '';
-
-      factions[faction].artifacts.forEach(c => {
-    if (selectedOption === 'Legión de los Mil Corazones' && c.gender && c.gender !== 'Hombre') return;
-    if (selectedOption === 'Mercenarias de Isha' && c.gender && c.gender !== 'Mujer') return;
-
+    
   factions[faction].artifacts.forEach(a => {
     const li = document.createElement('li');
     li.innerHTML = `${a.displayName}<br>${a.characteristics}`;
