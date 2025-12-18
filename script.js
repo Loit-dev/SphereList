@@ -311,7 +311,7 @@ const factions = {'Adeptos de Malesur': {
           '<strong>Habilidades:</strong>\n' +
           '<em>- Voladora:</em> Durante su fase de movimiento, esta combatiente se reubica en lugar de desplazarse, además, no tiene área de defensa\n' +
           '<strong>Hechizos:</strong>\n' +
-          '<strong>- Instigar duelo: - 4"<strong>El objetivo enemigo esdesplazado acercándose hacia este combatiente por la ruta mas corta hasta quedar en contacto. Este combatiente debe lucha contra el objetivo esta activacion, si puede.\n' +
+          '<strong>- Instigar duelo: - 4"</strong>El objetivo enemigo esdesplazado acercándose hacia este combatiente por la ruta mas corta hasta quedar en contacto. Este combatiente debe lucha contra el objetivo esta activacion, si puede.\n' +
           '<strong>Armas:</strong>\n' +
           '<strong>- Lanza de las Mercenarias</strong>' +
           '<em>Impactante:</em> Reduce en <strong>-1</strong> el numero objetivo de la tirada de daño (min. 2).\n' +
@@ -661,7 +661,7 @@ function showArtifacts(faction) {
      if (selectedOption === 'La Alianza' && a.gender && a.gender !== 'Alianza') return;
       
     const li = document.createElement('li');
-    li.innerHTML = `${a.displayName}<br>${a.characteristics}`;
+    li.innerHTML = `${a.displayName}<br>${a.extraInfo}`;
     applyTooltip(li, a);
     li.onclick = () => addToSelectedList(a, 'artifact');
     list.appendChild(li);
