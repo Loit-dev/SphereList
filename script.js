@@ -188,13 +188,13 @@ const factions = {'Adeptos de Malesur': {
         characteristics: '\nDOM:2 EST:3 ORD:3 \nMOV:3 DES:4 POT:3 CON:5 ARC:4 HER:6 TAM:3 AME:1 COR:5',
         extraInfo:
           '<strong>Habilidades:</strong>\n' +
-          '<strong>Formación de ataque:</strong>Mientras dos aliados <strong>Legión de los Cien Corazones</strong> estén en contacto, ignora la distancia maxima para considerar su carga impetuosa.\n' +
-          '<strong>Posición ofensiva:</strong>Este combatiente ignora la distancia maxima para considear su carga impetuosa.\n' +
+          '<strong>Formación de ataque:</strong> Mientras dos aliados <strong>Legión de los Cien Corazones</strong> estén en contacto, ignora la distancia maxima para considerar su carga impetuosa.\n' +
+          '<strong>Posición ofensiva:</strong> Este combatiente ignora la distancia maxima para considear su carga impetuosa.\n' +
           '<strong>Armas:</strong>\n' +
-          '<strong>Ajusticiadora:</strong> <em>Contundente</em>: Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2); si el ataque tiene POT 4 o más, recibe 1 adicional (2 en total).\n' +
-          '<strong>Bastión de la Verdad (Defensiva)</strong>: Esta arma no hace tiradas de daño ni provoca tiradas de moral por ganar la tirada en combate.\n' +
+          '<strong>Ajusticiadora:</strong> <em>Contundente:</em> Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2); si el ataque tiene POT 4 o más, recibe 1 adicional (2 en total).\n' +
+          '<strong>Bastión de la Verdad:</strong><em> Defensiva:</em> Esta arma no hace tiradas de daño ni provoca tiradas de moral por ganar la tirada en combate.\n' +
           '<strong>Hazañas:</strong>\n' +
-          '<strong>¡Levántate y lucha! - 4":</strong> El objetivo aliado que no sea este combatiente sana 1 herida. <strong>Sphere:</strong> Elige un objetivo aliado adicional que no sea este combatiente.',
+          '<strong>¡Levántate y lucha! - 4"</strong>: El objetivo aliado que no sea este combatiente sana 1 herida. <strong>Sphere:</strong> Elige un objetivo aliado adicional que no sea este combatiente.',
         comment:
           'Armas: Ajusticiadora (Contundente): Reduce en 1 el número objetivo de la Tirada de Daño (mín. 2); si el ataque tiene POT 4 o más, recibe 1 adicional (2 en total).\n' +
           'Bastión de la Verdad (Defensiva): Esta arma no hace tiradas de daño ni provoca tiradas de moral por ganar la tirada en combate.\n' +
@@ -211,7 +211,7 @@ const factions = {'Adeptos de Malesur': {
           '<strong>Formación de defensa:</strong>Mientras dos aliados <strong>Legión de los Cien Corazones</strong> estén en contacto, se anulan los modificadores por carga impetuosa de los enemigos en contacto.\n' +
           '<strong>Posición defensiva:</strong>se anulan los modificadores por carga impetuosa de los enemigos en contacto.\n' +
           '<strong>Armas:</strong>\n' +
-          '<strong>Integridad:</strong> <em>Intimidante</em>. Si se obtiene al menos un <strong>Sphere</strong> en la tirada de ataque, este combatiente obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
+          '<strong>Integridad:</strong> <em>Intimidante:</em>. Si se obtiene al menos un <strong>Sphere</strong> en la tirada de ataque, este combatiente obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
           '<strong>Hazañas:</strong>\n' +
           '<strong>¡Legión, con el corazón! - 4":</strong> El objetivo aliado que no sea este combatiente deja de estar cansado. <strong>Sphere:</strong> Elige un objetivo aliado adicional que no sea este combatiente.',
         comment:
@@ -229,7 +229,7 @@ const factions = {'Adeptos de Malesur': {
           '<strong>Aura de devoción a Taem</strong>Las otras aliadas <strong>Mercenarias de Isha</strong> a 4" o menos de esta combatiente, obtienen <strong>AME+1</strong>.\n' +
           '<strong>Corpulenta:</strong>Las tiradas de daño contra la CON de esta combatiente obtiene <strong>-1d6</strong>(mín.1).\n' +  
           '<strong>Armas:</strong>\n' +
-          '<strong>Hacha de carnicera:</strong> <em>Intimidante</em>: Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
+          '<strong>Hacha de carnicera:</strong> <em>Intimidante:</em> Si se obtiene al menos un Sphere en la Tirada de Ataque, obtiene <strong>AME +1</strong> hasta el final de la activación.\n' +
           '<strong>Hazañas:</strong>\n' +
           '<strong>¡Ven aquí! - 4":</strong> Si el objetivo es de <strong>TAM 4</strong> o inferior, desplázalo 4" acercándolo hacia este combatiente. <strong>Sphere:</strong> El objetivo sufre 1 herida.',
         comment:
@@ -248,7 +248,7 @@ const factions = {'Adeptos de Malesur': {
           '<strong>Habilidades:</strong>\n' +
           '<strong>Aura de devoción a Laroc:</strong> Las otras aliadas <strong>Mercenarias de Isha</strong> a 4" o menos de esta combatiente obtienen <strong>CON+1</strong> y <strong>ARC+1</strong>.\n' +
           '<strong>Hechizos:</strong>\n' +
-          '<strong>Descarga fulminante - 10":</strong> <em>Proyectil arcano</em>. El objetivo enemigo recibe una tirada de daño de <strong>3d6</strong> contra su <strong>ARC</strong>. <strong>Sphere:</strong> Aumenta el daño a <strong>5d6</strong>.\n' +
+          '<strong>Descarga fulminante - 10":</strong> <em>Proyectil arcano:</em> El objetivo enemigo recibe una tirada de daño de <strong>3d6</strong> contra su <strong>ARC</strong>. <strong>Sphere:</strong> Aumenta el daño a <strong>5d6</strong>.\n' +
           '<strong>Esfera protectora - 10":</strong> Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.',
         comment:
           'Armas: Báculo Ungido (Golpe Arcano): Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
@@ -272,7 +272,7 @@ const factions = {'Adeptos de Malesur': {
           '<strong>Habilidades:</strong>\n' +
           '<strong>Aura de devoción a Laroc:</strong> Las otras aliadas <strong>Mercenarias de Isha</strong> a 4" o menos de esta combatiente obtienen <strong>CON+1</strong> y <strong>ARC+1</strong>.\n' +
           '<strong>Hechizos:</strong>\n' +
-          '<strong>Descarga fulminante - 10":</strong> <em>Proyectil arcano</em>. El objetivo enemigo recibe una tirada de daño de <strong>3d6</strong> contra su <strong>ARC</strong>. <strong>Sphere:</strong> Aumenta el daño a <strong>5d6</strong>.\n' +
+          '<strong>Descarga fulminante - 10":</strong> <em>Proyectil arcano:</em> El objetivo enemigo recibe una tirada de daño de <strong>3d6</strong> contra su <strong>ARC</strong>. <strong>Sphere:</strong> Aumenta el daño a <strong>5d6</strong>.\n' +
           '<strong>Esfera protectora - 10":</strong> Elige un punto dentro del alcance del hechizo y todos los aliados a 4" de dicho punto obtienen 1 de salud temporal hasta el próximo turno aliado.',
         comment:
           'Armas: Báculo Ungido (Golpe Arcano): Puede elegirse si usar CON o ARC del oponente como número objetivo de la tirada de daño.\n' +
