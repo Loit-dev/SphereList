@@ -333,6 +333,10 @@ const options = {
    VARIABLES GLOBALES
 ========================== */
 
+/* ==========================
+   VARIABLES GLOBALES
+========================== */
+
 let selectedPoints = 0;
 let maxPoints = 0;
 let selectedFaction = '';
@@ -344,6 +348,40 @@ let selectedVeterans = new Set();
 let selectedArtifactsDOM = [];
 let selectedUniques = new Set();
 let hasSecondSoimi = false;
+
+/* ==========================
+   UI EXTRA (SE CREA SOLO)
+========================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+  const main = document.querySelector('.container.main');
+
+  const status = document.createElement('div');
+  status.id = 'list-status';
+  status.style.margin = '10px 0';
+  status.style.padding = '10px';
+  status.style.borderRadius = '8px';
+  status.style.fontWeight = 'bold';
+
+  const domInfo = document.createElement('div');
+  domInfo.id = 'dom-info';
+  domInfo.style.marginBottom = '6px';
+
+  const errorBox = document.createElement('div');
+  errorBox.id = 'error-box';
+  errorBox.style.color = '#b00020';
+  errorBox.style.whiteSpace = 'pre-line';
+
+  status.appendChild(domInfo);
+  status.appendChild(errorBox);
+
+  main.insertBefore(status, document.getElementById('selected-list'));
+
+  document.getElementById('generatePDF')
+    .addEventListener('click', generatePDF);
+
+  updateStatus();
+});
 
 /* ==========================
    HELPERS
@@ -360,13 +398,54 @@ function extractDOMCost(displayName) {
 }
 
 function isUnique(unit) {
-  return unit && unit.unique === true;
+  return unit?.unique === true;
 }
 
-/* Tooltip helper */
 function applyTooltip(li, unit) {
-  if (unit.comment) {
-    li.title = unit.comment;
+  if (unit.comment) li.title = unit.comment;
+}
+
+/* ==========================
+   ESTADO LEGAL
+========================== */
+
+function validateList() {
+  const errors = [];
+
+  if (!selectedLeader) {
+    errors.push('Falta un líder.');
+  }
+
+  if (selectedPoints > maxPoints) {
+    errors.push(`Puntos excedidos (${selectedPoints}/${maxPoints}).`);
+  }
+
+  const usedDOM = selectedArtifactsDOM.reduce((a,b)=>a+b,0);
+  if (usedDOM > currentDOM) {
+    errors.push(`DOM excedido (${usedDOM}/${currentDOM}).`);
+  }
+
+  return errors;
+}
+
+function updateStatus() {
+  const status = document.getElementById('list-status');
+  const domInfo = document.getElementById('dom-info');
+  const errorBox = document.getElementById('error-box');
+
+  const usedDOM = selectedArtifactsDOM.reduce((a,b)=>a+b,0);
+  domInfo.textContent = `DOM: ${usedDOM} / ${currentDOM}`;
+
+  const errors = validateList();
+
+  if (errors.length === 0) {
+    status.style.background = '#d4edda';
+    status.style.color = '#155724';
+    errorBox.textContent = 'Lista legal';
+  } else {
+    status.style.background = '#f8d7da';
+    status.style.color = '#721c24';
+    errorBox.textContent = errors.map(e => `• ${e}`).join('\n');
   }
 }
 
@@ -380,6 +459,7 @@ function setPoints(points) {
   document.getElementById('faction-title').classList.remove('hidden');
   document.getElementById('faction-list').classList.remove('hidden');
   showFactions();
+  updateStatus();
 }
 
 function showFactions() {
@@ -497,78 +577,35 @@ function showVeterans(faction) {
 ========================== */
 
 function addToSelectedList(unit, type) {
-
-  if (isUnique(unit) && selectedUniques.has(unit.name)) {
-    alert('Este personaje único ya ha sido seleccionado.');
-    return;
-  }
+  if (isUnique(unit) && selectedUniques.has(unit.name)) return;
 
   let cost = unit.points || 0;
 
   if (type === 'leader') {
-    if (selectedLeader) {
-      if (
-        selectedFaction === 'Vástagos de Kurgan' &&
-        selectedOption === 'Soimi' &&
-        !hasSecondSoimi
-      ) {
-        hasSecondSoimi = true;
-      } else {
-        alert('Solo puedes tener un líder.');
-        return;
-      }
-    } else {
-      selectedLeader = unit;
-      currentDOM = extractDOM(unit.characteristics);
-    }
+    if (selectedLeader) return;
+    selectedLeader = unit;
+    currentDOM = extractDOM(unit.characteristics);
   }
 
   if (type === 'veteran') {
-    if (!selectedLeader) {
-      alert('Necesitas un líder.');
-      return;
-    }
-    if (selectedVeterans.has(unit.name)) {
-      alert('No puedes repetir veteranías.');
-      return;
-    }
+    if (!selectedLeader || selectedVeterans.has(unit.name)) return;
     selectedVeterans.add(unit.name);
   }
 
   if (type === 'artifact') {
-    if (!selectedLeader) {
-      alert('Necesitas líder para artefactos.');
-      return;
-    }
+    if (!selectedLeader) return;
     const domCost = extractDOMCost(unit.displayName);
     const usedDOM = selectedArtifactsDOM.reduce((a,b)=>a+b,0);
-    if (usedDOM + domCost > currentDOM) {
-      alert('DOM insuficiente.');
-      return;
-    }
+    if (usedDOM + domCost > currentDOM) return;
     selectedArtifactsDOM.push(domCost);
   }
 
-  if (selectedOption === 'Devotos de Malesur' && type === 'combatant') {
-    cost += 1;
-  }
-
-  const list = document.getElementById('selected-list');
   const li = document.createElement('li');
-
-  li.innerHTML = `
-    ${unit.displayName || unit.name} - PB:${cost}<br>
-    ${unit.characteristics.replace(/\n/g,'<br>')}
-    ${unit.extraInfo ? '<br>' + unit.extraInfo.replace(/\n/g,'<br>') : ''}
-  `;
-  applyTooltip(li, unit);
-
+  li.innerHTML = `${unit.displayName} - PB:${cost}`;
   li.onclick = () => removeFromSelectedList(unit, type, li, cost);
-  list.appendChild(li);
+  document.getElementById('selected-list').appendChild(li);
 
-  if (isUnique(unit)) {
-    selectedUniques.add(unit.name);
-  }
+  if (isUnique(unit)) selectedUniques.add(unit.name);
 
   selectedPoints += cost;
   updateTotalPoints();
@@ -578,152 +615,65 @@ function removeFromSelectedList(unit, type, li, cost) {
   li.remove();
   selectedPoints -= cost;
 
-  if (isUnique(unit)) {
-    selectedUniques.delete(unit.name);
-  }
+  if (isUnique(unit)) selectedUniques.delete(unit.name);
 
   if (type === 'leader') {
     selectedLeader = null;
     currentDOM = 0;
-    hasSecondSoimi = false;
+    selectedArtifactsDOM = [];
   }
 
-  if (type === 'veteran') selectedVeterans.delete(unit.name);
-  if (type === 'artifact') selectedArtifactsDOM.pop();
+  if (type === 'artifact') {
+    const domCost = extractDOMCost(unit.displayName);
+    const i = selectedArtifactsDOM.indexOf(domCost);
+    if (i !== -1) selectedArtifactsDOM.splice(i,1);
+  }
 
   updateTotalPoints();
 }
 
 function updateTotalPoints() {
-  const el = document.getElementById('total-points');
-  el.textContent = `Total: ${selectedPoints}`;
-  el.classList.toggle('over-limit', selectedPoints > maxPoints);
+  document.getElementById('total-points').textContent = `Total: ${selectedPoints}`;
+  updateStatus();
 }
 
 /* ==========================
-   PDF NIVEL PRO
+   PDF (SEPARADO POR SECCIONES)
 ========================== */
 
 async function generatePDF() {
-  await generateVisualPDF();
-  await generateTextPDF();
-}
-
-/* ==========================
-   PDF VISUAL (BONITO)
-========================== */
-
-async function generateVisualPDF() {
-  const list = document.getElementById('selected-list');
-  if (!list || list.children.length === 0) {
-    alert('La lista está vacía');
-    return;
-  }
-
-  // Wrapper temporal
-  const wrapper = document.createElement('div');
-  wrapper.style.background = '#ffffff';
-  wrapper.style.padding = '20px';
-  wrapper.style.width = '800px';
-
-  wrapper.innerHTML = `
-    <div style="text-align:center; margin-bottom:20px;">
-      <img src="https://raw.githubusercontent.com/Loit-dev/SphereList/refs/heads/main/SphereWars.png"
-           style="max-width:160px; margin-bottom:10px;">
-      <h2>Sphere Wars – Lista de Banda</h2>
-      <p>
-        <strong>Facción:</strong> ${selectedFaction}<br>
-        <strong>Subfacción:</strong> ${selectedOption}<br>
-        <strong>Puntos:</strong> ${selectedPoints} / ${maxPoints}
-      </p>
-      <hr>
-    </div>
-  `;
-
-  wrapper.appendChild(list.cloneNode(true));
-  document.body.appendChild(wrapper);
-
-  const canvas = await html2canvas(wrapper, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: '#ffffff'
-  });
-
-  document.body.removeChild(wrapper);
-
-  const imgData = canvas.toDataURL('image/png');
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF('p', 'mm', 'a4');
-
-  const pdfWidth = 210;
-  const pdfHeight = 297;
-  const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-  heightLeft -= pdfHeight;
-
-  while (heightLeft > 0) {
-    position -= pdfHeight;
-    pdf.addPage();
-    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-    heightLeft -= pdfHeight;
-  }
-
-  pdf.save(`SphereList_${selectedFaction}_visual.pdf`);
-}
-
-/* ==========================
-   PDF TEXTO LIMPIO (TORNEO)
-========================== */
-
-async function generateTextPDF() {
-  const listItems = document.querySelectorAll('#selected-list li');
-  if (listItems.length === 0) return;
+  const errors = validateList();
+  if (errors.length) return;
 
   const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF('p', 'mm', 'a4');
-
+  const pdf = new jsPDF();
   let y = 15;
 
-  pdf.setFontSize(14);
-  pdf.text('Sphere Wars – Lista Legal', 10, y);
-  y += 10;
+  function section(title, items) {
+    if (!items.length) return;
+    pdf.setFontSize(12);
+    pdf.text(title, 10, y);
+    y += 6;
+    pdf.setFontSize(9);
 
-  pdf.setFontSize(10);
-  pdf.text(`Facción: ${selectedFaction}`, 10, y); y += 6;
-  pdf.text(`Subfacción: ${selectedOption}`, 10, y); y += 6;
-  pdf.text(`Puntos: ${selectedPoints} / ${maxPoints}`, 10, y); y += 10;
+    items.forEach(t => {
+      const lines = pdf.splitTextToSize(t, 180);
+      if (y + lines.length * 4 > 280) {
+        pdf.addPage();
+        y = 15;
+      }
+      pdf.text(lines, 10, y);
+      y += lines.length * 4 + 2;
+    });
+    y += 4;
+  }
 
-  pdf.setFontSize(12);
-  pdf.text('UNIDADES', 10, y);
-  y += 6;
+  const items = [...document.querySelectorAll('#selected-list li')].map(li => li.innerText);
 
-  pdf.setFontSize(9);
+  section('LÍDER', items.filter(t => t.includes('DOM')));
+  section('COMBATIENTES', items.filter(t => !t.includes('DOM')));
+  section('ARTEFACTOS', items.filter(t => t.includes('DOM-')));
+  section('VETERANÍAS', items.filter(t => t.includes('veterano')));
 
-  listItems.forEach(li => {
-    const text = li.innerText.replace(/\s+/g, ' ');
-    const lines = pdf.splitTextToSize(text, 180);
-
-    if (y + lines.length * 4 > 280) {
-      pdf.addPage();
-      y = 15;
-    }
-
-    pdf.text(lines, 10, y);
-    y += lines.length * 4 + 2;
-  });
-
-  pdf.save(`SphereList_${selectedFaction}_torneo.pdf`);
+  pdf.save('SphereList.pdf');
 }
-
-/* ==========================
-   EVENTO BOTÓN
-========================== */
-
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('generatePDF');
-  if (btn) btn.addEventListener('click', generatePDF);
-});
