@@ -496,15 +496,13 @@ function selectFaction(faction) {
 }
 
 /***********************
- * OPCIONES / SUBFACCIONES
+ * OPCIONES
  ***********************/
 function renderOptions() {
   const list = el('options-list');
   list.innerHTML = '';
 
-  if (!options[selectedFaction]) return;
-
-  options[selectedFaction].forEach(opt => {
+  options[selectedFaction]?.forEach(opt => {
     const li = document.createElement('li');
     li.innerHTML = opt.name;
     li.onclick = () => selectOption(opt.name);
@@ -532,8 +530,9 @@ function renderLeaders() {
 
   factions[selectedFaction].leaders.forEach(l => {
     if (!genderAllowed(l)) return;
+    if (isUniqueAlreadyUsed(l)) return;
 
-    const li = createUnitLI(l.displayName || l.name, () => {
+    const li = createUnitLI(l, () => {
       selectedLeader = l;
       usedPoints += l.points;
       currentDOM = extractDOM(l.characteristics);
@@ -557,7 +556,31 @@ function renderLeaders() {
 }
 
 /***********************
- * ARTEFACTOS (DOM)
+ * COMBATIENTES
+ ***********************/
+function renderCombatants() {
+  const list = el('combatant-list');
+  list.innerHTML = '';
+
+  factions[selectedFaction].combatants.forEach(c => {
+    if (!genderAllowed(c)) return;
+    if (isUniqueAlreadyUsed(c)) return;
+
+    const li = createUnitLI(c, () => {
+      selectedCombatants.push(c);
+      usedPoints += c.points;
+
+      renderCombatants();
+      renderSelected();
+      updatePoints();
+    });
+
+    list.appendChild(li);
+  });
+}
+
+/***********************
+ * ARTEFACTOS
  ***********************/
 function renderArtifacts() {
   const list = el('artifact-list');
@@ -572,11 +595,14 @@ function renderArtifacts() {
     const cost = extractDOM(a.characteristics);
     if (getUsedDOM() + cost > currentDOM) return;
 
-    const li = createUnitLI(a.displayName || a.name, () => {
+    const li = document.createElement('li');
+    li.innerHTML = `${a.name} — DOM ${cost}`;
+    li.title = buildTooltip(a);
+    li.onclick = () => {
       selectedArtifacts.push(a);
       renderArtifacts();
       renderSelected();
-    });
+    };
 
     list.appendChild(li);
   });
@@ -589,40 +615,20 @@ function renderVeterans() {
   const list = el('veteran-list');
   list.innerHTML = '';
 
-  if (!selectedLeader) return;
-
   factions[selectedFaction].veterans.forEach(v => {
     if (selectedVeterans.some(x => x.name === v.name)) return;
 
-    const li = createUnitLI(v.displayName || v.name, () => {
+    const li = document.createElement('li');
+    li.innerHTML = `${v.name} — PB ${v.points}`;
+    li.title = buildTooltip(v);
+    li.onclick = () => {
       selectedVeterans.push(v);
       usedPoints += v.points;
+
       renderVeterans();
       renderSelected();
       updatePoints();
-    });
-
-    list.appendChild(li);
-  });
-}
-
-/***********************
- * COMBATIENTES
- ***********************/
-function renderCombatants() {
-  const list = el('combatant-list');
-  list.innerHTML = '';
-
-  factions[selectedFaction].combatants.forEach(c => {
-    if (!genderAllowed(c)) return;
-
-    const li = createUnitLI(c.displayName || c.name, () => {
-      selectedCombatants.push(c);
-      usedPoints += c.points;
-      renderCombatants();
-      renderSelected();
-      updatePoints();
-    });
+    };
 
     list.appendChild(li);
   });
@@ -648,66 +654,6 @@ function addSelected(list, type, unit) {
 }
 
 /***********************
- * PDF
- ***********************/
-document.getElementById('generatePDF')?.addEventListener('click', generatePDF);
-
-function generatePDF() {
-  clearError();
-
-  if (!selectedLeader) return showError('Falta líder');
-  if (usedPoints > maxPoints) return showError('Puntos excedidos');
-  if (getUsedDOM() > currentDOM) return showError('DOM excedido');
-
-  const name = prompt('Nombre de la lista');
-  if (!name) return;
-
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
-
-  let y = 20;
-  pdf.setFontSize(14);
-  pdf.text(name, 15, y);
-
-  y += 6;
-  pdf.setFontSize(10);
-  pdf.text(`Puntos: ${usedPoints}/${maxPoints}`, 15, y);
-  y += 5;
-  pdf.text(`Facción: ${selectedFaction}`, 15, y);
-  y += 5;
-  pdf.text(`Subfacción: ${selectedOption}`, 15, y);
-  y += 10;
-
-  y = pdfSection(pdf, 'LÍDER', [selectedLeader], y);
-  y = pdfSection(pdf, 'COMBATIENTES', selectedCombatants, y);
-  y = pdfSection(pdf, 'ARTEFACTOS', selectedArtifacts, y);
-  y = pdfSection(pdf, 'VETERANÍAS', selectedVeterans, y);
-
-  pdf.save(`${name}.pdf`);
-}
-
-function pdfSection(pdf, title, items, y) {
-  if (!items.length) return y;
-
-  const h = pdf.internal.pageSize.height;
-  pdf.setFontSize(12);
-  pdf.text(title, 15, y);
-  y += 6;
-
-  pdf.setFontSize(10);
-  items.forEach(i => {
-    if (y > h - 20) {
-      pdf.addPage();
-      y = 20;
-    }
-    pdf.text(`- ${i.name}`, 15, y);
-    y += 5;
-  });
-
-  return y + 5;
-}
-
-/***********************
  * HELPERS
  ***********************/
 function genderAllowed(unit) {
@@ -715,6 +661,12 @@ function genderAllowed(unit) {
   if (selectedOption === 'Mercenarias de Isha') return unit.gender === 'Mujer';
   if (selectedOption === 'Legión de los Mil Corazones') return unit.gender === 'Hombre';
   return true;
+}
+
+function isUniqueAlreadyUsed(unit) {
+  if (!unit.unique) return false;
+  if (selectedLeader && selectedLeader.name === unit.name) return true;
+  return selectedCombatants.some(c => c.name === unit.name);
 }
 
 function extractDOM(text = '') {
@@ -726,9 +678,18 @@ function getUsedDOM() {
   return selectedArtifacts.reduce((s, a) => s + extractDOM(a.characteristics), 0);
 }
 
-function createUnitLI(content, onClick) {
+function buildTooltip(unit) {
+  let text = '';
+  if (unit.characteristics) text += unit.characteristics + '\n\n';
+  if (unit.extraInfo) text += unit.extraInfo + '\n\n';
+  if (unit.comment) text += unit.comment;
+  return text.trim();
+}
+
+function createUnitLI(unit, onClick) {
   const li = document.createElement('li');
-  li.innerHTML = content;
+  li.innerHTML = `<strong>${unit.name}</strong> — PB ${unit.points}`;
+  li.title = buildTooltip(unit);
   li.onclick = onClick;
   return li;
 }
