@@ -457,6 +457,14 @@ const errorBox = createErrorBox();
 function setPoints(points) {
   maxPoints = points;
   usedPoints = 0;
+  currentDOM = 0;
+
+  selectedFaction = null;
+  selectedOption = null;
+  selectedLeader = null;
+  selectedCombatants = [];
+  selectedArtifacts = [];
+  selectedVeterans = [];
 
   show('faction-title');
   show('faction-list');
@@ -487,14 +495,19 @@ function selectFaction(faction) {
   renderOptions();
 }
 
+/***********************
+ * OPCIONES / SUBFACCIONES
+ ***********************/
 function renderOptions() {
   const list = el('options-list');
   list.innerHTML = '';
 
-  factions[selectedFaction].options.forEach(opt => {
+  if (!options[selectedFaction]) return;
+
+  options[selectedFaction].forEach(opt => {
     const li = document.createElement('li');
-    li.textContent = opt;
-    li.onclick = () => selectOption(opt);
+    li.innerHTML = opt.name;
+    li.onclick = () => selectOption(opt.name);
     list.appendChild(li);
   });
 }
@@ -515,14 +528,15 @@ function renderLeaders() {
   const list = el('leader-list');
   list.innerHTML = '';
 
+  if (selectedLeader) return;
+
   factions[selectedFaction].leaders.forEach(l => {
     if (!genderAllowed(l)) return;
-    if (selectedLeader) return;
 
-    const li = createUnitLI(l, () => {
+    const li = createUnitLI(l.displayName || l.name, () => {
       selectedLeader = l;
-      usedPoints += l.pb;
-      currentDOM = l.dom || 0;
+      usedPoints += l.points;
+      currentDOM = extractDOM(l.characteristics);
 
       show('artifact-title');
       show('artifact-list');
@@ -555,17 +569,14 @@ function renderArtifacts() {
     if (!genderAllowed(a)) return;
     if (selectedArtifacts.some(x => x.name === a.name)) return;
 
-    const cost = a.dom || 0;
+    const cost = extractDOM(a.characteristics);
     if (getUsedDOM() + cost > currentDOM) return;
 
-    const li = createUnitLI(
-      `${a.name} (DOM ${cost})`,
-      () => {
-        selectedArtifacts.push(a);
-        renderArtifacts();
-        renderSelected();
-      }
-    );
+    const li = createUnitLI(a.displayName || a.name, () => {
+      selectedArtifacts.push(a);
+      renderArtifacts();
+      renderSelected();
+    });
 
     list.appendChild(li);
   });
@@ -583,9 +594,9 @@ function renderVeterans() {
   factions[selectedFaction].veterans.forEach(v => {
     if (selectedVeterans.some(x => x.name === v.name)) return;
 
-    const li = createUnitLI(v, () => {
+    const li = createUnitLI(v.displayName || v.name, () => {
       selectedVeterans.push(v);
-      usedPoints += 1;
+      usedPoints += v.points;
       renderVeterans();
       renderSelected();
       updatePoints();
@@ -605,9 +616,9 @@ function renderCombatants() {
   factions[selectedFaction].combatants.forEach(c => {
     if (!genderAllowed(c)) return;
 
-    const li = createUnitLI(c, () => {
+    const li = createUnitLI(c.displayName || c.name, () => {
       selectedCombatants.push(c);
-      usedPoints += c.pb;
+      usedPoints += c.points;
       renderCombatants();
       renderSelected();
       updatePoints();
@@ -625,7 +636,6 @@ function renderSelected() {
   list.innerHTML = '';
 
   if (selectedLeader) addSelected(list, 'Líder', selectedLeader);
-
   selectedArtifacts.forEach(a => addSelected(list, 'Artefacto', a));
   selectedVeterans.forEach(v => addSelected(list, 'Veteranía', v));
   selectedCombatants.forEach(c => addSelected(list, 'Combatiente', c));
@@ -638,9 +648,9 @@ function addSelected(list, type, unit) {
 }
 
 /***********************
- * PDF PRO
+ * PDF
  ***********************/
-document.getElementById('generatePDF').addEventListener('click', generatePDF);
+document.getElementById('generatePDF')?.addEventListener('click', generatePDF);
 
 function generatePDF() {
   clearError();
@@ -707,13 +717,18 @@ function genderAllowed(unit) {
   return true;
 }
 
+function extractDOM(text = '') {
+  const match = text.match(/DOM:?(\d+)/i);
+  return match ? parseInt(match[1], 10) : 0;
+}
+
 function getUsedDOM() {
-  return selectedArtifacts.reduce((s, a) => s + (a.dom || 0), 0);
+  return selectedArtifacts.reduce((s, a) => s + extractDOM(a.characteristics), 0);
 }
 
 function createUnitLI(content, onClick) {
   const li = document.createElement('li');
-  li.innerHTML = typeof content === 'string' ? content : content.name;
+  li.innerHTML = content;
   li.onclick = onClick;
   return li;
 }
@@ -723,7 +738,7 @@ function el(id) {
 }
 
 function show(id) {
-  el(id).classList.remove('hidden');
+  el(id)?.classList.remove('hidden');
 }
 
 /***********************
@@ -733,7 +748,7 @@ function createErrorBox() {
   const box = document.createElement('div');
   box.style.color = 'red';
   box.style.margin = '10px 0';
-  document.querySelector('.main').prepend(box);
+  document.querySelector('.main')?.prepend(box);
   return box;
 }
 
