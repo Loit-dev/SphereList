@@ -434,9 +434,9 @@ const options = {
           },
     { name: 'Mercenarias de Isha', description: 'Si se elige esta subfacción, solo se pueden reclutar combatientes <strong>Mercenaria de Isha</strong>. A cambio, se obtiene la regla especial <strong>Inquebrantables</strong>.' }
   ]};
-/***********************
+/*************************
  * ESTADO GLOBAL
- ***********************/
+ *************************/
 let maxPoints = 0;
 let usedPoints = 0;
 let currentDOM = 0;
@@ -449,11 +449,53 @@ let selectedCombatants = [];
 let selectedArtifacts = [];
 let selectedVeterans = [];
 
-const errorBox = createErrorBox();
+/*************************
+ * DATOS (EJEMPLO)
+ * Sustituye por tu JSON real
+ *************************/
+const factions = {
+  "La Alianza": {
+    options: ["La Alianza", "Mercenarias de Isha", "Legión de los Mil Corazones"],
+    leaders: [
+      {
+        name: "Capitana Alys",
+        points: 20,
+        dom: 2,
+        gender: "Mujer",
+        characteristics: "MOV 15 / ATQ 3 / DEF 4",
+        extraInfo: "Líder inspirador"
+      }
+    ],
+    combatants: [
+      {
+        name: "Infantería Ligera",
+        points: 10,
+        gender: null,
+        characteristics: "MOV 15 / ATQ 2 / DEF 3",
+        extraInfo: "Unidad básica"
+      }
+    ],
+    artifacts: [
+      {
+        name: "Espada Ancestral",
+        dom: 1,
+        characteristics: "+1 ATQ",
+        extraInfo: "Solo líder"
+      }
+    ],
+    veterans: [
+      {
+        name: "Veteranía I",
+        characteristics: "+1 DEF",
+        extraInfo: "No acumulable"
+      }
+    ]
+  }
+};
 
-/***********************
+/*************************
  * FLUJO PRINCIPAL
- ***********************/
+ *************************/
 function setPoints(points) {
   maxPoints = points;
   usedPoints = 0;
@@ -465,6 +507,9 @@ function setPoints(points) {
   updatePoints();
 }
 
+/*************************
+ * FACCIONES
+ *************************/
 function renderFactions() {
   const list = el('faction-list');
   list.innerHTML = '';
@@ -491,10 +536,10 @@ function renderOptions() {
   const list = el('options-list');
   list.innerHTML = '';
 
-  options[selectedFaction].forEach(opt => {
+  factions[selectedFaction].options.forEach(opt => {
     const li = document.createElement('li');
-    li.textContent = opt.name;
-    li.onclick = () => selectOption(opt.name);
+    li.textContent = opt;
+    li.onclick = () => selectOption(opt);
     list.appendChild(li);
   });
 }
@@ -508,21 +553,22 @@ function selectOption(option) {
   renderLeaders();
 }
 
-/***********************
+/*************************
  * LÍDERES
- ***********************/
+ *************************/
 function renderLeaders() {
   const list = el('leader-list');
   list.innerHTML = '';
 
+  if (selectedLeader) return;
+
   factions[selectedFaction].leaders.forEach(l => {
     if (!genderAllowed(l)) return;
-    if (selectedLeader) return;
 
     const li = createUnitLI(l, () => {
       selectedLeader = l;
       usedPoints += l.points;
-      currentDOM = extractDOM(l.characteristics);
+      currentDOM = l.dom || 0;
 
       show('artifact-title');
       show('artifact-list');
@@ -542,20 +588,61 @@ function renderLeaders() {
   });
 }
 
-/***********************
+/*************************
+ * ARTEFACTOS (DOM)
+ *************************/
+function renderArtifacts() {
+  const list = el('artifact-list');
+  list.innerHTML = '';
+
+  factions[selectedFaction].artifacts.forEach(a => {
+    if (selectedArtifacts.some(x => x.name === a.name)) return;
+    if (getUsedDOM() + (a.dom || 0) > currentDOM) return;
+
+    const li = createUnitLI(
+      { ...a, name: `${a.name} (DOM ${a.dom})` },
+      () => {
+        selectedArtifacts.push(a);
+        renderArtifacts();
+        renderSelected();
+      }
+    );
+
+    list.appendChild(li);
+  });
+}
+
+/*************************
+ * VETERANÍAS
+ *************************/
+function renderVeterans() {
+  const list = el('veteran-list');
+  list.innerHTML = '';
+
+  factions[selectedFaction].veterans.forEach(v => {
+    if (selectedVeterans.some(x => x.name === v.name)) return;
+
+    const li = createUnitLI(v, () => {
+      selectedVeterans.push(v);
+      usedPoints += 1;
+      renderVeterans();
+      renderSelected();
+      updatePoints();
+    });
+
+    list.appendChild(li);
+  });
+}
+
+/*************************
  * COMBATIENTES
- ***********************/
+ *************************/
 function renderCombatants() {
   const list = el('combatant-list');
   list.innerHTML = '';
 
   factions[selectedFaction].combatants.forEach(c => {
     if (!genderAllowed(c)) return;
-
-    if (c.unique && (
-      selectedCombatants.some(x => x.name === c.name) ||
-      (selectedLeader && selectedLeader.name === c.name)
-    )) return;
 
     const li = createUnitLI(c, () => {
       selectedCombatants.push(c);
@@ -569,172 +656,148 @@ function renderCombatants() {
   });
 }
 
-/***********************
- * ARTEFACTOS (DOM)
- ***********************/
-function renderArtifacts() {
-  const list = el('artifact-list');
-  list.innerHTML = '';
-
-  if (!selectedLeader) return;
-
-  factions[selectedFaction].artifacts.forEach(a => {
-    if (!genderAllowed(a)) return;
-    if (selectedArtifacts.some(x => x.name === a.name)) return;
-
-    const domCost = extractDOM(a.characteristics);
-    if (getUsedDOM() + domCost > currentDOM) return;
-
-    const li = createUnitLI(
-      {
-        ...a,
-        points: domCost
-      },
-      () => {
-        selectedArtifacts.push(a);
-        renderArtifacts();
-        renderSelected();
-      }
-    );
-
-    list.appendChild(li);
-  });
-}
-
-/***********************
- * VETERANÍAS
- ***********************/
-function renderVeterans() {
-  const list = el('veteran-list');
-  list.innerHTML = '';
-
-  factions[selectedFaction].veterans.forEach(v => {
-    if (selectedVeterans.some(x => x.name === v.name)) return;
-
-    const li = createUnitLI(v, () => {
-      selectedVeterans.push(v);
-      usedPoints += v.points;
-      renderVeterans();
-      renderSelected();
-      updatePoints();
-    });
-
-    list.appendChild(li);
-  });
-}
-
-/***********************
- * SELECCIONADOS
- ***********************/
+/*************************
+ * LISTA SELECCIONADA
+ *************************/
 function renderSelected() {
   const list = el('selected-list');
   list.innerHTML = '';
 
   if (selectedLeader) {
-    list.appendChild(
-      createSelectedCard('LÍDER', selectedLeader, () => {
-        selectedLeader = null;
-        selectedCombatants = [];
-        selectedArtifacts = [];
-        selectedVeterans = [];
-        usedPoints = 0;
-        currentDOM = 0;
-
-        renderLeaders();
-        renderArtifacts();
-        renderVeterans();
-        renderCombatants();
-        renderSelected();
-        updatePoints();
-      })
-    );
+    list.appendChild(createSelectedCard(selectedLeader, () => {
+      location.reload();
+    }));
   }
 
-  selectedCombatants.forEach((c, i) => {
-    list.appendChild(
-      createSelectedCard('COMBATIENTE', c, () => {
-        usedPoints -= c.points;
-        selectedCombatants.splice(i, 1);
-        renderCombatants();
-        renderSelected();
-        updatePoints();
-      })
-    );
-  });
-
   selectedArtifacts.forEach((a, i) => {
-    list.appendChild(
-      createSelectedCard('ARTEFACTO', a, () => {
-        selectedArtifacts.splice(i, 1);
-        renderArtifacts();
-        renderSelected();
-      })
-    );
+    list.appendChild(createSelectedCard(a, () => {
+      selectedArtifacts.splice(i, 1);
+      renderArtifacts();
+      renderSelected();
+    }));
   });
 
   selectedVeterans.forEach((v, i) => {
-    list.appendChild(
-      createSelectedCard('VETERANÍA', v, () => {
-        usedPoints -= v.points;
-        selectedVeterans.splice(i, 1);
-        renderVeterans();
-        renderSelected();
-        updatePoints();
-      })
-    );
+    list.appendChild(createSelectedCard(v, () => {
+      selectedVeterans.splice(i, 1);
+      usedPoints -= 1;
+      renderVeterans();
+      renderSelected();
+      updatePoints();
+    }));
+  });
+
+  selectedCombatants.forEach((c, i) => {
+    list.appendChild(createSelectedCard(c, () => {
+      selectedCombatants.splice(i, 1);
+      usedPoints -= c.points;
+      renderCombatants();
+      renderSelected();
+      updatePoints();
+    }));
   });
 }
 
-/***********************
- * UI COMPONENTES
- ***********************/
+/*************************
+ * PDF PRO (FUNCIONA)
+ *************************/
+document.getElementById('generatePDF').addEventListener('click', generatePDF);
+
+function generatePDF() {
+  if (!selectedLeader) return alert('Lista incompleta');
+  if (usedPoints > maxPoints) return alert('Exceso de puntos');
+
+  const name = prompt('Nombre de la lista');
+  if (!name) return;
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+
+  let y = 20;
+
+  pdf.setFontSize(14);
+  pdf.text(name, 15, y);
+
+  y += 8;
+  pdf.setFontSize(10);
+  pdf.text(`Puntos: ${usedPoints}/${maxPoints}`, 15, y);
+  y += 5;
+  pdf.text(`Facción: ${selectedFaction}`, 15, y);
+  y += 5;
+  pdf.text(`Subfacción: ${selectedOption}`, 15, y);
+  y += 10;
+
+  y = pdfSection(pdf, 'LÍDER', [selectedLeader], y);
+  y = pdfSection(pdf, 'COMBATIENTES', selectedCombatants, y);
+  y = pdfSection(pdf, 'ARTEFACTOS', selectedArtifacts, y);
+  y = pdfSection(pdf, 'VETERANÍAS', selectedVeterans, y);
+
+  pdf.save(`${name}.pdf`);
+}
+
+function pdfSection(pdf, title, items, y) {
+  if (!items.length) return y;
+
+  const pageHeight = pdf.internal.pageSize.height;
+
+  pdf.setFontSize(12);
+  pdf.text(title, 15, y);
+  y += 6;
+
+  pdf.setFontSize(10);
+  items.forEach(i => {
+    if (y > pageHeight - 20) {
+      pdf.addPage();
+      y = 20;
+    }
+    pdf.text(`- ${i.name}`, 15, y);
+    y += 5;
+  });
+
+  return y + 5;
+}
+
+/*************************
+ * TOOLTIP + HELPERS
+ *************************/
 function createUnitLI(unit, onClick) {
   const li = document.createElement('li');
   li.className = 'unit';
 
   li.innerHTML = `
-    <strong>${unit.name}</strong> — PB ${unit.points ?? ''}
-    <div class="tooltip">${formatTooltip(unit)}</div>
+    <strong>${unit.name}</strong>
+    ${unit.points ? ` — PB ${unit.points}` : ''}
+    <div class="tooltip">
+      ${formatTooltip(unit)}
+    </div>
   `;
 
   li.onclick = onClick;
   return li;
 }
 
-function createSelectedCard(type, unit, onRemove) {
+function createSelectedCard(unit, onRemove) {
   const div = document.createElement('div');
   div.className = 'selected-card';
 
   div.innerHTML = `
-    <strong>${type}: ${unit.name}</strong>
-    ${unit.points ? `<div><em>PB:</em> ${unit.points}</div>` : ''}
-    ${unit.characteristics ? `<div><em>Características:</em><br>${unit.characteristics}</div>` : ''}
-    ${unit.extraInfo ? `<div><em>Reglas:</em><br>${unit.extraInfo}</div>` : ''}
+    <strong>${unit.name}</strong>
+    ${unit.points ? `<div>PB: ${unit.points}</div>` : ''}
+    ${unit.characteristics ? `<div>${unit.characteristics}</div>` : ''}
+    ${unit.extraInfo ? `<div>${unit.extraInfo}</div>` : ''}
   `;
 
   div.onclick = onRemove;
   return div;
 }
 
-/***********************
- * HELPERS
- ***********************/
 function formatTooltip(unit) {
-  let html = '';
-
-  if (unit.characteristics) {
-    html += `<strong>Características</strong>\n${unit.characteristics}\n\n`;
-  }
-
-  if (unit.extraInfo) {
-    html += `<strong>Reglas</strong>\n${unit.extraInfo}\n\n`;
-  }
-
-  if (unit.comment) {
-    html += `<strong>Resumen</strong>\n${unit.comment}`;
-  }
-
-  return html;
+  return `
+${unit.points ? `PB: ${unit.points}\n` : ''}
+${unit.dom ? `DOM: ${unit.dom}\n` : ''}
+${unit.characteristics || ''}
+${unit.extraInfo ? `\n\n${unit.extraInfo}` : ''}
+`;
 }
 
 function genderAllowed(unit) {
@@ -744,14 +807,8 @@ function genderAllowed(unit) {
   return true;
 }
 
-function extractDOM(text) {
-  if (!text) return 0;
-  const match = text.match(/DOM[:\s]*(\d+)/i);
-  return match ? parseInt(match[1]) : 0;
-}
-
 function getUsedDOM() {
-  return selectedArtifacts.reduce((s, a) => s + extractDOM(a.characteristics), 0);
+  return selectedArtifacts.reduce((s, a) => s + (a.dom || 0), 0);
 }
 
 function el(id) {
@@ -764,15 +821,4 @@ function show(id) {
 
 function updatePoints() {
   el('total-points').textContent = `Total: ${usedPoints}/${maxPoints}`;
-}
-
-/***********************
- * ERRORES
- ***********************/
-function createErrorBox() {
-  const box = document.createElement('div');
-  box.style.color = 'red';
-  box.style.margin = '10px 0';
-  document.querySelector('.main').prepend(box);
-  return box;
 }
