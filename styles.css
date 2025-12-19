@@ -132,4 +132,64 @@ header li {
   color: #aaa;
   font-style: normal;
 }
+/* =========================
+   TOOLTIP FLOTANTE (MANUAL)
+========================= */
+.unit {
+  position: relative;
+  cursor: pointer;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  left: 102%;
+  top: 0;
+  z-index: 999;
+
+  width: 360px;
+  max-width: 90vw;
+
+  background: #2b2f36; /* gris oscuro azulado */
+  color: #f0f0f0;
+
+  padding: 14px;
+  border-radius: 8px;
+
+  font-size: 12px;
+  line-height: 1.45;
+
+  border: 1px solid #77aaff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+  white-space: pre-line;
+}
+
+.unit:hover .tooltip {
+  display: block;
+}
+
+/* =========================
+   TARJETAS SELECCIONADAS
+========================= */
+.selected-card {
+  border: 1px solid #77aaff;
+  border-left: 6px solid #77aaff;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #fdfdfd;
+  cursor: pointer;
+}
+
+.selected-card strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 15px;
+  color: #333;
+}
+
+.selected-card em {
+  color: #555;
+  font-style: normal;
+}
 
