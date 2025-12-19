@@ -457,14 +457,6 @@ const errorBox = createErrorBox();
 function setPoints(points) {
   maxPoints = points;
   usedPoints = 0;
-  currentDOM = 0;
-
-  selectedFaction = null;
-  selectedOption = null;
-  selectedLeader = null;
-  selectedCombatants = [];
-  selectedArtifacts = [];
-  selectedVeterans = [];
 
   show('faction-title');
   show('faction-list');
@@ -495,16 +487,13 @@ function selectFaction(faction) {
   renderOptions();
 }
 
-/***********************
- * OPCIONES
- ***********************/
 function renderOptions() {
   const list = el('options-list');
   list.innerHTML = '';
 
-  options[selectedFaction]?.forEach(opt => {
+  options[selectedFaction].forEach(opt => {
     const li = document.createElement('li');
-    li.innerHTML = opt.name;
+    li.textContent = opt.name;
     li.onclick = () => selectOption(opt.name);
     list.appendChild(li);
   });
@@ -526,11 +515,9 @@ function renderLeaders() {
   const list = el('leader-list');
   list.innerHTML = '';
 
-  if (selectedLeader) return;
-
   factions[selectedFaction].leaders.forEach(l => {
     if (!genderAllowed(l)) return;
-    if (isUniqueAlreadyUsed(l)) return;
+    if (selectedLeader) return;
 
     const li = createUnitLI(l, () => {
       selectedLeader = l;
@@ -564,12 +551,15 @@ function renderCombatants() {
 
   factions[selectedFaction].combatants.forEach(c => {
     if (!genderAllowed(c)) return;
-    if (isUniqueAlreadyUsed(c)) return;
+
+    if (c.unique && (
+      selectedCombatants.some(x => x.name === c.name) ||
+      (selectedLeader && selectedLeader.name === c.name)
+    )) return;
 
     const li = createUnitLI(c, () => {
       selectedCombatants.push(c);
       usedPoints += c.points;
-
       renderCombatants();
       renderSelected();
       updatePoints();
@@ -580,7 +570,7 @@ function renderCombatants() {
 }
 
 /***********************
- * ARTEFACTOS
+ * ARTEFACTOS (DOM)
  ***********************/
 function renderArtifacts() {
   const list = el('artifact-list');
@@ -592,17 +582,20 @@ function renderArtifacts() {
     if (!genderAllowed(a)) return;
     if (selectedArtifacts.some(x => x.name === a.name)) return;
 
-    const cost = extractDOM(a.characteristics);
-    if (getUsedDOM() + cost > currentDOM) return;
+    const domCost = extractDOM(a.characteristics);
+    if (getUsedDOM() + domCost > currentDOM) return;
 
-    const li = document.createElement('li');
-    li.innerHTML = `${a.name} — DOM ${cost}`;
-    li.title = buildTooltip(a);
-    li.onclick = () => {
-      selectedArtifacts.push(a);
-      renderArtifacts();
-      renderSelected();
-    };
+    const li = createUnitLI(
+      {
+        ...a,
+        points: domCost
+      },
+      () => {
+        selectedArtifacts.push(a);
+        renderArtifacts();
+        renderSelected();
+      }
+    );
 
     list.appendChild(li);
   });
@@ -618,17 +611,13 @@ function renderVeterans() {
   factions[selectedFaction].veterans.forEach(v => {
     if (selectedVeterans.some(x => x.name === v.name)) return;
 
-    const li = document.createElement('li');
-    li.innerHTML = `${v.name} — PB ${v.points}`;
-    li.title = buildTooltip(v);
-    li.onclick = () => {
+    const li = createUnitLI(v, () => {
       selectedVeterans.push(v);
       usedPoints += v.points;
-
       renderVeterans();
       renderSelected();
       updatePoints();
-    };
+    });
 
     list.appendChild(li);
   });
@@ -641,21 +630,113 @@ function renderSelected() {
   const list = el('selected-list');
   list.innerHTML = '';
 
-  if (selectedLeader) addSelected(list, 'Líder', selectedLeader);
-  selectedArtifacts.forEach(a => addSelected(list, 'Artefacto', a));
-  selectedVeterans.forEach(v => addSelected(list, 'Veteranía', v));
-  selectedCombatants.forEach(c => addSelected(list, 'Combatiente', c));
+  if (selectedLeader) {
+    list.appendChild(
+      createSelectedCard('LÍDER', selectedLeader, () => {
+        selectedLeader = null;
+        selectedCombatants = [];
+        selectedArtifacts = [];
+        selectedVeterans = [];
+        usedPoints = 0;
+        currentDOM = 0;
+
+        renderLeaders();
+        renderArtifacts();
+        renderVeterans();
+        renderCombatants();
+        renderSelected();
+        updatePoints();
+      })
+    );
+  }
+
+  selectedCombatants.forEach((c, i) => {
+    list.appendChild(
+      createSelectedCard('COMBATIENTE', c, () => {
+        usedPoints -= c.points;
+        selectedCombatants.splice(i, 1);
+        renderCombatants();
+        renderSelected();
+        updatePoints();
+      })
+    );
+  });
+
+  selectedArtifacts.forEach((a, i) => {
+    list.appendChild(
+      createSelectedCard('ARTEFACTO', a, () => {
+        selectedArtifacts.splice(i, 1);
+        renderArtifacts();
+        renderSelected();
+      })
+    );
+  });
+
+  selectedVeterans.forEach((v, i) => {
+    list.appendChild(
+      createSelectedCard('VETERANÍA', v, () => {
+        usedPoints -= v.points;
+        selectedVeterans.splice(i, 1);
+        renderVeterans();
+        renderSelected();
+        updatePoints();
+      })
+    );
+  });
 }
 
-function addSelected(list, type, unit) {
+/***********************
+ * UI COMPONENTES
+ ***********************/
+function createUnitLI(unit, onClick) {
   const li = document.createElement('li');
-  li.innerHTML = `<strong>${type}</strong>: ${unit.name}`;
-  list.appendChild(li);
+  li.className = 'unit';
+
+  li.innerHTML = `
+    <strong>${unit.name}</strong> — PB ${unit.points ?? ''}
+    <div class="tooltip">${formatTooltip(unit)}</div>
+  `;
+
+  li.onclick = onClick;
+  return li;
+}
+
+function createSelectedCard(type, unit, onRemove) {
+  const div = document.createElement('div');
+  div.className = 'selected-card';
+
+  div.innerHTML = `
+    <strong>${type}: ${unit.name}</strong>
+    ${unit.points ? `<div><em>PB:</em> ${unit.points}</div>` : ''}
+    ${unit.characteristics ? `<div><em>Características:</em><br>${unit.characteristics}</div>` : ''}
+    ${unit.extraInfo ? `<div><em>Reglas:</em><br>${unit.extraInfo}</div>` : ''}
+  `;
+
+  div.onclick = onRemove;
+  return div;
 }
 
 /***********************
  * HELPERS
  ***********************/
+function formatTooltip(unit) {
+  let html = '';
+
+  if (unit.characteristics) {
+    html += `<strong>Características</strong>\n${unit.characteristics}\n\n`;
+  }
+
+  if (unit.extraInfo) {
+    html += `<strong>Reglas</strong>\n${unit.extraInfo}\n\n`;
+  }
+
+  if (unit.comment) {
+    html += `<strong>Resumen</strong>\n${unit.comment}`;
+  }
+
+  return html;
+}
+
 function genderAllowed(unit) {
   if (!unit.gender) return true;
   if (selectedOption === 'Mercenarias de Isha') return unit.gender === 'Mujer';
@@ -663,35 +744,14 @@ function genderAllowed(unit) {
   return true;
 }
 
-function isUniqueAlreadyUsed(unit) {
-  if (!unit.unique) return false;
-  if (selectedLeader && selectedLeader.name === unit.name) return true;
-  return selectedCombatants.some(c => c.name === unit.name);
-}
-
-function extractDOM(text = '') {
-  const match = text.match(/DOM:?(\d+)/i);
-  return match ? parseInt(match[1], 10) : 0;
+function extractDOM(text) {
+  if (!text) return 0;
+  const match = text.match(/DOM[:\s]*(\d+)/i);
+  return match ? parseInt(match[1]) : 0;
 }
 
 function getUsedDOM() {
   return selectedArtifacts.reduce((s, a) => s + extractDOM(a.characteristics), 0);
-}
-
-function buildTooltip(unit) {
-  let text = '';
-  if (unit.characteristics) text += unit.characteristics + '\n\n';
-  if (unit.extraInfo) text += unit.extraInfo + '\n\n';
-  if (unit.comment) text += unit.comment;
-  return text.trim();
-}
-
-function createUnitLI(unit, onClick) {
-  const li = document.createElement('li');
-  li.innerHTML = `<strong>${unit.name}</strong> — PB ${unit.points}`;
-  li.title = buildTooltip(unit);
-  li.onclick = onClick;
-  return li;
 }
 
 function el(id) {
@@ -699,7 +759,11 @@ function el(id) {
 }
 
 function show(id) {
-  el(id)?.classList.remove('hidden');
+  el(id).classList.remove('hidden');
+}
+
+function updatePoints() {
+  el('total-points').textContent = `Total: ${usedPoints}/${maxPoints}`;
 }
 
 /***********************
@@ -709,18 +773,6 @@ function createErrorBox() {
   const box = document.createElement('div');
   box.style.color = 'red';
   box.style.margin = '10px 0';
-  document.querySelector('.main')?.prepend(box);
+  document.querySelector('.main').prepend(box);
   return box;
-}
-
-function showError(msg) {
-  errorBox.textContent = msg;
-}
-
-function clearError() {
-  errorBox.textContent = '';
-}
-
-function updatePoints() {
-  el('total-points').textContent = `Total: ${usedPoints}/${maxPoints}`;
 }
