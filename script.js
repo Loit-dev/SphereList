@@ -452,20 +452,6 @@ let selectedVeterans = [];
 const errorBox = createErrorBox();
 
 /***********************
- * DATOS (EJEMPLO)
- * 👉 aquí conectas tu JSON real
- ***********************/
-const factions = {
-  "La Alianza": {
-    options: ["La Alianza", "Mercenarias de Isha", "Legión de los Mil Corazones"],
-    leaders: [],
-    combatants: [],
-    artifacts: [],
-    veterans: []
-  }
-};
-
-/***********************
  * FLUJO PRINCIPAL
  ***********************/
 function setPoints(points) {
